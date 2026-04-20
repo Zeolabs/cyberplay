@@ -43,7 +43,6 @@ export function updateProgress(sourceId: string, update: Partial<FetchProgress>)
 interface SourceFetcher {
   type: string;
   search(query: string, num?: number): Promise<FetchedGame[]>;
-  fetchGamePage(url: string): Promise<FetchedGame | null>;
 }
 
 // ─── CrazyGames Fetcher ─────────────────────────────────────────────
@@ -60,114 +59,85 @@ class CrazyGamesFetcher implements SourceFetcher {
 
   async search(query: string, num = 10): Promise<FetchedGame[]> {
     const zai = await this.getZai();
-    const searchQuery = `site:crazygames.com ${query}`;
 
-    const results = await zai.functions.invoke('web_search', {
-      query: searchQuery,
-      num,
-    });
+    // Multiple search queries to maximize coverage
+    const searchQueries = [
+      `site:crazygames.com/game ${query}`,
+      `crazygames.com ${query} free online play`,
+      `crazygames ${query} game 2024`,
+    ];
 
-    const games: FetchedGame[] = [];
+    const allGames = new Map<string, FetchedGame>();
+    const seenUrls = new Set<string>();
 
-    for (const result of results) {
-      if (result.url && result.url.includes('crazygames.com/game/')) {
-        const game = await this.fetchGamePage(result.url);
-        if (game) {
-          games.push(game);
+    for (let qi = 0; qi < searchQueries.length; qi++) {
+      const sq = searchQueries[qi];
+      try {
+        const results = await zai.functions.invoke('web_search', {
+          query: sq,
+          num,
+        });
+
+        if (!Array.isArray(results)) continue;
+
+        for (const result of results) {
+          const url = result.url || '';
+          // Match CrazyGames game URLs
+          const slugMatch = url.match(/crazygames\.com\/game\/([^/?]+)/);
+          if (!slugMatch || seenUrls.has(slugMatch[1])) continue;
+
+          seenUrls.add(slugMatch[1]);
+          const slug = slugMatch[1];
+
+          // Extract title from search result name (clean up emoji)
+          const rawTitle = result.name || '';
+          const title = rawTitle
+            .replace(/[🕹️🎮🕹\s]+Play on CrazyGames.*$/i, '')
+            .replace(/[\s]*- Play Online.*$/i, '')
+            .trim();
+
+          if (!title || title.length < 2) continue;
+
+          const description = (result.snippet || '')
+            .replace(/^Free\s*·\s*Game\s*/i, '')
+            .trim();
+
+          // Build thumbnail URL from CrazyGames CDN pattern
+          const thumbnailUrl = `https://images.crazygames.com/crazygames/uploads/tumbnails/${slug}/400x225/${slug}.jpg`;
+
+          // Category detection from title/URL/description
+          const fullText = `${title} ${url} ${description}`.toLowerCase();
+          let category: 'HTML5' | 'UNITY_WEBGL' | 'FLASH' = 'HTML5';
+          if (fullText.includes('webgl') || fullText.includes('unity')) category = 'UNITY_WEBGL';
+          if (fullText.includes('flash') || fullText.includes('.swf')) category = 'FLASH';
+
+          // Extract tags from title
+          const tags = this.extractTagsFromTitle(title);
+
+          // Use the CrazyGames page URL as the game URL (supports iframe embedding)
+          const gameUrl = `https://www.crazygames.com/game/${slug}`;
+
+          allGames.set(slug, {
+            title,
+            description: description || `${title} — Play free on CYBERPLAY!`,
+            category,
+            thumbnailUrl,
+            gameUrl,
+            tags,
+            externalId: slug,
+            sourceUrl: url,
+          });
         }
+      } catch (err) {
+        console.error(`Search query ${qi} failed:`, err);
       }
     }
 
-    return games;
-  }
-
-  async fetchGamePage(url: string): Promise<FetchedGame | null> {
-    try {
-      const zai = await this.getZai();
-      const result = await zai.functions.invoke('page_reader', { url });
-
-      if (!result?.data?.html) return null;
-
-      const html = result.data.html as string;
-      const pageUrl = result.data.url as string;
-
-      // Extract title
-      const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/s) ||
-                         html.match(/<title[^>]*>(.*?)<\/title>/s);
-      const title = titleMatch
-        ? (titleMatch[1] || '').replace(/<[^>]*>/g, '').trim()
-        : '';
-
-      if (!title) return null;
-
-      // Extract description / og:description
-      const descMatch = html.match(/<meta\s+name=["']description["']\s+content=["'](.*?)["']/is) ||
-                        html.match(/<meta\s+property=["']og:description["']\s+content=["'](.*?)["']/is) ||
-                        html.match(/<p[^>]*class=["'][^"']*description[^"']*["'][^>]*>(.*?)<\/p>/is);
-      const description = descMatch
-        ? (descMatch[1] || '').trim().substring(0, 500)
-        : `${title} - Play now on CYBERPLAY!`;
-
-      // Extract thumbnail / og:image
-      const thumbMatch = html.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/is) ||
-                        html.match(/<img[^>]*(?:class|data-src|src)=["'](?:[^"']*?)*(?:thumbnail|cover|poster|icon)[^"']*["'][^>]*src=["'](.*?)["']/is) ||
-                        html.match(/https:\/\/images\.crazygames\.com\/[^"'\s]+/);
-      const thumbnailUrl = thumbMatch ? (thumbMatch[1] || thumbMatch[0] || '') : '';
-
-      // Extract game URL - look for iframe or embed
-      const iframeMatch = html.match(/src=["'](https:\/\/html5\.gamedistribution\.com\/[^"']+)["']/) ||
-                         html.match(/src=["'](https:\/\/play\.crazygames\.com\/[^"']+)["']/) ||
-                         html.match(/data-game-url=["'](.*?)["']/) ||
-                         html.match(/["'](https?:\/\/[^"']*?(?:embed|game|play)[^"']*)["']/);
-
-      // Build game URL - try the page itself as iframe fallback
-      let gameUrl = '';
-      if (iframeMatch) {
-        gameUrl = iframeMatch[1] || '';
-      } else {
-        // CrazyGames allows direct iframe embedding of game pages
-        gameUrl = pageUrl;
-      }
-
-      // Determine category
-      const category = this.categorizeGame(html, url, title);
-
-      // Extract tags from meta keywords or page content
-      const tagsMatch = html.match(/<meta\s+name=["']keywords["']\s+content=["'](.*?)["']/is);
-      const tags = tagsMatch
-        ? (tagsMatch[1] || '').trim()
-        : this.extractTagsFromTitle(title);
-
-      // Extract slug as external ID
-      const slugMatch = url.match(/crazygames\.com\/game\/([^/?]+)/);
-      const externalId = slugMatch ? slugMatch[1] : '';
-
-      return {
-        title,
-        description,
-        category,
-        thumbnailUrl,
-        gameUrl,
-        tags,
-        externalId,
-        sourceUrl: pageUrl,
-      };
-    } catch (error) {
-      console.error(`Failed to fetch game from ${url}:`, error);
-      return null;
-    }
-  }
-
-  private categorizeGame(html: string, url: string, title: string): 'HTML5' | 'UNITY_WEBGL' | 'FLASH' {
-    const lower = (html + ' ' + url + ' ' + title).toLowerCase();
-
-    if (lower.includes('webgl') || lower.includes('unity')) return 'UNITY_WEBGL';
-    if (lower.includes('flash') || lower.includes('swf') || lower.includes('.flv')) return 'FLASH';
-    return 'HTML5';
+    return Array.from(allGames.values());
   }
 
   private extractTagsFromTitle(title: string): string {
-    const stopWords = new Set(['the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'for', 'and', 'or', 'online', 'game', 'play', 'free']);
+    const stopWords = new Set(['the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'for', 'and', 'or', 'online', 'game', 'play', 'free', 'new', 'york', 'super', 'mini']);
     return title
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
@@ -178,60 +148,73 @@ class CrazyGamesFetcher implements SourceFetcher {
   }
 }
 
-// ─── Poki Fetcher (extensible) ──────────────────────────────────────
+// ─── Poki Fetcher ───────────────────────────────────────────────────
 class PokiFetcher implements SourceFetcher {
   type = 'POKI';
+  private zai: ZAI | null = null;
 
   private async getZai(): Promise<ZAI> {
-    return ZAI.create();
+    if (!this.zai) {
+      this.zai = await ZAI.create();
+    }
+    return this.zai;
   }
 
   async search(query: string, num = 10): Promise<FetchedGame[]> {
     const zai = await this.getZai();
-    const searchQuery = `site:poki.com ${query} game`;
 
-    const results = await zai.functions.invoke('web_search', {
-      query: searchQuery,
-      num,
-    });
+    const searchQueries = [
+      `site:poki.com ${query} game`,
+      `poki.com ${query} free play`,
+    ];
 
-    const games: FetchedGame[] = [];
+    const allGames = new Map<string, FetchedGame>();
+    const seenSlugs = new Set<string>();
 
-    for (const result of results) {
-      if (result.url && result.url.includes('poki.com/')) {
-        try {
-          const pageData = await zai.functions.invoke('page_reader', { url: result.url });
-          const html = pageData?.data?.html as string || '';
-          const titleMatch = html.match(/<h1[^>]*>(.*?)<\/h1>/s) || html.match(/<title[^>]*>(.*?)<\/title>/s);
-          const title = titleMatch ? (titleMatch[1] || '').replace(/<[^>]*>/g, '').trim() : '';
+    for (const sq of searchQueries) {
+      try {
+        const results = await zai.functions.invoke('web_search', {
+          query: sq,
+          num,
+        });
 
-          if (!title) continue;
+        if (!Array.isArray(results)) continue;
 
-          const descMatch = html.match(/<meta\s+name=["']description["']\s+content=["'](.*?)["']/is);
-          const thumbMatch = html.match(/<meta\s+property=["']og:image["']\s+content=["'](.*?)["']/is);
-          const slugMatch = result.url.match(/poki\.com\/(?:en\/)?g\/([^/?]+)/);
+        for (const result of results) {
+          const url = result.url || '';
+          const slugMatch = url.match(/poki\.com\/(?:en\/)?g\/([^/?]+)/);
+          if (!slugMatch || seenSlugs.has(slugMatch[1])) continue;
 
-          games.push({
+          seenSlugs.add(slugMatch[1]);
+          const slug = slugMatch[1];
+
+          const rawTitle = result.name || '';
+          const title = rawTitle.replace(/\s*-\s*Play.*$/i, '').replace(/\s*on Poki.*$/i, '').trim();
+          if (!title || title.length < 2) continue;
+
+          const description = (result.snippet || '').trim();
+          const fullText = `${title} ${url} ${description}`.toLowerCase();
+          let category: 'HTML5' | 'UNITY_WEBGL' | 'FLASH' = 'HTML5';
+          if (fullText.includes('webgl') || fullText.includes('unity')) category = 'UNITY_WEBGL';
+          if (fullText.includes('flash') || fullText.includes('.swf')) category = 'FLASH';
+
+          allGames.set(slug, {
             title,
-            description: descMatch ? (descMatch[1] || '').trim() : `${title} - Play on CYBERPLAY!`,
-            category: 'HTML5',
-            thumbnailUrl: thumbMatch ? (thumbMatch[1] || '') : '',
-            gameUrl: result.url,
+            description: description || `${title} — Play free on CYBERPLAY!`,
+            category,
+            thumbnailUrl: '',
+            gameUrl: `https://poki.com/en/g/${slug}`,
             tags: '',
-            externalId: slugMatch ? slugMatch[1] : '',
-            sourceUrl: result.url,
+            externalId: slug,
+            sourceUrl: url,
           });
-        } catch {
-          // Skip failed pages
         }
+      } catch (err) {
+        console.error('Poki search failed:', err);
       }
     }
 
-    return games;
-  }
-
-  async fetchGamePage(url: string): Promise<FetchedGame | null> {
-    return null;
+    return Array.from(allGames.values());
   }
 }
 
@@ -252,7 +235,7 @@ export function getAvailableSourceTypes(): { type: string; label: string; icon: 
   ];
 }
 
-// ─── Main Fetch & Save Logic ────────────────────────────────────────
+// ─── Main Fetch and Save Logic ────────────────────────────────────────
 export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgress> {
   const source = await db.gameSource.findUnique({ where: { id: sourceId } });
   if (!source) throw new Error('Source not found');
@@ -260,32 +243,68 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
   const fetcher = getFetcher(source.type);
   if (!fetcher) throw new Error(`No fetcher for type: ${source.type}`);
 
-  const query = source.searchQuery || `${source.type === 'CRAZYGAMES' ? 'popular free online' : 'popular'} html5 games`;
-  const numGames = 20;
+  // Use multiple search queries for broader coverage
+  const baseQuery = source.searchQuery || 'popular';
+  const searchQueries = [
+    baseQuery,
+    `${baseQuery} action`,
+    `${baseQuery} puzzle`,
+    `${baseQuery} racing`,
+    `${baseQuery} shooter`,
+  ];
+
+  const allGames: FetchedGame[] = [];
+  const seenIds = new Set<string>();
+  const gamesPerQuery = 10;
 
   updateProgress(sourceId, {
     status: 'searching',
-    message: `Searching ${source.name} for "${query}"...`,
-    total: numGames,
+    message: `Searching ${source.name}...`,
+    total: searchQueries.length,
     current: 0,
     games: [],
   });
 
   try {
-    const games = await fetcher.search(query, numGames);
+    // Search with multiple queries
+    for (let qi = 0; qi < searchQueries.length; qi++) {
+      const query = searchQueries[qi];
+      updateProgress(sourceId, {
+        status: 'searching',
+        message: `Searching "${query}" (${qi + 1}/${searchQueries.length})...`,
+        total: searchQueries.length,
+        current: qi,
+        games: allGames,
+      });
+
+      const games = await fetcher.search(query, gamesPerQuery);
+
+      for (const game of games) {
+        if (!seenIds.has(game.externalId)) {
+          seenIds.add(game.externalId);
+          allGames.push(game);
+        }
+      }
+
+      // Small delay between searches
+      if (qi < searchQueries.length - 1) {
+        await new Promise(r => setTimeout(r, 500));
+      }
+    }
 
     updateProgress(sourceId, {
       status: 'fetching',
-      message: `Found ${games.length} games. Fetching details...`,
-      total: games.length,
+      message: `Found ${allGames.length} unique games. Saving to database...`,
+      total: allGames.length,
       current: 0,
-      games,
+      games: allGames,
     });
 
     // Save games to database
     let savedCount = 0;
-    for (let i = 0; i < games.length; i++) {
-      const game = games[i];
+    let newCount = 0;
+    for (let i = 0; i < allGames.length; i++) {
+      const game = allGames[i];
 
       // Check if game already exists by externalId+sourceId
       const existing = game.externalId
@@ -322,15 +341,16 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
             rating: 3.5 + Math.random() * 1.5,
           },
         });
+        newCount++;
       }
 
       savedCount++;
       updateProgress(sourceId, {
         status: 'saving',
-        message: `Saving game ${savedCount}/${games.length}: ${game.title}`,
-        total: games.length,
+        message: `Saving ${savedCount}/${allGames.length}: ${game.title}`,
+        total: allGames.length,
         current: i + 1,
-        games,
+        games: allGames,
       });
     }
 
@@ -338,17 +358,21 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
     await db.gameSource.update({
       where: { id: sourceId },
       data: {
-        gamesFetched: { increment: savedCount },
+        gamesFetched: { increment: newCount },
         lastFetched: new Date(),
       },
     });
 
+    const finalMsg = newCount > 0
+      ? `Done! ${newCount} new + ${savedCount - newCount} updated = ${savedCount} games from ${source.name}.`
+      : `Done! ${savedCount} games updated (no new games) from ${source.name}.`;
+
     updateProgress(sourceId, {
       status: 'done',
-      message: `Done! Saved ${savedCount} games from ${source.name}.`,
-      total: games.length,
-      current: games.length,
-      games,
+      message: finalMsg,
+      total: allGames.length,
+      current: allGames.length,
+      games: allGames,
     });
 
     return getProgress(sourceId);

@@ -902,15 +902,6 @@
   animation: footerLineGlow 4s ease-in-out infinite;
 }
 
-.copyright-glow {
-  animation: copyrightGlow 3s ease-in-out infinite;
-}
-
-@keyframes copyrightGlow {
-  0%, 100% { text-shadow: 0 0 4px rgba(0, 255, 65, 0.3); }
-  50% { text-shadow: 0 0 10px rgba(0, 255, 65, 0.6), 0 0 20px rgba(0, 255, 65, 0.2); }
-}
-
 /* ═══════════════════════════════════════════════════════════════════
    §11  INPUT STYLES
    ═══════════════════════════════════════════════════════════════════ */

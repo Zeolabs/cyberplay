@@ -1765,7 +1765,7 @@ export default function GamePortal() {
               <Gamepad2 className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <span className="kali-text text-[10px]">CYBERPLAY</span>
-            <span className="text-[10px] text-[#00ff41]/80 font-bold copyright-glow tracking-wider">
+            <span className="text-[10px] text-[#00ff41]/80 font-bold kali-text tracking-wider">
               - COPYRIGHT © 2026 ZEOLABS STUDIO
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />

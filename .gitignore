@@ -79,4 +79,5 @@ bun.lock
 worklog.md
 
 # Z.ai scripts
+.zscripts/
 .zscript/

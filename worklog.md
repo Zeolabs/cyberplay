@@ -203,3 +203,32 @@ Work Log:
 Stage Summary:
 - Seed file completely removed — game data now comes exclusively from dynamic fetching (CrazyGames) and manual uploads
 - No breaking changes, existing DB data preserved
+
+---
+Task ID: 9
+Agent: Main Agent
+Task: CrazyGames-style hover video preview + dark thumbnail overlay + fix unplayable games
+
+Work Log:
+- Analyzed CrazyGames page structure: discovered `__NEXT_DATA__` JSON block containing `desktopUrl` (embeddable game URL), `videos.sizes` (MP4 hover previews), and `allowEmbed` flag
+- Found ALL 69 games had WRONG `gameUrl` — pointed to `crazygames.com/game/{slug}` (website page) instead of `games.crazygames.com/en_US/{slug}/index.html` (embeddable game URL)
+- Added `videoUrl` column to Prisma schema (Game model) and ran `db:push`
+- Created `/api/games/fix-urls` route that fetches CrazyGames pages via `page_reader`, extracts `__NEXT_DATA__`, and updates `gameUrl` + `videoUrl`
+- Fixed all 69 games: 69/69 embeddable URLs, 69/69 with video previews (some from API, some from URL slug pattern fallback)
+- Rewrote GameCard component with CrazyGames-style behavior:
+  - `<video>` element replaces thumbnail on hover (300ms delay, autoplay, loop, muted, playsInline)
+  - Video URL from `game.videoUrl` field
+  - Smooth crossfade between thumbnail and video (opacity transitions)
+  - Always-present dark overlay (`bg-black/40`) on thumbnails for badge visibility
+  - Stronger bottom gradient (`from-black/80`) for better text contrast
+  - All badges (category, HOT, play count) positioned with `z-10` over dark overlay
+- Removed floating hover popup — preview now happens directly in the card (matching CrazyGames UX)
+- Updated game-fetcher.ts: new games get `games.crazygames.com/en_US/{slug}/index.html` URL and `videoUrl` field
+- Fixed `&amp;` HTML entity decoding in thumbnail URLs (32 URLs fixed)
+
+Stage Summary:
+- 69/69 games now playable via correct embeddable URLs
+- 69/69 games have MP4 video preview URLs for hover effect
+- CrazyGames-style hover: video plays inside the card on hover (no popup)
+- Dark overlay on thumbnails ensures badges are always visible
+- Future fetches automatically use correct embeddable URLs

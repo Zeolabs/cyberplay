@@ -7,6 +7,7 @@ export interface FetchedGame {
   description: string;
   category: 'HTML5' | 'UNITY_WEBGL' | 'FLASH';
   thumbnailUrl: string;
+  videoUrl: string;
   gameUrl: string;
   tags: string;
   externalId: string;
@@ -133,7 +134,8 @@ class CrazyGamesFetcher implements SourceFetcher {
             description: description || `${title} — Play free on CYBERPLAY!`,
             category,
             thumbnailUrl: '', // Will be fetched separately
-            gameUrl: `https://www.crazygames.com/game/${slug}`,
+            videoUrl: '', // Will be fetched separately
+            gameUrl: `https://games.crazygames.com/en_US/${slug}/index.html`,
             tags: this.extractTagsFromTitle(title),
             externalId: slug,
             sourceUrl: url,
@@ -217,6 +219,7 @@ class PokiFetcher implements SourceFetcher {
             description: description || `${title} — Play free on CYBERPLAY!`,
             category,
             thumbnailUrl: '',
+            videoUrl: '',
             gameUrl: `https://poki.com/en/g/${slug}`,
             tags: '',
             externalId: slug,
@@ -385,6 +388,7 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
             description: game.description,
             category: game.category,
             thumbnailUrl: game.thumbnailUrl,
+            videoUrl: game.videoUrl,
             gameUrl: game.gameUrl,
             tags: game.tags,
             sourceId,

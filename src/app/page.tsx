@@ -475,7 +475,7 @@ export default function GamePortal() {
 
   // ─── Render ──────────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen flex flex-col cyber-gradient-bg scanlines scanlines-movable grid-bg">
+    <div className="relative min-h-screen flex flex-col kali-gradient-bg scanlines scanlines-movable kali-kali-grid-bg">
       {/* ── Background Particles ── */}
       {mounted &&
         particles.map((p) => (
@@ -493,28 +493,28 @@ export default function GamePortal() {
         ))}
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-[#050508]/80 backdrop-blur-md header-glow px-4 py-3 border-b border-[#00ff41]/20">
+      <header className="sticky top-0 z-50 bg-[#0a0a14]/80 backdrop-blur-md header-glow px-4 py-3 border-b border-[#8b5cf6]/20">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2 shrink-0">
-            <Gamepad2 className="w-7 h-7 text-[#00ff41] icon-glow-green" />
-            <span className="text-xl font-bold neon-text neon-text-cyan glitch-hover cursor-pointer tracking-wider">
+            <Gamepad2 className="w-7 h-7 text-[#8b5cf6] icon-glow-purple" />
+            <span className="text-xl font-bold kali-text-blue glitch-hover cursor-pointer tracking-wider">
               CYBERPLAY
             </span>
           </div>
 
           {/* Search */}
           <div className="hidden md:flex flex-1 max-w-md relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#00ff41]/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8b5cf6]/40" />
             <input
               ref={searchInputRef}
               type="text"
               placeholder="Search games..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="cyber-input w-full pl-10 pr-20 py-2 rounded-lg text-sm"
+              className="kali-input w-full pl-10 pr-20 py-2 rounded-lg text-sm"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#00ff41]/30 border border-[#00ff41]/15 rounded px-1.5 py-0.5">
+            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#8b5cf6]/30 border border-[#8b5cf6]/15 rounded px-1.5 py-0.5">
               CTRL+K
             </kbd>
           </div>
@@ -523,25 +523,25 @@ export default function GamePortal() {
           <div className="hidden md:flex items-center gap-1.5">
             <button
               onClick={seedDatabase}
-              className="cyber-btn-orange cyber-btn-sm"
+              className="kali-btn-blue kali-btn-sm"
             >
               <Database className="w-3 h-3 mr-1" /> SEED DATA
             </button>
             <button
               onClick={() => setView('sources')}
-              className={`cyber-btn-sm ${view === 'sources' ? 'cyber-btn-cyan-active' : 'cyber-btn-cyan'}`}
+              className={`kali-btn-sm ${view === 'sources' ? 'kali-btn-cyan-active' : 'kali-btn-cyan'}`}
             >
               <Globe className="w-3 h-3 mr-1" /> SOURCES
             </button>
             <button
               onClick={() => setUploadOpen(true)}
-              className="cyber-btn-sm"
+              className="kali-btn-sm"
             >
               <Upload className="w-3 h-3 mr-1" /> UPLOAD
             </button>
             <button
               onClick={() => setView('manage')}
-              className={`cyber-btn-sm ${view === 'manage' ? 'cyber-btn-magenta-active' : 'cyber-btn-magenta'}`}
+              className={`kali-btn-sm ${view === 'manage' ? 'kali-btn-purple-active' : 'kali-btn-purple'}`}
             >
               <Settings className="w-3 h-3 mr-1" /> MANAGE
             </button>
@@ -549,7 +549,7 @@ export default function GamePortal() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-[#00ff41] p-2 rounded hover:bg-[#00ff41]/10 border border-[#00ff41]/20 transition-all"
+            className="md:hidden text-[#8b5cf6] p-2 rounded hover:bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 transition-all"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <Menu className="w-5 h-5" />
@@ -571,18 +571,18 @@ export default function GamePortal() {
                   placeholder="Search games..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="cyber-input w-full px-3 py-2 rounded text-sm"
+                  className="kali-input w-full px-3 py-2 rounded text-sm"
                 />
-                <button onClick={() => { seedDatabase(); setMobileMenuOpen(false); }} className="cyber-btn-orange cyber-btn-sm justify-start">
+                <button onClick={() => { seedDatabase(); setMobileMenuOpen(false); }} className="kali-btn-blue kali-btn-sm justify-start">
                   <Database className="w-3 h-3 mr-1" /> SEED DATA
                 </button>
-                <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="cyber-btn-cyan cyber-btn-sm justify-start">
+                <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="kali-btn-cyan kali-btn-sm justify-start">
                   <Globe className="w-3 h-3 mr-1" /> SOURCES
                 </button>
-                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="cyber-btn cyber-btn-sm justify-start">
+                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="kali-btn kali-btn-sm justify-start">
                   <Upload className="w-3 h-3 mr-1" /> UPLOAD
                 </button>
-                <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="cyber-btn-magenta cyber-btn-sm justify-start">
+                <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="kali-btn-purple kali-btn-sm justify-start">
                   <Settings className="w-3 h-3 mr-1" /> MANAGE
                 </button>
               </div>
@@ -607,10 +607,10 @@ export default function GamePortal() {
               className="max-w-7xl mx-auto space-y-8"
             >
               {/* Hero Section */}
-              <section className="relative neon-border rounded p-6 md:p-10 text-center overflow-hidden bg-[#050508]/60 corner-brackets">
+              <section className="relative kali-border rounded p-6 md:p-10 text-center overflow-hidden bg-[#0a0a14]/60 corner-brackets">
                 {/* Floating orbs */}
-                <div className="hero-orb-1 absolute top-4 left-8 w-32 h-32 rounded-full bg-[#00ff41]/5 blur-3xl pointer-events-none" />
-                <div className="hero-orb-2 absolute bottom-4 right-8 w-40 h-40 rounded-full bg-[#00f0ff]/5 blur-3xl pointer-events-none" />
+                <div className="hero-orb-1 absolute top-4 left-8 w-32 h-32 rounded-full bg-[#8b5cf6]/5 blur-3xl pointer-events-none" />
+                <div className="hero-orb-2 absolute bottom-4 right-8 w-40 h-40 rounded-full bg-[#06b6d4]/5 blur-3xl pointer-events-none" />
 
                 <div className="relative z-10">
                   {/* Terminal header bar */}
@@ -623,7 +623,7 @@ export default function GamePortal() {
                     <span className="terminal-header-title">cyberplay@portal:~$</span>
                   </div>
                   <div className="flex items-center justify-center gap-2 mb-3">
-                    <span className="w-2 h-2 rounded-full bg-[#00ff41] status-dot-glow" />
+                    <span className="w-2 h-2 rounded-full bg-[#8b5cf6] status-dot-glow" />
                     <span className="terminal-prefix text-[10px]">
                       System Online
                     </span>
@@ -631,12 +631,12 @@ export default function GamePortal() {
 
                   {/* Typing animation */}
                   <h1 className="text-4xl md:text-6xl font-bold mb-2">
-                    <span className="neon-text">{heroTyping.displayed}</span>
+                    <span className="kali-text">{heroTyping.displayed}</span>
                     {!heroTyping.done && (
                       <span className="typing-cursor" />
                     )}
                   </h1>
-                  <p className="text-sm text-[#8b949e] mt-3 max-w-xl mx-auto font-light">
+                  <p className="text-sm text-[#94a3b8] mt-3 max-w-xl mx-auto font-light">
                     <span className="terminal-prefix-cyan">root@cyberplay</span>{'>'} Browse, play, and manage HTML5, Unity WebGL & Flash games.
                     No downloads required — just click and play.
                   </p>
@@ -658,8 +658,8 @@ export default function GamePortal() {
                     onClick={() => setCategoryFilter(key)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${
                       categoryFilter === key
-                        ? 'bg-[#00ff41]/10 text-[#00ff41] border border-[#00ff41]/30 tab-active-glow'
-                        : 'text-[#e0e0e0]/60 hover:text-[#e0e0e0] border border-transparent hover:border-[#00ff41]/15'
+                        ? 'bg-[#8b5cf6]/10 text-[#8b5cf6] border border-[#8b5cf6]/30 tab-active-glow'
+                        : 'text-[#e2e8f0]/60 hover:text-[#e2e8f0] border border-transparent hover:border-[#8b5cf6]/15'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -670,10 +670,10 @@ export default function GamePortal() {
                 {/* Sort Dropdown */}
                 <div className="ml-auto">
                   <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-                    <SelectTrigger className="cyber-input w-40 text-xs">
+                    <SelectTrigger className="kali-input w-40 text-xs">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#0d1117] border-[#00ff41]/15">
+                    <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
                       <SelectItem value="newest">Newest</SelectItem>
                       <SelectItem value="popular">Most Played</SelectItem>
                       <SelectItem value="top-rated">Top Rated</SelectItem>
@@ -683,12 +683,12 @@ export default function GamePortal() {
               </div>
 
               {/* Stats bar */}
-              <div className="flex items-center gap-2 text-xs text-[#8b949e] tracking-wider">
+              <div className="flex items-center gap-2 text-xs text-[#94a3b8] tracking-wider">
                 <span className="terminal-prefix">$</span>
                 {loading ? (
-                  <span className="text-[#00f0ff]">scanning games_db...</span>
+                  <span className="text-[#06b6d4]">scanning games_db...</span>
                 ) : (
-                  <span><span className="text-[#00ff41]">{allGames.length}</span> GAME{allGames.length !== 1 ? 'S' : ''} FOUND <span className="hex-decoration">0x{allGames.length.toString(16).toUpperCase()}</span></span>
+                  <span><span className="text-[#8b5cf6]">{allGames.length}</span> GAME{allGames.length !== 1 ? 'S' : ''} FOUND <span className="hex-decoration">0x{allGames.length.toString(16).toUpperCase()}</span></span>
                 )}
               </div>
 
@@ -696,8 +696,8 @@ export default function GamePortal() {
               {!loading && featuredGames.length > 0 && (
                 <section>
                   <div className="flex items-center gap-2 mb-4">
-                    <Trophy className="w-5 h-5 text-[#ffd700] icon-glow-gold" />
-                    <h2 className="text-xl font-bold neon-text-gold">FEATURED GAMES</h2>
+                    <Trophy className="w-5 h-5 text-[#fbbf24] icon-glow-gold" />
+                    <h2 className="text-xl font-bold kali-text-gold">FEATURED GAMES</h2>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {featuredGames.map((game) => (
@@ -710,8 +710,8 @@ export default function GamePortal() {
               {/* All Games Grid */}
               <section>
                 <div className="flex items-center gap-2 mb-4">
-                  <Gamepad2 className="w-5 h-5 text-[#00ff41] icon-glow-green" />
-                  <h2 className="text-xl font-bold neon-text">ALL GAMES</h2>
+                  <Gamepad2 className="w-5 h-5 text-[#8b5cf6] icon-glow-purple" />
+                  <h2 className="text-xl font-bold kali-text">ALL GAMES</h2>
                 </div>
 
                 {loading ? (
@@ -732,13 +732,13 @@ export default function GamePortal() {
                   </div>
                 ) : allGames.length === 0 ? (
                   <div className="text-center py-16">
-                    <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-[#00ff41]/30 icon-glow-green" />
-                    <p className="text-[#8b949e] text-sm">
+                    <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-[#8b5cf6]/30 icon-glow-purple" />
+                    <p className="text-[#94a3b8] text-sm">
                       No games found. Try a different search or category.
                     </p>
                     <Button
                       onClick={seedDatabase}
-                      className="mt-4 neon-btn text-xs"
+                      className="mt-4 kali-btn text-xs"
                     >
                       SEED DATABASE
                     </Button>
@@ -773,13 +773,13 @@ export default function GamePortal() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setView('home')}
-                    className="text-[#00ff41] hover:bg-[#00ff41]/10"
+                    className="text-[#8b5cf6] hover:bg-[#8b5cf6]/10"
                   >
                     <ArrowLeft className="w-4 h-4 mr-1" /> Back
                   </Button>
                   <h2 className="text-lg font-bold text-white">{selectedGame.title}</h2>
                   <CategoryBadge category={selectedGame.category} />
-                  <span className="text-xs text-[#8b949e] flex items-center gap-1">
+                  <span className="text-xs text-[#94a3b8] flex items-center gap-1">
                     <Eye className="w-3 h-3" /> {formatPlays(selectedGame.plays)} plays
                   </span>
                 </div>
@@ -790,7 +790,7 @@ export default function GamePortal() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsMuted(!isMuted)}
-                    className="text-[#e0e0e0] hover:bg-white/5"
+                    className="text-[#e2e8f0] hover:bg-white/5"
                   >
                     {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                   </Button>
@@ -798,7 +798,7 @@ export default function GamePortal() {
                     variant="ghost"
                     size="sm"
                     onClick={toggleFullscreen}
-                    className="text-[#e0e0e0] hover:bg-white/5"
+                    className="text-[#e2e8f0] hover:bg-white/5"
                   >
                     <Maximize2 className="w-4 h-4" />
                   </Button>
@@ -810,7 +810,7 @@ export default function GamePortal() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-[#e0e0e0] hover:bg-white/5"
+                      className="text-[#e2e8f0] hover:bg-white/5"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </Button>
@@ -819,7 +819,7 @@ export default function GamePortal() {
               </div>
 
               {/* Game Frame */}
-              <div ref={fullscreenRef} className="relative flex-1 rounded-xl overflow-hidden neon-border bg-black">
+              <div ref={fullscreenRef} className="relative flex-1 rounded-xl overflow-hidden kali-border bg-black">
                 <iframe
                   ref={gameFrameRef}
                   src={selectedGame.gameUrl}
@@ -830,29 +830,29 @@ export default function GamePortal() {
                 />
 
                 {/* Loading overlay (shown initially) */}
-                <div className="absolute inset-0 bg-[#050508]/90 flex flex-col items-center justify-center gap-4 pointer-events-none">
+                <div className="absolute inset-0 bg-[#0a0a14]/90 flex flex-col items-center justify-center gap-4 pointer-events-none">
                   <div className="relative">
-                    <Gamepad2 className="w-12 h-12 text-[#00ff41] animate-bounce icon-glow-green" />
-                    <span className="absolute inset-0 rounded-full bg-[#00ff41]/20 animate-ping" />
+                    <Gamepad2 className="w-12 h-12 text-[#8b5cf6] animate-bounce icon-glow-purple" />
+                    <span className="absolute inset-0 rounded-full bg-[#8b5cf6]/20 animate-ping" />
                   </div>
-                  <div className="w-48 h-1 bg-[#161b22] rounded-full overflow-hidden">
+                  <div className="w-48 h-1 bg-[#111127] rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-[#00ff41] to-[#00f0ff] rounded-full"
+                      className="h-full bg-gradient-to-r from-[#8b5cf6] to-[#06b6d4] rounded-full"
                       initial={{ width: '0%' }}
                       animate={{ width: '100%' }}
                       transition={{ duration: 2, ease: 'easeInOut' }}
                     />
                   </div>
-                  <p className="text-xs text-[#8b949e]">Loading game...</p>
+                  <p className="text-xs text-[#94a3b8]">Loading game...</p>
                 </div>
               </div>
 
               {/* Game Info Bar */}
-              <div className="mt-3 flex items-center justify-between text-xs text-[#8b949e] shrink-0">
+              <div className="mt-3 flex items-center justify-between text-xs text-[#94a3b8] shrink-0">
                 <div className="flex items-center gap-4">
                   <CategoryBadge category={selectedGame.category} />
                   <span className="flex items-center gap-1">
-                    <Star className="w-3 h-3 text-[#ffd700]" />
+                    <Star className="w-3 h-3 text-[#fbbf24]" />
                     {selectedGame.rating.toFixed(1)}
                   </span>
                 </div>
@@ -874,12 +874,12 @@ export default function GamePortal() {
               className="max-w-7xl mx-auto"
             >
               <div className="flex items-center gap-2 mb-6">
-                <Settings className="w-5 h-5 text-[#ff00ff] icon-glow-gold" />
-                <h2 className="text-xl font-bold neon-text-magenta">GAME MANAGER</h2>
+                <Settings className="w-5 h-5 text-[#a78bfa] icon-glow-gold" />
+                <h2 className="text-xl font-bold kali-text-purple">GAME MANAGER</h2>
               </div>
 
               {/* Table Header */}
-              <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-xs text-[#8b949e] tracking-wider uppercase border-b border-[#00ff41]/10">
+              <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-xs text-[#94a3b8] tracking-wider uppercase border-b border-[#8b5cf6]/10">
                 <div className="col-span-4">Title</div>
                 <div className="col-span-2">Category</div>
                 <div className="col-span-1">Plays</div>
@@ -895,7 +895,7 @@ export default function GamePortal() {
                       <div key={i} className="skeleton-glow h-14 rounded-lg" />
                     ))
                   ) : games.length === 0 ? (
-                    <div className="text-center py-16 text-[#8b949e] text-sm">
+                    <div className="text-center py-16 text-[#94a3b8] text-sm">
                       No games to manage.
                     </div>
                   ) : (
@@ -905,7 +905,7 @@ export default function GamePortal() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.03 }}
-                        className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-center px-4 py-3 rounded-lg bg-[#0d1117]/50 border border-[#00ff41]/8 hover:border-[#00ff41]/20 transition-all"
+                        className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-center px-4 py-3 rounded-lg bg-[#0d0d1f]/50 border border-[#8b5cf6]/8 hover:border-[#8b5cf6]/20 transition-all"
                       >
                         {/* Title + Thumbnail */}
                         <div className="md:col-span-4 flex items-center gap-3">
@@ -920,7 +920,7 @@ export default function GamePortal() {
                             <span className="text-sm font-medium text-white truncate block">
                               {game.title}
                               {game.featured && (
-                                <Star className="inline w-3 h-3 text-[#ffd700] ml-1 fill-[#ffd700]" />
+                                <Star className="inline w-3 h-3 text-[#fbbf24] ml-1 fill-[#fbbf24]" />
                               )}
                             </span>
                           </div>
@@ -932,13 +932,13 @@ export default function GamePortal() {
                         </div>
 
                         {/* Plays */}
-                        <div className="md:col-span-1 text-sm text-[#8b949e]">
+                        <div className="md:col-span-1 text-sm text-[#94a3b8]">
                           {formatPlays(game.plays)}
                         </div>
 
                         {/* Rating */}
-                        <div className="md:col-span-1 text-sm text-[#8b949e] flex items-center gap-1">
-                          <Star className="w-3 h-3 text-[#ffd700]" />
+                        <div className="md:col-span-1 text-sm text-[#94a3b8] flex items-center gap-1">
+                          <Star className="w-3 h-3 text-[#fbbf24]" />
                           {game.rating.toFixed(1)}
                         </div>
 
@@ -948,7 +948,7 @@ export default function GamePortal() {
                             size="sm"
                             variant="ghost"
                             onClick={() => playGame(game)}
-                            className="text-[#00ff41] hover:bg-[#00ff41]/10 hover:shadow-[0_0_10px_rgba(0,255,65,0.3)] text-xs"
+                            className="text-[#8b5cf6] hover:bg-[#8b5cf6]/10 hover:shadow-[0_0_10px_rgba(139,92,246,0.3)] text-xs"
                           >
                             <Play className="w-3 h-3 mr-1" /> Play
                           </Button>
@@ -956,7 +956,7 @@ export default function GamePortal() {
                             size="sm"
                             variant="ghost"
                             onClick={() => openEdit(game)}
-                            className="text-[#00f0ff] hover:bg-[#00f0ff]/10 hover:shadow-[0_0_10px_rgba(0,240,255,0.3)] text-xs"
+                            className="text-[#06b6d4] hover:bg-[#06b6d4]/10 hover:shadow-[0_0_10px_rgba(6,182,212,0.3)] text-xs"
                           >
                             <Edit3 className="w-3 h-3 mr-1" /> Edit
                           </Button>
@@ -970,18 +970,18 @@ export default function GamePortal() {
                                 <Trash2 className="w-3 h-3 mr-1" /> Delete
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-[#0d1117] border-[#ff4444]/20">
+                            <AlertDialogContent className="bg-[#0d0d1f] border-[#ef4444]/20">
                               <AlertDialogHeader>
                                 <AlertDialogTitle className="text-white">
                                   Delete Game
                                 </AlertDialogTitle>
-                                <AlertDialogDescription className="text-[#8b949e]">
+                                <AlertDialogDescription className="text-[#94a3b8]">
                                   Are you sure you want to delete &quot;{game.title}&quot;? This action
                                   cannot be undone.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-[#161b22] border-[#00ff41]/15 text-[#e0e0e0] hover:bg-[#21262d]">
+                                <AlertDialogCancel className="bg-[#111127] border-[#8b5cf6]/15 text-[#e2e8f0] hover:bg-[#1a1a2e]">
                                   Cancel
                                 </AlertDialogCancel>
                                 <AlertDialogAction
@@ -1016,12 +1016,12 @@ export default function GamePortal() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-[#00f0ff] icon-glow-cyan" />
-                  <h2 className="text-xl font-bold neon-text-cyan">GAME SOURCES</h2>
+                  <Globe className="w-5 h-5 text-[#06b6d4] icon-glow-blue" />
+                  <h2 className="text-xl font-bold kali-text-cyan">GAME SOURCES</h2>
                 </div>
                 <Button
                   onClick={() => setAddSourceOpen(true)}
-                  className="neon-btn text-xs"
+                  className="kali-btn text-xs"
                 >
                   <Plus className="w-4 h-4 mr-1" /> ADD SOURCE
                 </Button>
@@ -1032,15 +1032,15 @@ export default function GamePortal() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="neon-border-cyan rounded-xl p-4 bg-[#050508]/80"
+                  className="kali-border-blue rounded-xl p-4 bg-[#0a0a14]/80"
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <Loader2 className="w-5 h-5 text-[#00f0ff] animate-spin" />
-                    <span className="text-sm text-[#00f0ff]">{fetchProgress.message}</span>
+                    <Loader2 className="w-5 h-5 text-[#06b6d4] animate-spin" />
+                    <span className="text-sm text-[#06b6d4]">{fetchProgress.message}</span>
                   </div>
-                  <div className="w-full h-2 bg-[#161b22] rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-[#111127] rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-[#00f0ff] to-[#00ff41]"
+                      className="h-full rounded-full bg-gradient-to-r from-[#06b6d4] to-[#8b5cf6]"
                       animate={{
                         width:
                           fetchProgress.total > 0
@@ -1056,13 +1056,13 @@ export default function GamePortal() {
               {/* Source Cards Grid */}
               {sources.length === 0 ? (
                 <div className="text-center py-16">
-                  <Globe className="w-16 h-16 mx-auto mb-4 text-[#00f0ff]/30 icon-glow-cyan" />
-                  <p className="text-[#8b949e] text-sm">
+                  <Globe className="w-16 h-16 mx-auto mb-4 text-[#06b6d4]/30 icon-glow-blue" />
+                  <p className="text-[#94a3b8] text-sm">
                     No sources configured. Add a source to fetch games.
                   </p>
                   <Button
                     onClick={() => setAddSourceOpen(true)}
-                    className="mt-4 neon-btn text-xs"
+                    className="mt-4 kali-btn text-xs"
                   >
                     <Plus className="w-4 h-4 mr-1" /> ADD SOURCE
                   </Button>
@@ -1078,10 +1078,10 @@ export default function GamePortal() {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Globe className="w-5 h-5 text-[#00f0ff] icon-glow-cyan" />
+                          <Globe className="w-5 h-5 text-[#06b6d4] icon-glow-blue" />
                           <div>
                             <h3 className="text-sm font-bold text-white">{source.name}</h3>
-                            <p className="text-xs text-[#8b949e] truncate max-w-[200px]">
+                            <p className="text-xs text-[#94a3b8] truncate max-w-[200px]">
                               {source.baseUrl}
                             </p>
                           </div>
@@ -1089,7 +1089,7 @@ export default function GamePortal() {
                         <Badge className="badge-webgl text-[10px]">{source.type}</Badge>
                       </div>
 
-                      <div className="flex items-center gap-4 text-xs text-[#8b949e] mb-3">
+                      <div className="flex items-center gap-4 text-xs text-[#94a3b8] mb-3">
                         <span>{source.totalGames} games</span>
                         <span>{source.gamesFetched} fetched</span>
                         <span>
@@ -1105,7 +1105,7 @@ export default function GamePortal() {
                           variant="ghost"
                           onClick={() => fetchFromSource(source.id)}
                           disabled={!!fetchingSourceId}
-                          className="text-[#00f0ff] hover:bg-[#00f0ff]/10 text-xs"
+                          className="text-[#06b6d4] hover:bg-[#06b6d4]/10 text-xs"
                         >
                           {fetchingSourceId === source.id ? (
                             <Loader2 className="w-3 h-3 mr-1 animate-spin" />
@@ -1124,18 +1124,18 @@ export default function GamePortal() {
                               <Trash2 className="w-3 h-3 mr-1" /> Delete
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-[#0d1117] border-[#ff4444]/20">
+                          <AlertDialogContent className="bg-[#0d0d1f] border-[#ef4444]/20">
                             <AlertDialogHeader>
                               <AlertDialogTitle className="text-white">
                                 Delete Source
                               </AlertDialogTitle>
-                              <AlertDialogDescription className="text-[#8b949e]">
+                              <AlertDialogDescription className="text-[#94a3b8]">
                                 Are you sure you want to delete &quot;{source.name}&quot;?
                                 Linked games will not be deleted.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel className="bg-[#161b22] border-[#00ff41]/15 text-[#e0e0e0] hover:bg-[#21262d]">
+                              <AlertDialogCancel className="bg-[#111127] border-[#8b5cf6]/15 text-[#e2e8f0] hover:bg-[#1a1a2e]">
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
@@ -1161,27 +1161,27 @@ export default function GamePortal() {
 
       {/* Add Source Dialog */}
       <Dialog open={addSourceOpen} onOpenChange={setAddSourceOpen}>
-        <DialogContent className="bg-[#0d1117] border-[#00f0ff]/20 text-white">
+        <DialogContent className="bg-[#0d0d1f] border-[#06b6d4]/20 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-[#00f0ff]">
+            <DialogTitle className="flex items-center gap-2 text-[#06b6d4]">
               <Globe className="w-5 h-5" /> Add Game Source
             </DialogTitle>
-            <DialogDescription className="text-[#8b949e]">
+            <DialogDescription className="text-[#94a3b8]">
               Add a new game source to fetch games from.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Source Name</Label>
+              <Label className="text-xs text-[#94a3b8]">Source Name</Label>
               <Input
                 value={addSourceForm.name}
                 onChange={(e) => setAddSourceForm({ ...addSourceForm, name: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
                 placeholder="My Game Source"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Source Type</Label>
+              <Label className="text-xs text-[#94a3b8]">Source Type</Label>
               <Select
                 value={addSourceForm.type}
                 onValueChange={(v) =>
@@ -1197,10 +1197,10 @@ export default function GamePortal() {
                   })
                 }
               >
-                <SelectTrigger className="cyber-input">
+                <SelectTrigger className="kali-input">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0d1117] border-[#00ff41]/15">
+                <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
                   <SelectItem value="CRAZYGAMES">CrazyGames</SelectItem>
                   <SelectItem value="POKI">Poki</SelectItem>
                   <SelectItem value="CUSTOM">Custom</SelectItem>
@@ -1208,20 +1208,20 @@ export default function GamePortal() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Base URL</Label>
+              <Label className="text-xs text-[#94a3b8]">Base URL</Label>
               <Input
                 value={addSourceForm.baseUrl}
                 onChange={(e) => setAddSourceForm({ ...addSourceForm, baseUrl: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
                 placeholder="https://www.example.com"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Search Query</Label>
+              <Label className="text-xs text-[#94a3b8]">Search Query</Label>
               <Input
                 value={addSourceForm.searchQuery}
                 onChange={(e) => setAddSourceForm({ ...addSourceForm, searchQuery: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
                 placeholder="popular free games"
               />
             </div>
@@ -1230,11 +1230,11 @@ export default function GamePortal() {
             <Button
               variant="ghost"
               onClick={() => setAddSourceOpen(false)}
-              className="text-[#8b949e] hover:text-white"
+              className="text-[#94a3b8] hover:text-white"
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateSource} className="neon-btn text-xs">
+            <Button onClick={handleCreateSource} className="kali-btn text-xs">
               Create Source
             </Button>
           </DialogFooter>
@@ -1243,45 +1243,45 @@ export default function GamePortal() {
 
       {/* Upload Game Dialog */}
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
-        <DialogContent className="bg-[#0d1117] border-[#00ff41]/20 text-white">
+        <DialogContent className="bg-[#0d0d1f] border-[#8b5cf6]/20 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-[#00ff41]">
+            <DialogTitle className="flex items-center gap-2 text-[#8b5cf6]">
               <Upload className="w-5 h-5" /> Upload Game
             </DialogTitle>
-            <DialogDescription className="text-[#8b949e]">
+            <DialogDescription className="text-[#94a3b8]">
               Add a new game to the portal.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Title *</Label>
+              <Label className="text-xs text-[#94a3b8]">Title *</Label>
               <Input
                 value={uploadForm.title}
                 onChange={(e) => setUploadForm({ ...uploadForm, title: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
                 placeholder="Game Title"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Description *</Label>
+              <Label className="text-xs text-[#94a3b8]">Description *</Label>
               <Textarea
                 value={uploadForm.description}
                 onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
-                className="cyber-input min-h-[80px] resize-none"
+                className="kali-input min-h-[80px] resize-none"
                 placeholder="Game description..."
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs text-[#8b949e]">Category *</Label>
+                <Label className="text-xs text-[#94a3b8]">Category *</Label>
                 <Select
                   value={uploadForm.category}
                   onValueChange={(v) => setUploadForm({ ...uploadForm, category: v as Game['category'] })}
                 >
-                  <SelectTrigger className="cyber-input">
+                  <SelectTrigger className="kali-input">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0d1117] border-[#00ff41]/15">
+                  <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
                     <SelectItem value="HTML5">HTML5</SelectItem>
                     <SelectItem value="UNITY_WEBGL">Unity WebGL</SelectItem>
                     <SelectItem value="FLASH">Flash</SelectItem>
@@ -1289,40 +1289,40 @@ export default function GamePortal() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-[#8b949e]">Featured</Label>
+                <Label className="text-xs text-[#94a3b8]">Featured</Label>
                 <div className="flex items-center gap-2 h-10">
                   <Switch
                     checked={uploadForm.featured}
                     onCheckedChange={(v) => setUploadForm({ ...uploadForm, featured: v })}
                   />
-                  <span className="text-xs text-[#8b949e]">{uploadForm.featured ? 'Yes' : 'No'}</span>
+                  <span className="text-xs text-[#94a3b8]">{uploadForm.featured ? 'Yes' : 'No'}</span>
                 </div>
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Thumbnail URL</Label>
+              <Label className="text-xs text-[#94a3b8]">Thumbnail URL</Label>
               <Input
                 value={uploadForm.thumbnailUrl}
                 onChange={(e) => setUploadForm({ ...uploadForm, thumbnailUrl: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
                 placeholder="https://example.com/thumb.jpg"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Game URL *</Label>
+              <Label className="text-xs text-[#94a3b8]">Game URL *</Label>
               <Input
                 value={uploadForm.gameUrl}
                 onChange={(e) => setUploadForm({ ...uploadForm, gameUrl: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
                 placeholder="https://example.com/game.html"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Tags (comma separated)</Label>
+              <Label className="text-xs text-[#94a3b8]">Tags (comma separated)</Label>
               <Input
                 value={uploadForm.tags}
                 onChange={(e) => setUploadForm({ ...uploadForm, tags: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
                 placeholder="action, arcade, fun"
               />
             </div>
@@ -1331,11 +1331,11 @@ export default function GamePortal() {
             <Button
               variant="ghost"
               onClick={() => setUploadOpen(false)}
-              className="text-[#8b949e] hover:text-white"
+              className="text-[#94a3b8] hover:text-white"
             >
               Cancel
             </Button>
-            <Button onClick={handleUpload} className="neon-btn text-xs">
+            <Button onClick={handleUpload} className="kali-btn text-xs">
               Upload Game
             </Button>
           </DialogFooter>
@@ -1344,43 +1344,43 @@ export default function GamePortal() {
 
       {/* Edit Game Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="bg-[#0d1117] border-[#00f0ff]/20 text-white">
+        <DialogContent className="bg-[#0d0d1f] border-[#06b6d4]/20 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-[#00f0ff]">
+            <DialogTitle className="flex items-center gap-2 text-[#06b6d4]">
               <Edit3 className="w-5 h-5" /> Edit Game
             </DialogTitle>
-            <DialogDescription className="text-[#8b949e]">
+            <DialogDescription className="text-[#94a3b8]">
               Update game details.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Title</Label>
+              <Label className="text-xs text-[#94a3b8]">Title</Label>
               <Input
                 value={editForm.title}
                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Description</Label>
+              <Label className="text-xs text-[#94a3b8]">Description</Label>
               <Textarea
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                className="cyber-input min-h-[80px] resize-none"
+                className="kali-input min-h-[80px] resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs text-[#8b949e]">Category</Label>
+                <Label className="text-xs text-[#94a3b8]">Category</Label>
                 <Select
                   value={editForm.category}
                   onValueChange={(v) => setEditForm({ ...editForm, category: v as Game['category'] })}
                 >
-                  <SelectTrigger className="cyber-input">
+                  <SelectTrigger className="kali-input">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0d1117] border-[#00ff41]/15">
+                  <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
                     <SelectItem value="HTML5">HTML5</SelectItem>
                     <SelectItem value="UNITY_WEBGL">Unity WebGL</SelectItem>
                     <SelectItem value="FLASH">Flash</SelectItem>
@@ -1388,7 +1388,7 @@ export default function GamePortal() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-[#8b949e]">Rating</Label>
+                <Label className="text-xs text-[#94a3b8]">Rating</Label>
                 <Input
                   type="number"
                   step="0.1"
@@ -1396,44 +1396,44 @@ export default function GamePortal() {
                   max="5"
                   value={editForm.rating}
                   onChange={(e) => setEditForm({ ...editForm, rating: parseFloat(e.target.value) || 0 })}
-                  className="cyber-input"
+                  className="kali-input"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Thumbnail URL</Label>
+              <Label className="text-xs text-[#94a3b8]">Thumbnail URL</Label>
               <Input
                 value={editForm.thumbnailUrl}
                 onChange={(e) => setEditForm({ ...editForm, thumbnailUrl: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Game URL</Label>
+              <Label className="text-xs text-[#94a3b8]">Game URL</Label>
               <Input
                 value={editForm.gameUrl}
                 onChange={(e) => setEditForm({ ...editForm, gameUrl: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
               />
             </div>
             <div className="flex items-center gap-4">
               <div className="space-y-2">
-                <Label className="text-xs text-[#8b949e]">Featured</Label>
+                <Label className="text-xs text-[#94a3b8]">Featured</Label>
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={editForm.featured}
                     onCheckedChange={(v) => setEditForm({ ...editForm, featured: v })}
                   />
-                  <span className="text-xs text-[#8b949e]">{editForm.featured ? 'Yes' : 'No'}</span>
+                  <span className="text-xs text-[#94a3b8]">{editForm.featured ? 'Yes' : 'No'}</span>
                 </div>
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-[#8b949e]">Tags (comma separated)</Label>
+              <Label className="text-xs text-[#94a3b8]">Tags (comma separated)</Label>
               <Input
                 value={editForm.tags}
                 onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })}
-                className="cyber-input"
+                className="kali-input"
               />
             </div>
           </div>
@@ -1441,11 +1441,11 @@ export default function GamePortal() {
             <Button
               variant="ghost"
               onClick={() => setEditOpen(false)}
-              className="text-[#8b949e] hover:text-white"
+              className="text-[#94a3b8] hover:text-white"
             >
               Cancel
             </Button>
-            <Button onClick={handleEdit} className="neon-btn text-xs">
+            <Button onClick={handleEdit} className="kali-btn text-xs">
               Save Changes
             </Button>
           </DialogFooter>
@@ -1453,12 +1453,12 @@ export default function GamePortal() {
       </Dialog>
 
       {/* ── Footer ── */}
-      <footer className="footer-glow mt-auto px-4 py-3 bg-[#050508]/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-[#8b949e]">
+      <footer className="footer-glow mt-auto px-4 py-3 bg-[#0a0a14]/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-[#94a3b8]">
           <div className="flex items-center gap-2">
-            <Gamepad2 className="w-4 h-4 text-[#00ff41] icon-glow-green" />
-            <span className="neon-text text-[10px]">CYBERPLAY</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
+            <Gamepad2 className="w-4 h-4 text-[#8b5cf6] icon-glow-purple" />
+            <span className="kali-text text-[10px]">CYBERPLAY</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#8b5cf6] status-dot-glow" />
           </div>
           <span>{games.length} GAME{games.length !== 1 ? 'S' : ''} AVAILABLE</span>
         </div>
@@ -1488,8 +1488,8 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
 
         {/* Play button overlay */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="play-btn-glow w-14 h-14 rounded-full bg-[#00ff41]/20 border border-[#00ff41]/40 flex items-center justify-center">
-            <Play className="w-6 h-6 text-[#00ff41] fill-[#00ff41] ml-1" />
+          <div className="play-btn-glow w-14 h-14 rounded-full bg-[#8b5cf6]/20 border border-[#8b5cf6]/40 flex items-center justify-center">
+            <Play className="w-6 h-6 text-[#8b5cf6] fill-[#8b5cf6] ml-1" />
           </div>
         </div>
 
@@ -1500,8 +1500,8 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
 
         {/* Featured star */}
         {game.featured && (
-          <div className="absolute top-2 right-2 flex items-center gap-1 neon-text-gold text-xs font-bold">
-            <Star className="w-3.5 h-3.5 icon-glow-gold fill-[#ffd700]" />
+          <div className="absolute top-2 right-2 flex items-center gap-1 kali-text-gold text-xs font-bold">
+            <Star className="w-3.5 h-3.5 icon-glow-gold fill-[#fbbf24]" />
             HOT
           </div>
         )}
@@ -1515,10 +1515,10 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
 
       {/* Card body */}
       <div className="p-3">
-        <h3 className="text-sm font-bold text-[#e0e0e0] mb-1 truncate transition-all duration-300 group-hover:text-[#00ff41] group-hover:[text-shadow:0_0_8px_rgba(0,255,65,0.5)]">
+        <h3 className="text-sm font-bold text-[#e2e8f0] mb-1 truncate transition-all duration-300 group-hover:text-[#8b5cf6] group-hover:[text-shadow:0_0_8px_rgba(139,92,246,0.5)]">
           {game.title}
         </h3>
-        <p className="text-xs text-[#8b949e] line-clamp-2 mb-2">{game.description}</p>
+        <p className="text-xs text-[#94a3b8] line-clamp-2 mb-2">{game.description}</p>
 
         {/* Rating + Tags */}
         <div className="flex items-center justify-between">
@@ -1528,15 +1528,15 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
                 key={i}
                 className={`w-3 h-3 ${
                   i < Math.round(game.rating)
-                    ? 'text-[#ffd700] fill-[#ffd700]'
-                    : 'text-[#21262d]'
+                    ? 'text-[#fbbf24] fill-[#fbbf24]'
+                    : 'text-[#1a1a2e]'
                 }`}
               />
             ))}
-            <span className="text-[10px] text-[#8b949e] ml-1">{game.rating.toFixed(1)}</span>
+            <span className="text-[10px] text-[#94a3b8] ml-1">{game.rating.toFixed(1)}</span>
           </div>
           {game.tags && (
-            <span className="text-[10px] text-[#8b949e] truncate max-w-[100px]">
+            <span className="text-[10px] text-[#94a3b8] truncate max-w-[100px]">
               {game.tags.split(',').slice(0, 2).join(', ')}
             </span>
           )}

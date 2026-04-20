@@ -62,3 +62,30 @@ Stage Summary:
 - Background fetch with polling progress (searching → fetching → saving → done)
 - Duplicate detection via externalId+sourceId (updates existing games instead of creating duplicates)
 - Dev server running on port 3000 via Caddy gateway on port 81
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Restyle entire portal to Kali Linux 2026 theme
+
+Work Log:
+- Completely rewrote globals.css (888 → 1768 lines) with Kali Linux 2026 aesthetic
+- Eliminated ALL green (#00ff41) references — zero remaining
+- Applied purple (#8b5cf6) as primary color across 44 CSS references
+- Updated all button styles: kali-btn, kali-btn-blue, kali-btn-cyan, kali-btn-purple, kali-btn-danger, kali-btn-sm
+- Restyled all cards with purple→blue→cyan gradient borders on hover
+- Updated all text glow animations to purple/blue/gold themes
+- Added terminal decorations with purple accents (terminal-header, terminal-prefix, corner-brackets, hex-decoration)
+- Updated scanlines, particles, scrollbar, badges, skeletons to purple theme
+- Applied color mapping in page.tsx: all hex colors, RGBAs, and CSS class names
+- Renamed 15+ CSS class families (neon-* → kali-*, cyber-* → kali-*)
+- All shadcn component overrides (dialogs, selects, buttons, toasts) now purple-themed
+- Zero lint errors after all changes
+
+Stage Summary:
+- Complete Kali Linux 2026 visual overhaul
+- Color palette: purple (#8b5cf6), blue (#3b82f6), cyan (#06b6d4), gold (#fbbf24) on dark bg (#0a0a14)
+- 36 keyframe animations, all purple/blue themed
+- Cards with holographic purple→blue→cyan gradient borders
+- Terminal-style buttons with Kali branding
+- Dev server running, all pages rendering correctly with 200 status

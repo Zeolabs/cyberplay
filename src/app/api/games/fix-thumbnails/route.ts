@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { FETCH_HEADERS, HEAD_TIMEOUT, FETCH_TIMEOUT, sleep, extractSlug, extractOgImage, decodeHtmlEntities, fetchPage } from '@/lib/fetch-utils';
+import { HEAD_TIMEOUT, FETCH_TIMEOUT, sleep, extractSlug, extractOgImage, decodeHtmlEntities, fetchPage } from '@/lib/fetch-utils';
 
 // Check if URL returns a valid image
 async function tryImageUrl(url: string): Promise<string | null> {

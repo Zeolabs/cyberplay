@@ -145,41 +145,6 @@
   }
 }
 
-@keyframes textGlowBlue {
-  0%, 100% {
-    text-shadow:
-      0 0 4px #3b82f6,
-      0 0 11px #3b82f6,
-      0 0 19px #3b82f6,
-      0 0 40px #2563eb;
-  }
-  50% {
-    text-shadow:
-      0 0 4px #3b82f6,
-      0 0 11px #3b82f6,
-      0 0 25px #3b82f6,
-      0 0 55px #2563eb,
-      0 0 80px #1d4ed8;
-  }
-}
-
-@keyframes textGlowCyan {
-  0%, 100% {
-    text-shadow:
-      0 0 4px #06b6d4,
-      0 0 11px #06b6d4,
-      0 0 19px #06b6d4,
-      0 0 40px #0891b2;
-  }
-  50% {
-    text-shadow:
-      0 0 4px #06b6d4,
-      0 0 11px #06b6d4,
-      0 0 25px #06b6d4,
-      0 0 55px #0891b2,
-      0 0 80px #0e7490;
-  }
-}
 
 @keyframes textGlowGold {
   0%, 100% {
@@ -202,15 +167,6 @@
   animation: textGlowPulse 3s ease-in-out infinite;
 }
 
-.kali-text-blue {
-  color: #3b82f6;
-  animation: textGlowBlue 3s ease-in-out infinite;
-}
-
-.kali-text-cyan {
-  color: #06b6d4;
-  animation: textGlowCyan 3s ease-in-out infinite;
-}
 
 .kali-text-gold {
   color: #fbbf24;
@@ -242,21 +198,6 @@
   }
 }
 
-@keyframes borderPulseBlue {
-  0%, 100% {
-    box-shadow:
-      0 0 5px rgba(59, 130, 246, 0.15),
-      0 0 10px rgba(59, 130, 246, 0.08),
-      inset 0 0 5px rgba(59, 130, 246, 0.03);
-  }
-  50% {
-    box-shadow:
-      0 0 12px rgba(59, 130, 246, 0.3),
-      0 0 25px rgba(59, 130, 246, 0.15),
-      0 0 50px rgba(59, 130, 246, 0.05),
-      inset 0 0 12px rgba(59, 130, 246, 0.05);
-  }
-}
 
 .kali-border {
   border: 1px solid rgba(0, 255, 65, 0.3);
@@ -273,20 +214,6 @@
     inset 0 0 15px rgba(0, 255, 65, 0.05);
 }
 
-.kali-border-blue {
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  animation: borderPulseBlue 3s ease-in-out infinite;
-  transition: all 0.3s ease;
-}
-
-.kali-border-blue:hover {
-  border-color: rgba(59, 130, 246, 0.6);
-  box-shadow:
-    0 0 15px rgba(59, 130, 246, 0.3),
-    0 0 30px rgba(59, 130, 246, 0.15),
-    0 0 60px rgba(59, 130, 246, 0.08),
-    inset 0 0 15px rgba(59, 130, 246, 0.05);
-}
 
 /* ═══════════════════════════════════════════════════════════════════
    §5  BUTTON STYLES
@@ -361,100 +288,6 @@
   transform: translateY(-1px);
 }
 
-.kali-btn-blue {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono), 'Fira Code', monospace;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  padding: 0.55rem 1.5rem;
-  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  color: #ffffff;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.25rem;
-  text-shadow: 0 0 4px rgba(59, 130, 246, 0.3);
-}
-
-.kali-btn-blue::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-  pointer-events: none;
-}
-
-.kali-btn-blue:hover::before {
-  animation: btnSweep 0.6s ease forwards;
-}
-
-.kali-btn-blue:hover {
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  border-color: rgba(59, 130, 246, 0.8);
-  box-shadow:
-    0 0 12px rgba(59, 130, 246, 0.4),
-    0 0 25px rgba(59, 130, 246, 0.2),
-    0 0 50px rgba(59, 130, 246, 0.1),
-    inset 0 0 15px rgba(59, 130, 246, 0.05);
-  text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-  transform: translateY(-1px);
-}
-
-.kali-btn-cyan {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono), 'Fira Code', monospace;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  padding: 0.55rem 1.5rem;
-  background: linear-gradient(135deg, #0891b2, #06b6d4);
-  border: 1px solid rgba(6, 182, 212, 0.4);
-  color: #ffffff;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.25rem;
-  text-shadow: 0 0 4px rgba(6, 182, 212, 0.3);
-}
-
-.kali-btn-cyan::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-  pointer-events: none;
-}
-
-.kali-btn-cyan:hover::before {
-  animation: btnSweep 0.6s ease forwards;
-}
-
-.kali-btn-cyan:hover {
-  background: linear-gradient(135deg, #0e7490, #0891b2);
-  border-color: rgba(6, 182, 212, 0.8);
-  box-shadow:
-    0 0 12px rgba(6, 182, 212, 0.4),
-    0 0 25px rgba(6, 182, 212, 0.2),
-    0 0 50px rgba(6, 182, 212, 0.1),
-    inset 0 0 15px rgba(6, 182, 212, 0.05);
-  transform: translateY(-1px);
-}
 
 .kali-btn-outline {
   position: relative;
@@ -503,63 +336,6 @@
   transform: translateY(-1px);
 }
 
-.kali-btn-danger {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono), 'Fira Code', monospace;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  padding: 0.55rem 1.5rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.25rem;
-  text-shadow: 0 0 4px rgba(239, 68, 68, 0.3);
-}
-
-.kali-btn-danger:hover {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: rgba(239, 68, 68, 0.6);
-  box-shadow:
-    0 0 12px rgba(239, 68, 68, 0.2),
-    0 0 25px rgba(239, 68, 68, 0.08);
-  text-shadow: 0 0 8px #ef4444;
-  transform: translateY(-1px);
-}
-
-.kali-btn-ghost {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono), 'Fira Code', monospace;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  padding: 0.55rem 1.5rem;
-  background: transparent;
-  border: 1px solid transparent;
-  color: #00ff41;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.25rem;
-}
-
-.kali-btn-ghost:hover {
-  background: rgba(0, 255, 65, 0.08);
-  border-color: rgba(0, 255, 65, 0.2);
-  color: #39ff14;
-  text-shadow: 0 0 6px rgba(0, 255, 65, 0.4);
-}
 
 .kali-btn-sm {
   padding: 0.3rem 0.85rem;
@@ -570,17 +346,6 @@
 /* Green matrix button — alias for .kali-btn (single source of truth) */
 .kali-btn-green {
   composes: kali-btn;
-}
-
-/* Only add sm-specific overrides if needed */
-
-/* Active states for nav buttons */
-.kali-btn-cyan-active {
-  background: rgba(6, 182, 212, 0.15) !important;
-  border: 1px solid rgba(6, 182, 212, 0.5) !important;
-  color: #22d3ee !important;
-  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2), inset 0 0 8px rgba(6, 182, 212, 0.04) !important;
-  text-shadow: 0 0 6px rgba(6, 182, 212, 0.5) !important;
 }
 
 .kali-btn-green-active {
@@ -595,9 +360,7 @@
   text-shadow: 0 0 6px rgba(0, 255, 65, 0.5) !important;
 }
 
-.kali-btn-sm.kali-btn-green,
-.kali-btn-sm.kali-btn-cyan,
-.kali-btn-sm.kali-btn-blue {
+.kali-btn-sm.kali-btn-green {
   padding: 0.3rem 0.85rem;
   font-size: 0.75rem;
 }
@@ -701,40 +464,6 @@
    §7  SCANLINES & BACKGROUND
    ═══════════════════════════════════════════════════════════════════ */
 
-.scanlines::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 255, 65, 0.04) 0px,
-    rgba(0, 255, 65, 0.04) 1px,
-    transparent 1px,
-    transparent 2px
-  );
-  pointer-events: none;
-  z-index: 9999;
-}
-
-.scanlines-movable::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(0, 255, 65, 0.3) 20%,
-    rgba(59, 130, 246, 0.2) 50%,
-    rgba(0, 255, 65, 0.3) 80%,
-    transparent 100%
-  );
-  animation: scanLine 6s linear infinite;
-  pointer-events: none;
-  z-index: 9998;
-}
 
 .kali-grid-bg {
   background-image:
@@ -783,20 +512,6 @@
   box-shadow: 0 0 4px #06b6d4, 0 0 8px rgba(6, 182, 212, 0.4);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   §9  GLITCH EFFECT  (green + cyan)
-   ═══════════════════════════════════════════════════════════════════ */
-
-@keyframes glitch {
-  0%, 100% { text-shadow: 2px 0 #00ff41, -2px 0 #06b6d4; }
-  25% { text-shadow: -2px 0 #00ff41, 2px 0 #06b6d4; }
-  50% { text-shadow: 2px 2px #00ff41, -2px -2px #06b6d4; }
-  75% { text-shadow: -2px 2px #00ff41, 2px -2px #06b6d4; }
-}
-
-.glitch-hover:hover {
-  animation: glitch 0.3s ease infinite;
-}
 
 /* ═══════════════════════════════════════════════════════════════════
    §10  HEADER & FOOTER GLOW
@@ -965,30 +680,6 @@
   content: '$ ';
 }
 
-.terminal-prefix-cyan {
-  color: #06b6d4;
-  font-weight: bold;
-  text-shadow: 0 0 4px rgba(6, 182, 212, 0.4);
-  user-select: none;
-}
-
-.terminal-prefix-cyan::after {
-  content: '# ';
-}
-
-.corner-brackets {
-  color: #00ff41;
-  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3);
-  animation: cornerPulse 3s ease-in-out infinite;
-}
-
-.corner-brackets::before {
-  content: '[';
-}
-
-.corner-brackets::after {
-  content: ']';
-}
 
 .hex-decoration {
   color: #00cc33;
@@ -998,20 +689,6 @@
   text-shadow: 0 0 3px rgba(0, 255, 65, 0.2);
 }
 
-.kali-divider {
-  border: none;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(0, 255, 65, 0.3) 20%,
-    rgba(0, 255, 65, 0.5) 50%,
-    rgba(0, 255, 65, 0.3) 80%,
-    transparent 100%
-  );
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.1);
-  margin: 1.5rem 0;
-}
 
 /* ═══════════════════════════════════════════════════════════════════
    §15  PLAY BUTTON OVERLAY GLOW
@@ -1049,25 +726,6 @@
   box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   §17  TAB ACTIVE GLOW
-   ═══════════════════════════════════════════════════════════════════ */
-
-@keyframes activeTabGlow {
-  0%, 100% {
-    box-shadow: 0 0 6px rgba(0, 255, 65, 0.15), 0 0 12px rgba(0, 255, 65, 0.06);
-  }
-  50% {
-    box-shadow:
-      0 0 10px rgba(0, 255, 65, 0.3),
-      0 0 20px rgba(0, 255, 65, 0.1),
-      0 0 35px rgba(0, 255, 65, 0.04);
-  }
-}
-
-.tab-active-glow {
-  animation: activeTabGlow 2.5s ease-in-out infinite;
-}
 
 /* ═══════════════════════════════════════════════════════════════════
    §18  STATUS DOT GLOW
@@ -1104,35 +762,6 @@
   50% { opacity: 0; }
 }
 
-@keyframes flicker {
-  0%, 100% { opacity: 1; }
-  41.99% { opacity: 1; }
-  42% { opacity: 0; }
-  43% { opacity: 1; }
-  45% { opacity: 0; }
-  46% { opacity: 1; }
-  50% { opacity: 0; }
-  55% { opacity: 1; }
-  57% { opacity: 0; }
-  58% { opacity: 1; }
-}
-
-@keyframes scanLine {
-  0% {
-    top: -4px;
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  95% {
-    opacity: 1;
-  }
-  100% {
-    top: 100%;
-    opacity: 0;
-  }
-}
 
 @keyframes holoFlicker {
   0%, 100% { opacity: 1; }
@@ -1167,16 +796,6 @@
   100% { background-position: 0% 50%; }
 }
 
-@keyframes cornerPulse {
-  0%, 100% {
-    text-shadow: 0 0 4px currentColor, 0 0 8px currentColor;
-    opacity: 0.6;
-  }
-  50% {
-    text-shadow: 0 0 8px currentColor, 0 0 16px currentColor, 0 0 24px currentColor;
-    opacity: 1;
-  }
-}
 
 @keyframes btnScanLine {
   0% { top: -2px; opacity: 0; }
@@ -1190,28 +809,6 @@
   10% { opacity: 1; }
   90% { opacity: 1; }
   100% { left: 130%; opacity: 0; }
-}
-
-/* Misc glow classes */
-
-.pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite;
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(0, 255, 65, 0.2), 0 0 10px rgba(0, 255, 65, 0.1);
-  }
-  50% {
-    box-shadow:
-      0 0 12px rgba(0, 255, 65, 0.4),
-      0 0 25px rgba(0, 255, 65, 0.2),
-      0 0 40px rgba(0, 255, 65, 0.08);
-  }
-}
-
-.flicker {
-  animation: flicker 3s linear infinite;
 }
 
 .typing-cursor::after {
@@ -1249,19 +846,9 @@
   }
 }
 
-@keyframes iconGlowCyan {
-  0%, 100% {
-    filter: drop-shadow(0 0 3px rgba(6, 182, 212, 0.3));
-  }
-  50% {
-    filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6)) drop-shadow(0 0 15px rgba(6, 182, 212, 0.2));
-  }
-}
-
 .icon-glow-green { animation: iconGlowGreen 3s ease-in-out infinite; }
 .icon-glow-blue { animation: iconGlowBlue 3s ease-in-out infinite; }
 .icon-glow-gold { animation: iconGlowGold 2.5s ease-in-out infinite; }
-.icon-glow-cyan { animation: iconGlowCyan 2.5s ease-in-out infinite; }
 
 /* ═══════════════════════════════════════════════════════════════════
    §22  DRAGON LOGO & BACKGROUND
@@ -1289,27 +876,6 @@
   animation-play-state: paused;
 }
 
-/* Dragon logo glow pulse */
-@keyframes dragonLogoGlow {
-  0%, 100% {
-    filter: drop-shadow(0 0 4px rgba(0, 255, 65, 0.5)) drop-shadow(0 0 8px rgba(0, 255, 65, 0.3));
-    transform: scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 8px rgba(0, 255, 65, 0.8)) drop-shadow(0 0 16px rgba(59, 130, 246, 0.4)) drop-shadow(0 0 24px rgba(6, 182, 212, 0.2));
-    transform: scale(1.05);
-  }
-}
-
-.dragon-logo {
-  animation: dragonLogoGlow 3s ease-in-out infinite;
-  transition: filter 0.3s ease;
-}
-
-.dragon-logo:hover {
-  filter: drop-shadow(0 0 12px rgba(0, 255, 65, 1)) drop-shadow(0 0 24px rgba(59, 130, 246, 0.6)) drop-shadow(0 0 36px rgba(6, 182, 212, 0.3));
-  animation-play-state: paused;
-}
 
 /* Dragon background watermark */
 @keyframes dragonDrift {
@@ -1371,11 +937,6 @@
   66% {
     transform: translate(calc(-50% - 8px), calc(-50% - 10px)) scale(0.98) rotate(-0.3deg);
   }
-}
-
-/* Dragon footer icon */
-.dragon-footer {
-  animation: dragonLogoGlow 4s ease-in-out infinite;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1530,58 +1091,6 @@
 
 .hero-orb-2 {
   animation: orbFloat2 10s ease-in-out infinite;
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   §25  FEATURED CARD RIBBON
-   ═══════════════════════════════════════════════════════════════════ */
-
-.featured-card { position: relative; }
-
-.featured-card::after {
-  content: '★ FEATURED';
-  position: absolute;
-  top: 12px;
-  right: -30px;
-  background: linear-gradient(135deg, #00cc33, #fbbf24);
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 2px 35px;
-  transform: rotate(45deg);
-  z-index: 10;
-  letter-spacing: 1px;
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3), 0 0 20px rgba(251, 191, 36, 0.15);
-  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   §26  BACKGROUND PATTERN
-   ═══════════════════════════════════════════════════════════════════ */
-
-.kali-bg-pattern {
-  background-image:
-    linear-gradient(
-      45deg,
-      rgba(0, 255, 65, 0.02) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(0, 255, 65, 0.02) 50%,
-      rgba(0, 255, 65, 0.02) 75%,
-      transparent 75%,
-      transparent
-    ),
-    linear-gradient(
-      -45deg,
-      rgba(59, 130, 246, 0.015) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(59, 130, 246, 0.015) 50%,
-      rgba(59, 130, 246, 0.015) 75%,
-      transparent 75%,
-      transparent
-    );
-  background-size: 60px 60px;
 }
 
 /* █████████████████████████████████████████████████████████████████████████████████

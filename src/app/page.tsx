@@ -34,7 +34,6 @@ import {
   AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { DEFAULT_SETTINGS as CACHE_DEFAULTS } from '@/lib/cache-config';
 import { CRAZYGAMES_BASE, SOURCE_POLL_INTERVAL, CATEGORY_POLL_INTERVAL, PROGRESS_CLEAR_DELAY, CATEGORY_PROGRESS_CLEAR_DELAY } from '@/lib/constants';
 
 // ─── Genre Icon Map ──────────────────────────────────────────────
@@ -157,10 +156,8 @@ export default function GamePortal() {
   const [genreFilter, setGenreFilter] = useState('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [genres, setGenres] = useState<GenreInfo[]>([]);
-  const [genresLoading, setGenresLoading] = useState(false);
   const [categoryFetching, setCategoryFetching] = useState(false);
   const [categoryFetchProgress, setCategoryFetchProgress] = useState<string | null>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [gameLoading, setGameLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -426,10 +423,8 @@ export default function GamePortal() {
     if (!fullscreenRef.current) return;
     if (!document.fullscreenElement) {
       fullscreenRef.current.requestFullscreen();
-      setIsFullscreen(true);
     } else {
       document.exitFullscreen();
-      setIsFullscreen(false);
     }
   };
 
@@ -614,7 +609,6 @@ export default function GamePortal() {
 
   // ─── Computed Values ─────────────────────────────────────────────
   const featuredGames = useMemo(() => games.filter((g) => g.featured), [games]);
-  const allGames = useMemo(() => games, [games]);
 
   // ─── Render ──────────────────────────────────────────────────────
   return (
@@ -876,7 +870,7 @@ export default function GamePortal() {
                 {loading ? (
                   <span className="text-[#06b6d4]">scanning games_db...</span>
                 ) : (
-                  <span><span className="text-[#00ff41]">{allGames.length}</span> GAME{allGames.length !== 1 ? 'S' : ''} FOUND <span className="hex-decoration">0x{allGames.length.toString(16).toUpperCase()}</span></span>
+                  <span><span className="text-[#00ff41]">{games.length}</span> GAME{games.length !== 1 ? 'S' : ''} FOUND <span className="hex-decoration">0x{games.length.toString(16).toUpperCase()}</span></span>
                 )}
               </div>
 
@@ -928,7 +922,7 @@ export default function GamePortal() {
                       </div>
                     ))}
                   </div>
-                ) : allGames.length === 0 ? (
+                ) : games.length === 0 ? (
                   <div className="text-center py-16">
                     <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-[#00ff41]/30 icon-glow-green" />
                     <p className="text-[#94a3b8] text-sm">
@@ -937,7 +931,7 @@ export default function GamePortal() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {allGames.map((game) => (
+                    {games.map((game) => (
                       <GameCard key={game.id} game={game} onPlay={playGame} />
                     ))}
                   </div>

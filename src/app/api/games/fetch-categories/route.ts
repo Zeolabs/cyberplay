@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { FETCH_HEADERS, PAGE_FETCH_TIMEOUT, sleep, decodeHtmlEntities, fetchPage, POLITE_DELAY } from '@/lib/fetch-utils';
+import { PAGE_FETCH_TIMEOUT, sleep, decodeHtmlEntities, fetchPage, POLITE_DELAY } from '@/lib/fetch-utils';
 import { CRAZYGAMES_BASE, CRAZYGAMES_GAMES, CRAZYGAMES_IMAGES, CRAZYGAMES_VIDEOS, FALLBACK_DESCRIPTION } from '@/lib/constants';
 
 // CrazyGames tags — fetched dynamically from sidebar, with icon mapping
@@ -31,7 +31,7 @@ const CRAZYGAMES_TAGS = [
   { name: 'Stickman',      slug: 'stick',                icon: 'PersonStanding', prefix: '/t' },
   { name: 'Thinky',        slug: 'thinky',               icon: 'Brain',          prefix: '/t' },
   { name: 'Tower Defense', slug: 'tower-defense',        icon: 'Castle',         prefix: '/t' },
-] as const;
+];
 
 type FetchStatus = {
   status: 'idle' | 'fetching' | 'done' | 'error';
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
 }
 
 // ─── Core: fetch games from each CrazyGames tag page ───────────────────
-async function fetchBulkTags(tags: readonly typeof CRAZYGAMES_TAGS) {
+async function fetchBulkTags(tags: typeof CRAZYGAMES_TAGS) {
   let totalNew = 0;
 
   fetchStatus.status = 'fetching';

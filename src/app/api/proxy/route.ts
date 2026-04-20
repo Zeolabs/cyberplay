@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from 'fs';
 import { join } from 'path';
-import { readFile } from 'fs/promises';
-import { hash } from 'crypto';
+import { createHash } from 'crypto';
 import {
   CACHE_DIR, readSettings,
 } from '@/lib/cache-config';
 
 // ─── Helpers ───────────────────────────────────────────────────────
 function hashUrl(url: string): string {
-  return hash('sha256', url).toString('hex').slice(0, 16);
+  return createHash('sha256').update(url).digest('hex').slice(0, 16);
 }
 
 function getExt(url: string, contentType: string): string {

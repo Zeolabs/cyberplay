@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -8,9 +9,31 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const firaCode = localFont({
+  src: [
+    {
+      path: "../../public/fonts/FiraCode-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/FiraCode-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/FiraCode-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/FiraCode-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  variable: "--font-fira-code",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +53,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#050508] text-[#e0e0e0]`}
+        className={`${geistSans.variable} ${firaCode.variable} antialiased bg-[#050508] text-[#e0e0e0]`}
+        style={{ fontFamily: 'var(--font-fira-code), monospace' }}
       >
         {children}
         <Toaster />

@@ -7,26 +7,30 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 function createPrismaClient(): PrismaClient {
+  // On Vercel/Turso: use TURSO_DATABASE_URL for the adapter,
+  // while DATABASE_URL stays as a dummy file: URL for schema validation
+  const tursoUrl = process.env.TURSO_DATABASE_URL
+  const tursoToken = process.env.TURSO_AUTH_TOKEN
   const databaseUrl = process.env.DATABASE_URL || ''
 
   console.log('[db] DATABASE_URL prefix:', databaseUrl.substring(0, 20) + '...')
-  console.log('[db] TURSO_AUTH_TOKEN set:', !!process.env.TURSO_AUTH_TOKEN)
+  console.log('[db] TURSO_DATABASE_URL set:', !!tursoUrl)
+  console.log('[db] TURSO_AUTH_TOKEN set:', !!tursoToken)
   console.log('[db] NODE_ENV:', process.env.NODE_ENV)
 
-  // Use libSQL adapter when connecting to Turso (libsql:// URL)
-  if (databaseUrl.startsWith('libsql://')) {
+  // Use libSQL adapter when TURSO_DATABASE_URL is set (production/Vercel)
+  if (tursoUrl && tursoUrl.startsWith('libsql://')) {
     console.log('[db] Using Turso/libSQL adapter')
     try {
       const libsql = createClient({
-        url: databaseUrl,
-        authToken: process.env.TURSO_AUTH_TOKEN,
+        url: tursoUrl,
+        authToken: tursoToken,
       })
       const adapter = new PrismaLibSQL(libsql)
-      const client = new PrismaClient({
+      return new PrismaClient({
         adapter,
         log: ['error'],
       })
-      return client
     } catch (err) {
       console.error('[db] Failed to create libSQL adapter:', err)
       throw err
@@ -34,7 +38,7 @@ function createPrismaClient(): PrismaClient {
   }
 
   // Local SQLite for development
-  console.log('[db] Using local SQLite')
+  console.log('[db] Using local SQLite, DATABASE_URL:', databaseUrl)
   return new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query'] : ['error'],
   })

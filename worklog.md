@@ -232,3 +232,32 @@ Stage Summary:
 - CrazyGames-style hover: video plays inside the card on hover (no popup)
 - Dark overlay on thumbnails ensures badges are always visible
 - Future fetches automatically use correct embeddable URLs
+
+---
+Task ID: 10
+Agent: Main Agent
+Task: Fix "Fetch All" button not working — add rate limit handling and retry logic
+
+Work Log:
+- Diagnosed root cause: z-ai-web-dev-sdk returning 429 rate limits on ALL API calls
+- Previous code made 80+ API calls (3 web_search + 1 page_reader × 20 genres) with minimal 300ms delays
+- All calls failed silently due to try-catch blocks swallowing errors — fetch appeared to complete but found 0 games
+- Completely rewrote `src/app/api/games/fetch-categories/route.ts`:
+  - Added `invokeWithRetry()` with exponential backoff (8s → 16s → 32s base delays + random jitter)
+  - Added `parseNextData()` to extract games from `__NEXT_DATA__` JSON (1 page_reader call per genre vs 4)
+  - Proper rate limit detection: 429 errors trigger backoff; after max retries, 30s cooldown then one more attempt
+  - 8-12 second delays between genres to prevent consecutive rate limits
+  - Enhanced status reporting: retries count, rateLimitWaits count, per-genre progress
+  - Fixed syntax error: `rec teaser` → `rec.teaser` in __NEXT_DATA__ parser
+- Updated `src/app/page.tsx` frontend:
+  - Rich progress messages: `[3/20] | ⚠2 rate-limits | 15 new | Action: 15 new, 48 total`
+  - Yellow text (#fbbf24) when rate limited, cyan (#06b6d4) during normal progress
+  - Longer poll interval (3s instead of 2s) to reduce server load
+  - Toast: "Fetch started! This may take several minutes."
+  - Truncated progress text with `max-w-[60vw]` to prevent overflow
+
+Stage Summary:
+- Fetch All button now properly starts background game fetching
+- Rate limits handled gracefully with exponential backoff instead of silent failure
+- Reduced API calls from 80+ to 20 (one page_reader per genre via __NEXT_DATA__ parsing)
+- Verified: POST returns 200, status polling shows retry progression, rate limits detected and retried

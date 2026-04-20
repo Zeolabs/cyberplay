@@ -81,3 +81,6 @@ worklog.md
 # Z.ai scripts
 .zscripts/
 .zscript/
+
+# Sandbox config
+Caddyfile

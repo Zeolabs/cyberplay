@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Gamepad2, Search, Upload, Settings, Play, Star, Eye, Trash2,
@@ -79,8 +79,11 @@ export default function GamePortal() {
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const gameFrameRef = useRef<HTMLIFrameElement>(null);
   const fullscreenRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // Upload dialog state
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -237,22 +240,24 @@ export default function GamePortal() {
   // ─── Render ─────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex flex-col cyber-gradient-bg scanlines grid-bg relative">
-      {/* Background particles */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="particle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDuration: `${8 + Math.random() * 12}s`,
-              animationDelay: `${Math.random() * 10}s`,
-              animation: `float ${8 + Math.random() * 12}s linear ${Math.random() * 10}s infinite`,
-              opacity: Math.random() * 0.5 + 0.1,
-            }}
-          />
-        ))}
-      </div>
+      {/* Background particles — client-only to avoid hydration mismatch */}
+      {mounted && (
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div
+              key={i}
+              className="particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${8 + Math.random() * 12}s`,
+                animationDelay: `${Math.random() * 10}s`,
+                animation: `float ${8 + Math.random() * 12}s linear ${Math.random() * 10}s infinite`,
+                opacity: Math.random() * 0.5 + 0.1,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* ─── HEADER ──────────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#050508]/80 border-b border-[rgba(0,255,65,0.15)]">

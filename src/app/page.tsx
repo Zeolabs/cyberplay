@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Gamepad2, Search, Upload, Settings, Play, Star, Eye, Trash2,
   Edit3, Zap, Monitor, Cpu, Menu, Grid3X3, Trophy, ArrowLeft,
-  ExternalLink, Maximize2, Volume2, VolumeX, Globe, Database,
+  ExternalLink, Maximize2, Globe, Database,
   Plus, Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -143,7 +143,6 @@ export default function GamePortal() {
   const [genresLoading, setGenresLoading] = useState(false);
   const [categoryFetching, setCategoryFetching] = useState(false);
   const [categoryFetchProgress, setCategoryFetchProgress] = useState<string | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [gameLoading, setGameLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -903,14 +902,6 @@ export default function GamePortal() {
 
                 {/* Controls */}
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsMuted(!isMuted)}
-                    className="text-[#e2e8f0] hover:bg-white/5"
-                  >
-                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"

@@ -589,11 +589,11 @@ export default function GamePortal() {
         ))}
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-[#0a0a14]/80 backdrop-blur-md header-glow px-4 py-3 border-b border-[#8b5cf6]/20">
+      <header className="sticky top-0 z-50 bg-[#050a05]/80 backdrop-blur-md header-glow px-4 py-3 border-b border-[#00ff41]/20">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2.5 shrink-0">
-            <div className="text-[#8b5cf6] header-logo-glow">
+            <div className="text-[#00ff41] header-logo-glow">
               <Gamepad2 className="w-7 h-7" strokeWidth={1.5} />
             </div>
             <span className="text-xl font-bold kali-text cursor-pointer tracking-wider">
@@ -603,7 +603,7 @@ export default function GamePortal() {
 
           {/* Search */}
           <div className="hidden md:flex flex-1 max-w-md relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8b5cf6]/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#00ff41]/40" />
             <input
               ref={searchInputRef}
               type="text"
@@ -612,7 +612,7 @@ export default function GamePortal() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="kali-input w-full pl-10 pr-20 py-2 rounded-lg text-sm"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#8b5cf6]/30 border border-[#8b5cf6]/15 rounded px-1.5 py-0.5">
+            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#00ff41]/30 border border-[#00ff41]/15 rounded px-1.5 py-0.5">
               CTRL+K
             </kbd>
           </div>
@@ -641,7 +641,7 @@ export default function GamePortal() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-[#8b5cf6] p-2 rounded hover:bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 transition-all"
+            className="md:hidden text-[#00ff41] p-2 rounded hover:bg-[#00ff41]/10 border border-[#00ff41]/20 transition-all"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <Menu className="w-5 h-5" />
@@ -696,7 +696,7 @@ export default function GamePortal() {
               className="max-w-7xl mx-auto space-y-8"
             >
               {/* Hero Section */}
-              <section className="relative kali-border rounded p-6 md:p-10 text-center overflow-hidden bg-[#0a0a14]/60">
+              <section className="relative kali-border rounded p-6 md:p-10 text-center overflow-hidden bg-[#050a05]/60">
                 {/* Dragon background watermark (right) */}
                 <img
                   src="/dragon.svg"
@@ -712,7 +712,7 @@ export default function GamePortal() {
                   aria-hidden="true"
                 />
                 {/* Floating orbs */}
-                <div className="hero-orb-1 absolute top-4 left-8 w-32 h-32 rounded-full bg-[#8b5cf6]/5 blur-3xl pointer-events-none" />
+                <div className="hero-orb-1 absolute top-4 left-8 w-32 h-32 rounded-full bg-[#00ff41]/5 blur-3xl pointer-events-none" />
                 <div className="hero-orb-2 absolute bottom-4 right-8 w-40 h-40 rounded-full bg-[#06b6d4]/5 blur-3xl pointer-events-none" />
 
                 <div className="relative z-10">
@@ -726,8 +726,8 @@ export default function GamePortal() {
                     <span className="terminal-header-title">cyberplay@portal:~$</span>
                   </div>
                   <div className="flex items-center justify-center gap-2 mb-3">
-                    <span className="w-2 h-2 rounded-full bg-[#8b5cf6] status-dot-glow" />
-                    <span className="text-[#8b5cf6] text-[10px] font-medium">
+                    <span className="w-2 h-2 rounded-full bg-[#00ff41] status-dot-glow" />
+                    <span className="text-[#00ff41] text-[10px] font-medium">
                       System Online
                     </span>
                   </div>
@@ -750,7 +750,7 @@ export default function GamePortal() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-[#8b5cf6] terminal-prefix">category_scan</span>
+                    <span className="text-xs text-[#00ff41] terminal-prefix">category_scan</span>
                     {categoryFetching && (
                       <span className="text-xs text-[#06b6d4] flex items-center gap-1.5 max-w-[60vw] truncate">
                         <Loader2 className="w-3 h-3 animate-spin shrink-0" />
@@ -772,7 +772,7 @@ export default function GamePortal() {
                       <SelectTrigger className="kali-input w-32 text-xs">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
+                      <SelectContent className="bg-[#080f08] border-[#00ff41]/15">
                         <SelectItem value="newest">Newest</SelectItem>
                         <SelectItem value="popular">Most Played</SelectItem>
                         <SelectItem value="top-rated">Top Rated</SelectItem>
@@ -783,15 +783,15 @@ export default function GamePortal() {
 
                 {/* Horizontal scrollable genre chips */}
                 <div className="relative">
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[#8b5cf6]/20 scrollbar-track-transparent">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[#00ff41]/20 scrollbar-track-transparent">
                     {genres.filter(g => g.count > 0 && g.name !== 'Uncategorized' || g.name === 'All').map((genre) => (
                       <button
                         key={genre.name}
                         onClick={() => setGenreFilter(genre.name)}
                         className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border shrink-0 ${
                           genreFilter === genre.name
-                            ? 'bg-[#8b5cf6]/15 text-[#a78bfa] border-[#8b5cf6]/40 shadow-[0_0_12px_rgba(139,92,246,0.2)]'
-                            : 'bg-[#0d0d1f]/60 text-[#e2e8f0]/50 border-[#8b5cf6]/8 hover:text-[#e2e8f0] hover:border-[#8b5cf6]/20'
+                            ? 'bg-[#00ff41]/15 text-[#39ff14] border-[#00ff41]/40 shadow-[0_0_12px_rgba(0,255,65,0.2)]'
+                            : 'bg-[#080f08]/60 text-[#e2e8f0]/50 border-[#00ff41]/8 hover:text-[#e2e8f0] hover:border-[#00ff41]/20'
                         }`}
                       >
                         <span className="shrink-0">
@@ -801,25 +801,25 @@ export default function GamePortal() {
                           })()}
                         </span>
                         <span>{genre.name}</span>
-                        <span className={`text-[10px] ml-0.5 ${genreFilter === genre.name ? 'text-[#8b5cf6]' : 'text-[#94a3b8]/50'}`}>
+                        <span className={`text-[10px] ml-0.5 ${genreFilter === genre.name ? 'text-[#00ff41]' : 'text-[#94a3b8]/50'}`}>
                           {genre.count}
                         </span>
                       </button>
                     ))}
                   </div>
                   {/* Fade edges */}
-                  <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#0a0a14] to-transparent" />
-                  <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#0a0a14] to-transparent" />
+                  <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#050a05] to-transparent" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#050a05] to-transparent" />
                 </div>
               </div>
 
               {/* Stats bar */}
               <div className="flex items-center gap-2 text-xs text-[#94a3b8] tracking-wider">
-                <span className="text-[#8b5cf6]">$</span>
+                <span className="text-[#00ff41]">$</span>
                 {loading ? (
                   <span className="text-[#06b6d4]">scanning games_db...</span>
                 ) : (
-                  <span><span className="text-[#8b5cf6]">{allGames.length}</span> GAME{allGames.length !== 1 ? 'S' : ''} FOUND <span className="hex-decoration">0x{allGames.length.toString(16).toUpperCase()}</span></span>
+                  <span><span className="text-[#00ff41]">{allGames.length}</span> GAME{allGames.length !== 1 ? 'S' : ''} FOUND <span className="hex-decoration">0x{allGames.length.toString(16).toUpperCase()}</span></span>
                 )}
               </div>
 
@@ -841,14 +841,14 @@ export default function GamePortal() {
               {/* All Games Grid */}
               <section>
                 <div className="flex items-center gap-2 mb-4">
-                  <Gamepad2 className="w-5 h-5 text-[#8b5cf6] icon-glow-purple" />
+                  <Gamepad2 className="w-5 h-5 text-[#00ff41] icon-glow-purple" />
                   <h2 className="text-xl font-bold kali-text">
                     {genreFilter === 'All' ? 'ALL GAMES' : genreFilter.toUpperCase()}
                   </h2>
                   {genreFilter !== 'All' && (
                     <button
                       onClick={() => setGenreFilter('All')}
-                      className="text-[10px] text-[#94a3b8] hover:text-[#8b5cf6] ml-2 transition-colors"
+                      className="text-[10px] text-[#94a3b8] hover:text-[#00ff41] ml-2 transition-colors"
                     >
                       [clear]
                     </button>
@@ -873,7 +873,7 @@ export default function GamePortal() {
                   </div>
                 ) : allGames.length === 0 ? (
                   <div className="text-center py-16">
-                    <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-[#8b5cf6]/30 icon-glow-purple" />
+                    <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-[#00ff41]/30 icon-glow-purple" />
                     <p className="text-[#94a3b8] text-sm">
                       No games found. Try a different search or category.
                     </p>
@@ -908,7 +908,7 @@ export default function GamePortal() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setView('home')}
-                    className="text-[#8b5cf6] hover:bg-[#8b5cf6]/10"
+                    className="text-[#00ff41] hover:bg-[#00ff41]/10"
                   >
                     <ArrowLeft className="w-4 h-4 mr-1" /> Back
                   </Button>
@@ -965,15 +965,15 @@ export default function GamePortal() {
                       initial={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.4, ease: 'easeOut' }}
-                      className="absolute inset-0 bg-[#0a0a14]/90 flex flex-col items-center justify-center gap-4 pointer-events-none"
+                      className="absolute inset-0 bg-[#050a05]/90 flex flex-col items-center justify-center gap-4 pointer-events-none"
                     >
                       <div className="relative">
-                        <Gamepad2 className="w-12 h-12 text-[#8b5cf6] animate-bounce icon-glow-purple" />
-                        <span className="absolute inset-0 rounded-full bg-[#8b5cf6]/20 animate-ping" />
+                        <Gamepad2 className="w-12 h-12 text-[#00ff41] animate-bounce icon-glow-purple" />
+                        <span className="absolute inset-0 rounded-full bg-[#00ff41]/20 animate-ping" />
                       </div>
-                      <div className="w-48 h-1 bg-[#111127] rounded-full overflow-hidden">
+                      <div className="w-48 h-1 bg-[#0c150c] rounded-full overflow-hidden">
                         <motion.div
-                          className="h-full bg-gradient-to-r from-[#8b5cf6] to-[#06b6d4] rounded-full"
+                          className="h-full bg-gradient-to-r from-[#00ff41] to-[#06b6d4] rounded-full"
                           initial={{ width: '0%' }}
                           animate={{ width: '100%' }}
                           transition={{ duration: 2, ease: 'easeInOut' }}
@@ -1012,12 +1012,12 @@ export default function GamePortal() {
               className="max-w-7xl mx-auto"
             >
               <div className="flex items-center gap-2 mb-6">
-                <Settings className="w-5 h-5 text-[#a78bfa] icon-glow-gold" />
+                <Settings className="w-5 h-5 text-[#39ff14] icon-glow-gold" />
                 <h2 className="text-xl font-bold kali-text-purple">GAME MANAGER</h2>
               </div>
 
               {/* Table Header */}
-              <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-xs text-[#94a3b8] tracking-wider uppercase border-b border-[#8b5cf6]/10">
+              <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-xs text-[#94a3b8] tracking-wider uppercase border-b border-[#00ff41]/10">
                 <div className="col-span-4">Title</div>
                 <div className="col-span-2">Genre</div>
                 <div className="col-span-1">Plays</div>
@@ -1043,7 +1043,7 @@ export default function GamePortal() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.03 }}
-                        className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-center px-4 py-3 rounded-lg bg-[#0d0d1f]/50 border border-[#8b5cf6]/8 hover:border-[#8b5cf6]/20 transition-all"
+                        className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-center px-4 py-3 rounded-lg bg-[#080f08]/50 border border-[#00ff41]/8 hover:border-[#00ff41]/20 transition-all"
                       >
                         {/* Title + Thumbnail */}
                         <div className="md:col-span-4 flex items-center gap-3">
@@ -1067,7 +1067,7 @@ export default function GamePortal() {
                         {/* Genre/Category */}
                         <div className="md:col-span-2">
                           {game.genre ? (
-                            <Badge className="text-[10px] bg-[#8b5cf6]/10 text-[#a78bfa] border border-[#8b5cf6]/20">
+                            <Badge className="text-[10px] bg-[#00ff41]/10 text-[#39ff14] border border-[#00ff41]/20">
                               {game.genre}
                             </Badge>
                           ) : (
@@ -1092,7 +1092,7 @@ export default function GamePortal() {
                             size="sm"
                             variant="ghost"
                             onClick={() => playGame(game)}
-                            className="text-[#8b5cf6] hover:bg-[#8b5cf6]/10 hover:shadow-[0_0_10px_rgba(139,92,246,0.3)] text-xs"
+                            className="text-[#00ff41] hover:bg-[#00ff41]/10 hover:shadow-[0_0_10px_rgba(0,255,65,0.3)] text-xs"
                           >
                             <Play className="w-3 h-3 mr-1" /> Play
                           </Button>
@@ -1114,7 +1114,7 @@ export default function GamePortal() {
                                 <Trash2 className="w-3 h-3 mr-1" /> Delete
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-[#0d0d1f] border-[#ef4444]/20">
+                            <AlertDialogContent className="bg-[#080f08] border-[#ef4444]/20">
                               <AlertDialogHeader>
                                 <AlertDialogTitle className="text-white">
                                   Delete Game
@@ -1125,7 +1125,7 @@ export default function GamePortal() {
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-[#111127] border-[#8b5cf6]/15 text-[#e2e8f0] hover:bg-[#1a1a2e]">
+                                <AlertDialogCancel className="bg-[#0c150c] border-[#00ff41]/15 text-[#e2e8f0] hover:bg-[#1a1a2e]">
                                   Cancel
                                 </AlertDialogCancel>
                                 <AlertDialogAction
@@ -1176,15 +1176,15 @@ export default function GamePortal() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="kali-border-blue rounded-xl p-4 bg-[#0a0a14]/80"
+                  className="kali-border-blue rounded-xl p-4 bg-[#050a05]/80"
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <Loader2 className="w-5 h-5 text-[#06b6d4] animate-spin" />
                     <span className="text-sm text-[#06b6d4]">{fetchProgress.message}</span>
                   </div>
-                  <div className="w-full h-2 bg-[#111127] rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-[#0c150c] rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-[#06b6d4] to-[#8b5cf6]"
+                      className="h-full rounded-full bg-gradient-to-r from-[#06b6d4] to-[#00ff41]"
                       animate={{
                         width:
                           fetchProgress.total > 0
@@ -1268,7 +1268,7 @@ export default function GamePortal() {
                               <Trash2 className="w-3 h-3 mr-1" /> Delete
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-[#0d0d1f] border-[#ef4444]/20">
+                          <AlertDialogContent className="bg-[#080f08] border-[#ef4444]/20">
                             <AlertDialogHeader>
                               <AlertDialogTitle className="text-white">
                                 Delete Source
@@ -1279,7 +1279,7 @@ export default function GamePortal() {
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel className="bg-[#111127] border-[#8b5cf6]/15 text-[#e2e8f0] hover:bg-[#1a1a2e]">
+                              <AlertDialogCancel className="bg-[#0c150c] border-[#00ff41]/15 text-[#e2e8f0] hover:bg-[#1a1a2e]">
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
@@ -1305,7 +1305,7 @@ export default function GamePortal() {
 
       {/* Add Source Dialog */}
       <Dialog open={addSourceOpen} onOpenChange={setAddSourceOpen}>
-        <DialogContent className="bg-[#0d0d1f] border-[#06b6d4]/20 text-white">
+        <DialogContent className="bg-[#080f08] border-[#06b6d4]/20 text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-[#06b6d4]">
               <Globe className="w-5 h-5" /> Add Game Source
@@ -1344,7 +1344,7 @@ export default function GamePortal() {
                 <SelectTrigger className="kali-input">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
+                <SelectContent className="bg-[#080f08] border-[#00ff41]/15">
                   <SelectItem value="CRAZYGAMES">CrazyGames</SelectItem>
                   <SelectItem value="POKI">Poki</SelectItem>
                   <SelectItem value="CUSTOM">Custom</SelectItem>
@@ -1387,9 +1387,9 @@ export default function GamePortal() {
 
       {/* Upload Game Dialog */}
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
-        <DialogContent className="bg-[#0d0d1f] border-[#8b5cf6]/20 text-white">
+        <DialogContent className="bg-[#080f08] border-[#00ff41]/20 text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-[#8b5cf6]">
+            <DialogTitle className="flex items-center gap-2 text-[#00ff41]">
               <Upload className="w-5 h-5" /> Upload Game
             </DialogTitle>
             <DialogDescription className="text-[#94a3b8]">
@@ -1425,7 +1425,7 @@ export default function GamePortal() {
                   <SelectTrigger className="kali-input">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
+                  <SelectContent className="bg-[#080f08] border-[#00ff41]/15">
                     <SelectItem value="HTML5">HTML5</SelectItem>
                     <SelectItem value="UNITY_WEBGL">Unity WebGL</SelectItem>
                     <SelectItem value="FLASH">Flash</SelectItem>
@@ -1488,7 +1488,7 @@ export default function GamePortal() {
 
       {/* Edit Game Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="bg-[#0d0d1f] border-[#06b6d4]/20 text-white">
+        <DialogContent className="bg-[#080f08] border-[#06b6d4]/20 text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-[#06b6d4]">
               <Edit3 className="w-5 h-5" /> Edit Game
@@ -1524,7 +1524,7 @@ export default function GamePortal() {
                   <SelectTrigger className="kali-input">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
+                  <SelectContent className="bg-[#080f08] border-[#00ff41]/15">
                     <SelectItem value="HTML5">HTML5</SelectItem>
                     <SelectItem value="UNITY_WEBGL">Unity WebGL</SelectItem>
                     <SelectItem value="FLASH">Flash</SelectItem>
@@ -1597,14 +1597,14 @@ export default function GamePortal() {
       </Dialog>
 
       {/* ── Footer ── */}
-      <footer className="footer-glow mt-auto px-4 py-3 bg-[#0a0a14]/80 backdrop-blur-sm">
+      <footer className="footer-glow mt-auto px-4 py-3 bg-[#050a05]/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-[#94a3b8]">
           <div className="flex items-center gap-2">
-            <div className="text-[#8b5cf6] header-logo-glow">
+            <div className="text-[#00ff41] header-logo-glow">
               <Gamepad2 className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <span className="kali-text text-[10px]">CYBERPLAY</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8b5cf6] status-dot-glow" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
           </div>
           <span>{games.length} GAME{games.length !== 1 ? 'S' : ''} AVAILABLE</span>
         </div>
@@ -1667,7 +1667,7 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
       onMouseLeave={handleMouseLeave}
     >
       {/* Thumbnail / Video area */}
-      <div className="relative overflow-hidden bg-[#111127] h-40">
+      <div className="relative overflow-hidden bg-[#0c150c] h-40">
         {/* Thumbnail image — hidden when video is playing */}
         {game.thumbnailUrl && (
           <img
@@ -1694,7 +1694,7 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
 
         {/* Fallback: game initial letter when no thumbnail */}
         <div className={`absolute inset-0 flex items-center justify-center ${game.thumbnailUrl ? 'hidden' : ''}`}>
-          <div className="text-4xl font-bold text-[#8b5cf6]/20 select-none">
+          <div className="text-4xl font-bold text-[#00ff41]/20 select-none">
             {(game.title || '?')[0].toUpperCase()}
           </div>
         </div>
@@ -1708,7 +1708,7 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
         {/* Genre/Category badge top-left */}
         <div className="absolute top-2 left-2 z-10">
           {game.genre ? (
-            <Badge className="text-[10px] bg-[#8b5cf6]/30 text-[#c4b5fd] border border-[#8b5cf6]/25 backdrop-blur-sm">
+            <Badge className="text-[10px] bg-[#00ff41]/30 text-[#39ff14] border border-[#00ff41]/25 backdrop-blur-sm">
               {game.genre}
             </Badge>
           ) : (
@@ -1732,15 +1732,15 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
 
         {/* Play button overlay — only show when not playing video */}
         <div className={`absolute inset-0 flex items-center justify-center z-10 transition-opacity duration-300 ${isHovered && game.videoUrl ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}>
-          <div className="play-btn-glow w-14 h-14 rounded-full bg-[#8b5cf6]/20 border border-[#8b5cf6]/40 flex items-center justify-center backdrop-blur-sm">
-            <Play className="w-6 h-6 text-[#8b5cf6] fill-[#8b5cf6] ml-1" />
+          <div className="play-btn-glow w-14 h-14 rounded-full bg-[#00ff41]/20 border border-[#00ff41]/40 flex items-center justify-center backdrop-blur-sm">
+            <Play className="w-6 h-6 text-[#00ff41] fill-[#00ff41] ml-1" />
           </div>
         </div>
       </div>
 
       {/* Card body */}
       <div className="p-3">
-        <h3 className="text-sm font-bold text-[#e2e8f0] mb-1 truncate transition-all duration-300 group-hover:text-[#8b5cf6] group-hover:[text-shadow:0_0_8px_rgba(139,92,246,0.5)]">
+        <h3 className="text-sm font-bold text-[#e2e8f0] mb-1 truncate transition-all duration-300 group-hover:text-[#00ff41] group-hover:[text-shadow:0_0_8px_rgba(0,255,65,0.5)]">
           {game.title}
         </h3>
         <p className="text-xs text-[#94a3b8] line-clamp-2 mb-2">{game.description}</p>

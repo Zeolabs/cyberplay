@@ -1766,8 +1766,9 @@ export default function GamePortal() {
             </div>
             <span className="kali-text text-[10px]">CYBERPLAY</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
-            <span className="text-[10px] text-[#00ff41]/70 ml-1 font-bold copyright-glow">
-              © {new Date().getFullYear()} Zeolabs Studio.
+            <span className="w-1 h-1 rounded-full bg-[#00ff41] copyright-dot" />
+            <span className="text-[10px] text-[#00ff41]/80 font-bold copyright-glow tracking-wider">
+              - COPYRIGHT © 2026 ZEOLABS STUDIO
             </span>
           </div>
           <span>{games.length} GAME{games.length !== 1 ? 'S' : ''} AVAILABLE</span>
@@ -1859,7 +1860,7 @@ function LoadingOverlay({ onComplete }: { onComplete: () => void }) {
               </div>
 
               {/* Terminal body */}
-              <div className="p-4 font-mono text-xs min-h-[220px] max-h-[260px] overflow-hidden">
+              <div className="p-4 font-mono text-[11px] min-h-[220px] max-h-[260px] overflow-hidden">
                 {lines.map((line, idx) => (
                   <motion.div
                     key={idx}

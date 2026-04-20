@@ -67,3 +67,16 @@ server.log
 
 # Lock files
 bun.lock
+
+# Non-project directories
+/examples/
+/mini-services/
+/skills/
+/upload/
+/download/
+
+# Worklog
+worklog.md
+
+# Z.ai scripts
+.zscript/

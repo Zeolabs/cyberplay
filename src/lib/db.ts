@@ -22,10 +22,18 @@ function createPrismaClient(): PrismaClient {
         authToken: process.env.TURSO_AUTH_TOKEN,
       })
       const adapter = new PrismaLibSQL(libsql)
-      return new PrismaClient({
+      const client = new PrismaClient({
         adapter,
+        // Explicitly override datasource to prevent Prisma engine
+        // from trying to validate the libsql:// URL directly
+        datasources: {
+          db: {
+            url: databaseUrl,
+          },
+        },
         log: ['error'],
       })
+      return client
     } catch (err) {
       console.error('[db] Failed to create libSQL adapter:', err)
       throw err

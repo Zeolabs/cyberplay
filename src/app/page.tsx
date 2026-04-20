@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Gamepad2, Search, Upload, Settings, Play, Star, Eye, Trash2,
   Edit3, Zap, Monitor, Cpu, Menu, Grid3X3, Trophy, ArrowLeft,
-  ExternalLink, Maximize2, Globe, Database,
+  ExternalLink, Maximize2, Globe, Database, SlidersHorizontal,
   Plus, Loader2,
   Swords, Compass, CircleDot, Bike, Car, Layers, Smile,
   MousePointerClick, Truck, DoorOpen, Crosshair, Skull,
@@ -693,7 +693,7 @@ export default function GamePortal() {
               onClick={() => setSettingsOpen(true)}
               className="kali-btn-outline kali-btn-sm"
             >
-              <Settings className="w-3 h-3 mr-1" /> SETTINGS
+              <SlidersHorizontal className="w-3 h-3 mr-1" /> SETTINGS
             </button>
           </div>
 
@@ -733,7 +733,7 @@ export default function GamePortal() {
                   <Settings className="w-3 h-3 mr-1" /> MANAGE
                 </button>
                 <button onClick={() => { setSettingsOpen(true); setMobileMenuOpen(false); }} className="kali-btn-outline kali-btn-sm justify-start">
-                  <Settings className="w-3 h-3 mr-1" /> SETTINGS
+                  <SlidersHorizontal className="w-3 h-3 mr-1" /> SETTINGS
                 </button>
               </div>
             </motion.div>
@@ -1669,7 +1669,7 @@ export default function GamePortal() {
         <DialogContent className="bg-[#080f08] border-[#00ff41]/20 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-[#00ff41] flex items-center gap-2">
-              <Settings className="w-4 h-4" /> CACHE SETTINGS
+              <SlidersHorizontal className="w-4 h-4" /> CACHE SETTINGS
             </DialogTitle>
             <DialogDescription className="text-[#94a3b8] text-xs">
               Manage image &amp; video proxy cache

@@ -648,6 +648,10 @@
 }
 
 .kali-btn-green-active {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
   background: rgba(0, 255, 65, 0.15) !important;
   border: 1px solid rgba(0, 255, 65, 0.5) !important;
   color: #39ff14 !important;

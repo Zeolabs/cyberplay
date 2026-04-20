@@ -1774,14 +1774,14 @@ export default function GamePortal() {
           <div className="flex items-center gap-1">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="w-7 h-7 flex items-center justify-center rounded border border-[#00ff41]/20 text-[#00ff41] hover:bg-[#00ff41]/10 transition-all"
+              className="w-7 h-7 flex items-center justify-center rounded border border-[#00ff41]/20 text-[#00ff41] hover:bg-[#00ff41]/10 hover:border-[#00ff41]/50 cursor-pointer transition-all"
               title="Scroll to top"
             >
               <ArrowUp className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
-              className="w-7 h-7 flex items-center justify-center rounded border border-[#00ff41]/20 text-[#00ff41] hover:bg-[#00ff41]/10 transition-all"
+              className="w-7 h-7 flex items-center justify-center rounded border border-[#00ff41]/20 text-[#00ff41] hover:bg-[#00ff41]/10 hover:border-[#00ff41]/50 cursor-pointer transition-all"
               title="Scroll to bottom"
             >
               <ArrowDown className="w-3.5 h-3.5" />

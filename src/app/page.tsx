@@ -272,19 +272,6 @@ export default function GamePortal() {
   }, []);
 
   // ─── API Functions ───────────────────────────────────────────────
-  const seedDatabase = async () => {
-    try {
-      const res = await fetch('/api/seed', { method: 'POST' });
-      if (res.ok) {
-        toast.success('Database seeded successfully!');
-        fetchGames();
-      } else {
-        toast.error('Failed to seed database');
-      }
-    } catch {
-      toast.error('Failed to seed database');
-    }
-  };
 
   const playGame = async (game: Game) => {
     setSelectedGame(game);
@@ -533,12 +520,6 @@ export default function GamePortal() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1.5">
             <button
-              onClick={seedDatabase}
-              className="kali-btn-blue kali-btn-sm"
-            >
-              <Database className="w-3 h-3 mr-1" /> SEED DATA
-            </button>
-            <button
               onClick={() => setView('sources')}
               className={`kali-btn-sm ${view === 'sources' ? 'kali-btn-cyan-active' : 'kali-btn-cyan'}`}
             >
@@ -584,9 +565,6 @@ export default function GamePortal() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="kali-input w-full px-3 py-2 rounded text-sm"
                 />
-                <button onClick={() => { seedDatabase(); setMobileMenuOpen(false); }} className="kali-btn-blue kali-btn-sm justify-start">
-                  <Database className="w-3 h-3 mr-1" /> SEED DATA
-                </button>
                 <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="kali-btn-cyan kali-btn-sm justify-start">
                   <Globe className="w-3 h-3 mr-1" /> SOURCES
                 </button>
@@ -761,12 +739,6 @@ export default function GamePortal() {
                     <p className="text-[#94a3b8] text-sm">
                       No games found. Try a different search or category.
                     </p>
-                    <Button
-                      onClick={seedDatabase}
-                      className="mt-4 kali-btn text-xs"
-                    >
-                      SEED DATABASE
-                    </Button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

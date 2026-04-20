@@ -184,3 +184,22 @@ Stage Summary:
 - Sources UI (SOURCES tab) allows: add new sources, trigger fetches, monitor progress, delete sources
 - Easily extensible: add new source types via `SourceFetcher` interface in game-fetcher.ts
 - No lint errors
+
+---
+Task ID: 8
+Agent: Main Agent
+Task: Remove seed file and all seed-related code
+
+Work Log:
+- Deleted `/src/app/api/seed/route.ts` (seed API route with 16 hardcoded games)
+- Removed `seedDatabase` function definition from `src/app/page.tsx`
+- Removed "SEED DATA" button from desktop navigation bar
+- Removed "SEED DATA" button from mobile hamburger menu
+- Removed "SEED DATABASE" button from empty state fallback
+- Kept `Database` icon import (still used by Fetch button in sources panel)
+- Verified no remaining references with grep (zero matches)
+- Lint check passed with no errors
+
+Stage Summary:
+- Seed file completely removed — game data now comes exclusively from dynamic fetching (CrazyGames) and manual uploads
+- No breaking changes, existing DB data preserved

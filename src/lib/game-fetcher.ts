@@ -14,7 +14,7 @@ export interface FetchedGame {
 }
 
 export interface FetchProgress {
-  status: 'idle' | 'searching' | 'fetching' | 'saving' | 'done' | 'error';
+  status: 'idle' | 'searching' | 'fetching_thumbs' | 'saving' | 'done' | 'error';
   message: string;
   total: number;
   current: number;
@@ -39,10 +39,37 @@ export function updateProgress(sourceId: string, update: Partial<FetchProgress>)
   progressMap.set(sourceId, { ...prev, ...update });
 }
 
+// ─── Utility: Extract og:image from HTML ───────────────────────────
+function extractOgImage(html: string): string {
+  // Try og:image first
+  const ogMatch = html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i);
+  if (ogMatch) {
+    let url = ogMatch[1]
+      .replace(/&amp;/g, '&')
+      .replace(/\?.*$/, '');  // strip query params for clean URL
+    // Re-add essential params for a decent thumbnail
+    url += '?metadata=none&quality=85&width=480&fit=crop';
+    return url;
+  }
+  return '';
+}
+
+// ─── Utility: Extract thumbnail from page_reader ───────────────────
+async function fetchThumbnailFromPage(zai: ZAI, pageUrl: string): Promise<string> {
+  try {
+    const result = await zai.functions.invoke('page_reader', { url: pageUrl });
+    const html = String(result?.data?.html || '');
+    return extractOgImage(html);
+  } catch {
+    return '';
+  }
+}
+
 // ─── Source Fetcher Base ────────────────────────────────────────────
 interface SourceFetcher {
   type: string;
   search(query: string, num?: number): Promise<FetchedGame[]>;
+  fetchThumbnail(zai: ZAI, gameUrl: string): Promise<string>;
 }
 
 // ─── CrazyGames Fetcher ─────────────────────────────────────────────
@@ -50,7 +77,7 @@ class CrazyGamesFetcher implements SourceFetcher {
   type = 'CRAZYGAMES';
   private zai: ZAI | null = null;
 
-  private async getZai(): Promise<ZAI> {
+  async getZai(): Promise<ZAI> {
     if (!this.zai) {
       this.zai = await ZAI.create();
     }
@@ -60,7 +87,6 @@ class CrazyGamesFetcher implements SourceFetcher {
   async search(query: string, num = 10): Promise<FetchedGame[]> {
     const zai = await this.getZai();
 
-    // Multiple search queries to maximize coverage
     const searchQueries = [
       `site:crazygames.com/game ${query}`,
       `crazygames.com ${query} free online play`,
@@ -71,59 +97,44 @@ class CrazyGamesFetcher implements SourceFetcher {
     const seenUrls = new Set<string>();
 
     for (let qi = 0; qi < searchQueries.length; qi++) {
-      const sq = searchQueries[qi];
       try {
         const results = await zai.functions.invoke('web_search', {
-          query: sq,
+          query: searchQueries[qi],
           num,
         });
-
         if (!Array.isArray(results)) continue;
 
         for (const result of results) {
           const url = result.url || '';
-          // Match CrazyGames game URLs
           const slugMatch = url.match(/crazygames\.com\/game\/([^/?]+)/);
           if (!slugMatch || seenUrls.has(slugMatch[1])) continue;
 
           seenUrls.add(slugMatch[1]);
           const slug = slugMatch[1];
 
-          // Extract title from search result name (clean up emoji)
           const rawTitle = result.name || '';
           const title = rawTitle
             .replace(/[🕹️🎮🕹\s]+Play on CrazyGames.*$/i, '')
             .replace(/[\s]*- Play Online.*$/i, '')
             .trim();
-
           if (!title || title.length < 2) continue;
 
           const description = (result.snippet || '')
             .replace(/^Free\s*·\s*Game\s*/i, '')
             .trim();
 
-          // Build thumbnail URL from CrazyGames CDN pattern
-          const thumbnailUrl = `https://images.crazygames.com/crazygames/uploads/tumbnails/${slug}/400x225/${slug}.jpg`;
-
-          // Category detection from title/URL/description
           const fullText = `${title} ${url} ${description}`.toLowerCase();
           let category: 'HTML5' | 'UNITY_WEBGL' | 'FLASH' = 'HTML5';
           if (fullText.includes('webgl') || fullText.includes('unity')) category = 'UNITY_WEBGL';
           if (fullText.includes('flash') || fullText.includes('.swf')) category = 'FLASH';
 
-          // Extract tags from title
-          const tags = this.extractTagsFromTitle(title);
-
-          // Use the CrazyGames page URL as the game URL (supports iframe embedding)
-          const gameUrl = `https://www.crazygames.com/game/${slug}`;
-
           allGames.set(slug, {
             title,
             description: description || `${title} — Play free on CYBERPLAY!`,
             category,
-            thumbnailUrl,
-            gameUrl,
-            tags,
+            thumbnailUrl: '', // Will be fetched separately
+            gameUrl: `https://www.crazygames.com/game/${slug}`,
+            tags: this.extractTagsFromTitle(title),
             externalId: slug,
             sourceUrl: url,
           });
@@ -134,6 +145,10 @@ class CrazyGamesFetcher implements SourceFetcher {
     }
 
     return Array.from(allGames.values());
+  }
+
+  async fetchThumbnail(zai: ZAI, gameUrl: string): Promise<string> {
+    return fetchThumbnailFromPage(zai, gameUrl);
   }
 
   private extractTagsFromTitle(title: string): string {
@@ -153,7 +168,7 @@ class PokiFetcher implements SourceFetcher {
   type = 'POKI';
   private zai: ZAI | null = null;
 
-  private async getZai(): Promise<ZAI> {
+  async getZai(): Promise<ZAI> {
     if (!this.zai) {
       this.zai = await ZAI.create();
     }
@@ -177,7 +192,6 @@ class PokiFetcher implements SourceFetcher {
           query: sq,
           num,
         });
-
         if (!Array.isArray(results)) continue;
 
         for (const result of results) {
@@ -216,6 +230,10 @@ class PokiFetcher implements SourceFetcher {
 
     return Array.from(allGames.values());
   }
+
+  async fetchThumbnail(zai: ZAI, gameUrl: string): Promise<string> {
+    return fetchThumbnailFromPage(zai, gameUrl);
+  }
 }
 
 // ─── Fetcher Registry ───────────────────────────────────────────────
@@ -242,8 +260,9 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
 
   const fetcher = getFetcher(source.type);
   if (!fetcher) throw new Error(`No fetcher for type: ${source.type}`);
+  const zai = await ZAI.create();
 
-  // Use multiple search queries for broader coverage
+  // Multi-query search
   const baseQuery = source.searchQuery || 'popular';
   const searchQueries = [
     baseQuery,
@@ -255,8 +274,8 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
 
   const allGames: FetchedGame[] = [];
   const seenIds = new Set<string>();
-  const gamesPerQuery = 10;
 
+  // ── Phase 1: Search ──────────────────────────────────────────────
   updateProgress(sourceId, {
     status: 'searching',
     message: `Searching ${source.name}...`,
@@ -266,7 +285,6 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
   });
 
   try {
-    // Search with multiple queries
     for (let qi = 0; qi < searchQueries.length; qi++) {
       const query = searchQueries[qi];
       updateProgress(sourceId, {
@@ -277,7 +295,7 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
         games: allGames,
       });
 
-      const games = await fetcher.search(query, gamesPerQuery);
+      const games = await fetcher.search(query, 10);
 
       for (const game of games) {
         if (!seenIds.has(game.externalId)) {
@@ -286,27 +304,58 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
         }
       }
 
-      // Small delay between searches
       if (qi < searchQueries.length - 1) {
         await new Promise(r => setTimeout(r, 500));
       }
     }
 
+    // ── Phase 2: Fetch Thumbnails ───────────────────────────────────
     updateProgress(sourceId, {
-      status: 'fetching',
-      message: `Found ${allGames.length} unique games. Saving to database...`,
+      status: 'fetching_thumbs',
+      message: `Fetching thumbnails (0/${allGames.length})...`,
       total: allGames.length,
       current: 0,
       games: allGames,
     });
 
-    // Save games to database
+    // Fetch thumbnails in batches of 3 concurrent
+    const BATCH_SIZE = 3;
+    for (let i = 0; i < allGames.length; i += BATCH_SIZE) {
+      const batch = allGames.slice(i, i + BATCH_SIZE);
+      const thumbPromises = batch.map(async (game) => {
+        const thumb = await fetcher.fetchThumbnail(zai, game.gameUrl);
+        if (thumb) game.thumbnailUrl = thumb;
+        return game;
+      });
+      await Promise.all(thumbPromises);
+
+      updateProgress(sourceId, {
+        status: 'fetching_thumbs',
+        message: `Fetching thumbnails (${Math.min(i + BATCH_SIZE, allGames.length)}/${allGames.length})...`,
+        total: allGames.length,
+        current: Math.min(i + BATCH_SIZE, allGames.length),
+        games: allGames,
+      });
+
+      // Small delay between batches
+      await new Promise(r => setTimeout(r, 300));
+    }
+
+    // ── Phase 3: Save to Database ────────────────────────────────────
+    updateProgress(sourceId, {
+      status: 'saving',
+      message: `Saving ${allGames.length} games to database...`,
+      total: allGames.length,
+      current: 0,
+      games: allGames,
+    });
+
     let savedCount = 0;
     let newCount = 0;
+    let thumbUpdated = 0;
     for (let i = 0; i < allGames.length; i++) {
       const game = allGames[i];
 
-      // Check if game already exists by externalId+sourceId
       const existing = game.externalId
         ? await db.game.findFirst({
             where: { externalId: game.externalId, sourceId },
@@ -314,20 +363,22 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
         : null;
 
       if (existing) {
-        // Update existing game
+        // Check if we're updating the thumbnail
+        const needsThumbUpdate = game.thumbnailUrl && !existing.thumbnailUrl?.includes('imgs.crazygames.com') && !existing.thumbnailUrl?.includes('imgs.poki.com');
+
         await db.game.update({
           where: { id: existing.id },
           data: {
             title: game.title,
             description: game.description,
             category: game.category,
-            thumbnailUrl: game.thumbnailUrl,
+            ...(game.thumbnailUrl ? { thumbnailUrl: game.thumbnailUrl } : {}),
             gameUrl: game.gameUrl,
             tags: game.tags,
           },
         });
+        if (needsThumbUpdate) thumbUpdated++;
       } else {
-        // Create new game
         await db.game.create({
           data: {
             title: game.title,
@@ -349,7 +400,7 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
         status: 'saving',
         message: `Saving ${savedCount}/${allGames.length}: ${game.title}`,
         total: allGames.length,
-        current: i + 1,
+        current: savedCount,
         games: allGames,
       });
     }
@@ -363,9 +414,8 @@ export async function fetchGamesFromSource(sourceId: string): Promise<FetchProgr
       },
     });
 
-    const finalMsg = newCount > 0
-      ? `Done! ${newCount} new + ${savedCount - newCount} updated = ${savedCount} games from ${source.name}.`
-      : `Done! ${savedCount} games updated (no new games) from ${source.name}.`;
+    const thumbsWith = allGames.filter(g => g.thumbnailUrl).length;
+    const finalMsg = `Done! ${newCount} new + ${savedCount - newCount} updated = ${savedCount} games. ${thumbsWith} with thumbnails.`;
 
     updateProgress(sourceId, {
       status: 'done',

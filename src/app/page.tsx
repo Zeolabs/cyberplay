@@ -1504,12 +1504,22 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
       onClick={() => onPlay(game)}
     >
       {/* Thumbnail */}
-      <div className="relative overflow-hidden">
-        <img
-          src={game.thumbnailUrl || '/placeholder.jpg'}
-          alt={game.title}
-          className="w-full h-40 object-cover transition-transform duration-500 group-hover:scale-110"
-        />
+      <div className="relative overflow-hidden bg-[#111127]">
+        {game.thumbnailUrl ? (
+          <img
+            src={game.thumbnailUrl}
+            alt={game.title}
+            className="w-full h-40 object-cover transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        ) : null}
+        {/* Fallback: game initial letter when no thumbnail */}
+        <div className={`absolute inset-0 flex items-center justify-center ${game.thumbnailUrl ? 'hidden' : ''}`}>
+          <div className="text-4xl font-bold text-[#8b5cf6]/20 select-none">
+            {(game.title || '?')[0].toUpperCase()}
+          </div>
+        </div>
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 

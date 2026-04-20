@@ -24,13 +24,6 @@ function createPrismaClient(): PrismaClient {
       const adapter = new PrismaLibSQL(libsql)
       const client = new PrismaClient({
         adapter,
-        // Explicitly override datasource to prevent Prisma engine
-        // from trying to validate the libsql:// URL directly
-        datasources: {
-          db: {
-            url: databaseUrl,
-          },
-        },
         log: ['error'],
       })
       return client

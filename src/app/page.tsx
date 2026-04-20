@@ -618,7 +618,7 @@ export default function GamePortal() {
 
   // ─── Render ──────────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen flex flex-col kali-gradient-bg scanlines scanlines-movable kali-grid-bg">
+    <div className="relative min-h-screen flex flex-col kali-gradient-bg kali-grid-bg">
       {/* ── Dragon Page Background ── */}
       {mounted && (
         <img

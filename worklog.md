@@ -294,3 +294,46 @@ Stage Summary:
 - Only game-fetcher.ts still uses SDK (Sources tab feature — separate from Fetch All)
 - Tag list now matches CrazyGames actual sidebar (26 categories including .io, Thinky, Mahjong, etc.)
 - Server running persistently via detached node spawn
+
+---
+Task ID: 1
+Agent: Theme Cleanup Agent
+Task: Change all "purple" theme elements to green Matrix hacking theme — remove all leftover purple references
+
+Work Log:
+- Read worklog and analyzed current state of globals.css (2027 lines) and page.tsx
+- Found some changes already partially applied (--color-kali-green, §3 comment, button class name)
+- Fixed 3 remaining purple rgba(167, 139, 250, ...) color values in globals.css:
+  - Line 1329: headerLogoGlow keyframe 50% state — changed to rgba(0, 255, 65, 0.25)
+  - Line 1335: header-logo-glow:hover — changed to rgba(0, 255, 65, 0.4)
+  - Line 1434: kali-text-purple text-shadow — changed to rgba(0, 255, 65, 0.5)
+- Renamed all "purple" CSS class names to "green" in globals.css:
+  - `.kali-btn-purple` → `.kali-btn-green` (all variants: ::before, :hover, :hover::before, -active, .kali-btn-sm.)
+  - `@keyframes iconGlowPurple` → `@keyframes iconGlowGreen`
+  - `.icon-glow-purple` → `.icon-glow-green`
+  - `.kali-text-purple` → `.kali-text-green`
+- Updated CSS section comments:
+  - §3: "GLOW ANIMATIONS (purple / blue / cyan / gold)" → "(green / blue / cyan / gold)"
+  - §8: "PARTICLES (purple / blue)" → "(green / blue)"
+  - §9: "GLITCH EFFECT (purple + cyan)" → "(green + cyan)"
+  - Line 586: "Purple button variant" → "Green matrix button variant"
+- Removed entire §20b duplicate section (69 lines) — all button/text classes were duplicates of §5/§12 definitions
+- Moved `.kali-text-green` class to §3 section (after `.kali-text-gold`) as the only unique definition from §20b
+- Updated all class references in page.tsx:
+  - `kali-btn-purple` → `kali-btn-green` (4 occurrences: lines 630, 636, 671, 674)
+  - `kali-btn-purple-active` → `kali-btn-green-active` (line 636)
+  - `icon-glow-purple` → `icon-glow-green` (3 occurrences: lines 844, 876, 971)
+  - `kali-text-purple` → `kali-text-green` (line 1016)
+- Verified no purple references remain in any CSS, TSX, or component files
+- Verified no rgba(167, 139, 250, ...) values remain anywhere in the project
+- play/[slug]/page.tsx does not exist; GameCard.tsx has no purple references
+- Lint passes with 0 errors
+- Dev server running, page renders with 200 status
+
+Stage Summary:
+- Zero remaining "purple" class names, comments, or color values in the entire project
+- All CSS classes renamed: kali-btn-green, kali-btn-green-active, icon-glow-green, iconGlowGreen, kali-text-green
+- All purple rgba values replaced with green Matrix equivalents (rgba(0, 255, 65, ...))
+- §20b duplicate section removed (globals.css reduced from 2027 → 1962 lines)
+- Blue (#3b82f6), cyan (#06b6d4), gold (#fbbf24), red (#ef4444) accent colors untouched
+- Consistent green Matrix hacking theme throughout

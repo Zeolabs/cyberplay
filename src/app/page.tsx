@@ -627,13 +627,13 @@ export default function GamePortal() {
             </button>
             <button
               onClick={() => setUploadOpen(true)}
-              className="kali-btn-purple kali-btn-sm"
+              className="kali-btn-green kali-btn-sm"
             >
               <Upload className="w-3 h-3 mr-1" /> UPLOAD
             </button>
             <button
               onClick={() => setView('manage')}
-              className={`kali-btn-sm ${view === 'manage' ? 'kali-btn-purple-active' : 'kali-btn-purple'}`}
+              className={`kali-btn-sm ${view === 'manage' ? 'kali-btn-green-active' : 'kali-btn-green'}`}
             >
               <Settings className="w-3 h-3 mr-1" /> MANAGE
             </button>
@@ -668,10 +668,10 @@ export default function GamePortal() {
                 <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="kali-btn-cyan kali-btn-sm justify-start">
                   <Globe className="w-3 h-3 mr-1" /> SOURCES
                 </button>
-                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="kali-btn-purple kali-btn-sm justify-start">
+                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="kali-btn-green kali-btn-sm justify-start">
                   <Upload className="w-3 h-3 mr-1" /> UPLOAD
                 </button>
-                <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="kali-btn-purple kali-btn-sm justify-start">
+                <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="kali-btn-green kali-btn-sm justify-start">
                   <Settings className="w-3 h-3 mr-1" /> MANAGE
                 </button>
               </div>
@@ -841,7 +841,7 @@ export default function GamePortal() {
               {/* All Games Grid */}
               <section>
                 <div className="flex items-center gap-2 mb-4">
-                  <Gamepad2 className="w-5 h-5 text-[#00ff41] icon-glow-purple" />
+                  <Gamepad2 className="w-5 h-5 text-[#00ff41] icon-glow-green" />
                   <h2 className="text-xl font-bold kali-text">
                     {genreFilter === 'All' ? 'ALL GAMES' : genreFilter.toUpperCase()}
                   </h2>
@@ -873,7 +873,7 @@ export default function GamePortal() {
                   </div>
                 ) : allGames.length === 0 ? (
                   <div className="text-center py-16">
-                    <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-[#00ff41]/30 icon-glow-purple" />
+                    <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-[#00ff41]/30 icon-glow-green" />
                     <p className="text-[#94a3b8] text-sm">
                       No games found. Try a different search or category.
                     </p>
@@ -968,7 +968,7 @@ export default function GamePortal() {
                       className="absolute inset-0 bg-[#050a05]/90 flex flex-col items-center justify-center gap-4 pointer-events-none"
                     >
                       <div className="relative">
-                        <Gamepad2 className="w-12 h-12 text-[#00ff41] animate-bounce icon-glow-purple" />
+                        <Gamepad2 className="w-12 h-12 text-[#00ff41] animate-bounce icon-glow-green" />
                         <span className="absolute inset-0 rounded-full bg-[#00ff41]/20 animate-ping" />
                       </div>
                       <div className="w-48 h-1 bg-[#0c150c] rounded-full overflow-hidden">
@@ -1013,7 +1013,7 @@ export default function GamePortal() {
             >
               <div className="flex items-center gap-2 mb-6">
                 <Settings className="w-5 h-5 text-[#39ff14] icon-glow-gold" />
-                <h2 className="text-xl font-bold kali-text-purple">GAME MANAGER</h2>
+                <h2 className="text-xl font-bold kali-text-green">GAME MANAGER</h2>
               </div>
 
               {/* Table Header */}

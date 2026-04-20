@@ -824,7 +824,7 @@ export default function GamePortal() {
                     <button
                       onClick={handleFetchCategories}
                       disabled={categoryFetching}
-                      className="kali-btn-cyan kali-btn-sm text-[10px]"
+                      className="kali-btn-green kali-btn-sm text-[10px]"
                       title="Fetch all games from CrazyGames (direct HTTP, no SDK)"
                     >
                       <Database className="w-3 h-3 mr-1" />
@@ -843,35 +843,27 @@ export default function GamePortal() {
                   </div>
                 </div>
 
-                {/* Horizontal scrollable genre chips */}
-                <div className="relative">
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[#00ff41]/20 scrollbar-track-transparent">
-                    {genres.filter(g => g.count > 0 && g.name !== 'Uncategorized' || g.name === 'All').map((genre) => (
-                      <button
-                        key={genre.name}
-                        onClick={() => setGenreFilter(genre.name)}
-                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border shrink-0 ${
-                          genreFilter === genre.name
-                            ? 'bg-[#00ff41]/15 text-[#39ff14] border-[#00ff41]/40 shadow-[0_0_12px_rgba(0,255,65,0.2)]'
-                            : 'bg-[#080f08]/60 text-[#e2e8f0]/50 border-[#00ff41]/8 hover:text-[#e2e8f0] hover:border-[#00ff41]/20'
-                        }`}
-                      >
-                        <span className="shrink-0">
-                          {(() => {
-                            const IconComponent = GENRE_ICON_MAP[genre.icon] || Gamepad2;
-                            return <IconComponent className="w-3.5 h-3.5" />;
-                          })()}
-                        </span>
-                        <span>{genre.name}</span>
-                        <span className={`text-[10px] ml-0.5 ${genreFilter === genre.name ? 'text-[#00ff41]' : 'text-[#94a3b8]/50'}`}>
-                          {genre.count}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  {/* Fade edges */}
-                  <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#050a05] to-transparent" />
-                  <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#050a05] to-transparent" />
+                {/* Genre dropdown */}
+                <div className="flex items-center gap-2">
+                  <Select value={genreFilter} onValueChange={(v) => setGenreFilter(v)}>
+                    <SelectTrigger className="kali-input w-44 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#080f08] border-[#00ff41]/15 max-h-64">
+                      {genres.filter(g => g.count > 0 && g.name !== 'Uncategorized' || g.name === 'All').map((genre) => {
+                        const IconComponent = GENRE_ICON_MAP[genre.icon] || Gamepad2;
+                        return (
+                          <SelectItem key={genre.name} value={genre.name} className="text-xs">
+                            <span className="flex items-center gap-2">
+                              <IconComponent className="w-3.5 h-3.5 shrink-0" />
+                              <span>{genre.name}</span>
+                              <span className="text-[10px] text-[#94a3b8]/50 ml-auto">{genre.count}</span>
+                            </span>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 

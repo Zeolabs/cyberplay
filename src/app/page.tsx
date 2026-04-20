@@ -1125,7 +1125,7 @@ export default function GamePortal() {
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-[#0c150c] border-[#00ff41]/15 text-[#e2e8f0] hover:bg-[#1a1a2e]">
+                                <AlertDialogCancel className="bg-[#0c150c] border-[#00ff41]/15 text-[#e2e8f0] hover:bg-[#0c1a0c]">
                                   Cancel
                                 </AlertDialogCancel>
                                 <AlertDialogAction
@@ -1279,7 +1279,7 @@ export default function GamePortal() {
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel className="bg-[#0c150c] border-[#00ff41]/15 text-[#e2e8f0] hover:bg-[#1a1a2e]">
+                              <AlertDialogCancel className="bg-[#0c150c] border-[#00ff41]/15 text-[#e2e8f0] hover:bg-[#0c1a0c]">
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction

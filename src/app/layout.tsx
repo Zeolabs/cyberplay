@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${firaCode.variable} antialiased bg-[#050508] text-[#e0e0e0]`}
+        className={`${geistSans.variable} ${firaCode.variable} antialiased bg-[#050a05] text-[#e0e0e0]`}
         style={{ fontFamily: 'var(--font-fira-code), monospace' }}
       >
         {children}

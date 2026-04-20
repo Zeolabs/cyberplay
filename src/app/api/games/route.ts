@@ -48,7 +48,8 @@ export async function GET(request: Request) {
     return NextResponse.json(games);
   } catch (error) {
     console.error('Error fetching games:', error);
-    return NextResponse.json({ error: 'Failed to fetch games' }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: 'Failed to fetch games', detail: message }, { status: 500 });
   }
 }
 

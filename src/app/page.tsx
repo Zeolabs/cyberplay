@@ -134,6 +134,7 @@ export default function GamePortal() {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [gameLoading, setGameLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -278,6 +279,7 @@ export default function GamePortal() {
 
   const playGame = async (game: Game) => {
     setSelectedGame(game);
+    setGameLoading(true);
     setView('play');
     try {
       await fetch(`/api/games/${game.id}/play`, { method: 'POST' });
@@ -829,24 +831,35 @@ export default function GamePortal() {
                   allowFullScreen
                   allow="autoplay; fullscreen; gamepad"
                   title={selectedGame.title}
+                  onLoad={() => setGameLoading(false)}
                 />
 
-                {/* Loading overlay (shown initially) */}
-                <div className="absolute inset-0 bg-[#0a0a14]/90 flex flex-col items-center justify-center gap-4 pointer-events-none">
-                  <div className="relative">
-                    <Gamepad2 className="w-12 h-12 text-[#8b5cf6] animate-bounce icon-glow-purple" />
-                    <span className="absolute inset-0 rounded-full bg-[#8b5cf6]/20 animate-ping" />
-                  </div>
-                  <div className="w-48 h-1 bg-[#111127] rounded-full overflow-hidden">
+                {/* Loading overlay (shown initially, fades out on load) */}
+                <AnimatePresence>
+                  {gameLoading && (
                     <motion.div
-                      className="h-full bg-gradient-to-r from-[#8b5cf6] to-[#06b6d4] rounded-full"
-                      initial={{ width: '0%' }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: 2, ease: 'easeInOut' }}
-                    />
-                  </div>
-                  <p className="text-xs text-[#94a3b8]">Loading game...</p>
-                </div>
+                      key="game-loader"
+                      initial={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4, ease: 'easeOut' }}
+                      className="absolute inset-0 bg-[#0a0a14]/90 flex flex-col items-center justify-center gap-4 pointer-events-none"
+                    >
+                      <div className="relative">
+                        <Gamepad2 className="w-12 h-12 text-[#8b5cf6] animate-bounce icon-glow-purple" />
+                        <span className="absolute inset-0 rounded-full bg-[#8b5cf6]/20 animate-ping" />
+                      </div>
+                      <div className="w-48 h-1 bg-[#111127] rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-gradient-to-r from-[#8b5cf6] to-[#06b6d4] rounded-full"
+                          initial={{ width: '0%' }}
+                          animate={{ width: '100%' }}
+                          transition={{ duration: 2, ease: 'easeInOut' }}
+                        />
+                      </div>
+                      <p className="text-xs text-[#94a3b8]">Loading game...</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Game Info Bar */}

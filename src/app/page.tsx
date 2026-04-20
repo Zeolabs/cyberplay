@@ -803,7 +803,7 @@ export default function GamePortal() {
                     )}
                   </h1>
                   <p className="text-sm text-[#94a3b8] mt-3 max-w-xl mx-auto font-light">
-                    <span className="text-[#06b6d4] font-medium">root@cyberplay</span>{' >'} Browse, play, and manage HTML5, Unity WebGL & Flash games.
+                    <span className="text-[#00ff41] font-medium">root@cyberplay</span>{' >'} Browse, play, and manage HTML5, Unity WebGL & Flash games.
                     No downloads required — just click and play.
                   </p>
                 </div>

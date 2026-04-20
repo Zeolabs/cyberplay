@@ -5,6 +5,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
+    const genre = searchParams.get('genre');
     const search = searchParams.get('search');
     const featured = searchParams.get('featured');
     const sortBy = searchParams.get('sortBy') || 'newest';
@@ -15,11 +16,16 @@ export async function GET(request: Request) {
       where.category = category;
     }
 
+    if (genre && genre !== 'All' && genre !== 'all') {
+      where.genre = { contains: genre };
+    }
+
     if (search) {
       where.OR = [
         { title: { contains: search } },
         { description: { contains: search } },
         { tags: { contains: search } },
+        { genre: { contains: search } },
       ];
     }
 
@@ -49,7 +55,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, category, thumbnailUrl, gameUrl, featured, tags } = body;
+    const { title, description, category, genre, thumbnailUrl, gameUrl, featured, tags } = body;
 
     if (!title || !description || !category || !gameUrl) {
       return NextResponse.json(
@@ -71,6 +77,7 @@ export async function POST(request: Request) {
         title,
         description,
         category,
+        genre: genre || '',
         thumbnailUrl: thumbnailUrl || '',
         gameUrl,
         featured: featured || false,

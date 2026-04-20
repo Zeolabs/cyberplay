@@ -34,7 +34,8 @@ interface Game {
   id: string;
   title: string;
   description: string;
-  category: 'HTML5' | 'UNITY_WEBGL' | 'FLASH';
+  category: string;
+  genre: string;
   thumbnailUrl: string;
   videoUrl: string;
   gameUrl: string;
@@ -47,8 +48,14 @@ interface Game {
 }
 
 type ViewMode = 'home' | 'play' | 'manage' | 'sources';
-type CategoryFilter = 'ALL' | 'HTML5' | 'UNITY_WEBGL' | 'FLASH';
 type SortOption = 'newest' | 'popular' | 'top-rated';
+
+interface GenreInfo {
+  name: string;
+  slug: string;
+  icon: string;
+  count: number;
+}
 
 interface GameSource {
   id: string;
@@ -130,8 +137,12 @@ export default function GamePortal() {
   const [view, setView] = useState<ViewMode>('home');
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('ALL');
+  const [genreFilter, setGenreFilter] = useState('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [genres, setGenres] = useState<GenreInfo[]>([]);
+  const [genresLoading, setGenresLoading] = useState(false);
+  const [categoryFetching, setCategoryFetching] = useState(false);
+  const [categoryFetchProgress, setCategoryFetchProgress] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [gameLoading, setGameLoading] = useState(true);
@@ -210,12 +221,25 @@ export default function GamePortal() {
     setMounted(true);
   }, []);
 
+  // Fetch genres list
+  const fetchGenres = useCallback(async () => {
+    try {
+      const res = await fetch('/api/games/fetch-categories?mode=genres');
+      if (res.ok) {
+        const data = await res.json();
+        setGenres(data);
+      }
+    } catch {
+      // Silent fail
+    }
+  }, []);
+
   // Fetch games on mount and when filters change
   const fetchGames = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (categoryFilter !== 'ALL') params.set('category', categoryFilter);
+      if (genreFilter && genreFilter !== 'All') params.set('genre', genreFilter);
       if (searchQuery) params.set('search', searchQuery);
       params.set('sortBy', sortBy);
 
@@ -229,7 +253,12 @@ export default function GamePortal() {
     } finally {
       setLoading(false);
     }
-  }, [categoryFilter, searchQuery, sortBy]);
+  }, [genreFilter, searchQuery, sortBy]);
+
+  // Fetch genres on mount
+  useEffect(() => {
+    fetchGenres();
+  }, [fetchGenres]);
 
   useEffect(() => {
     fetchGames();
@@ -463,6 +492,54 @@ export default function GamePortal() {
     }
   };
 
+  const handleFetchCategories = async () => {
+    try {
+      setCategoryFetching(true);
+      setCategoryFetchProgress('Starting...');
+      const res = await fetch('/api/games/fetch-categories', { method: 'POST' });
+      if (res.ok) {
+        toast.success('Category fetch started!');
+      } else {
+        toast.error('Failed to start category fetch');
+        setCategoryFetching(false);
+        return;
+      }
+
+      // Poll for progress
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusRes = await fetch('/api/games/fetch-categories?mode=status');
+          if (statusRes.ok) {
+            const status = await statusRes.json();
+            setCategoryFetchProgress(
+              `[${status.genresDone}/${status.genresTotal}] ${status.message}`
+            );
+
+            if (status.status === 'done' || status.status === 'error') {
+              clearInterval(pollInterval);
+              setCategoryFetching(false);
+              setCategoryFetchProgress(null);
+              fetchGenres();
+              fetchGames();
+              // Fire-and-forget thumbnail fix
+              fetch('/api/games/fix-thumbnails', { method: 'POST' }).catch(() => {});
+              if (status.status === 'done') {
+                toast.success(status.message);
+              } else {
+                toast.error(status.message);
+              }
+            }
+          }
+        } catch {
+          // Continue polling
+        }
+      }, 2000);
+    } catch {
+      toast.error('Failed to start fetch');
+      setCategoryFetching(false);
+    }
+  };
+
   // ─── Computed Values ─────────────────────────────────────────────
   const featuredGames = useMemo(() => games.filter((g) => g.featured), [games]);
   const allGames = useMemo(() => games, [games]);
@@ -653,42 +730,64 @@ export default function GamePortal() {
                 </div>
               </section>
 
-              {/* Category Filter Tabs */}
-              <div className="flex flex-wrap items-center gap-2">
-                {(
-                  [
-                    { key: 'ALL', label: 'All Games', Icon: Grid3X3 },
-                    { key: 'HTML5', label: 'HTML5', Icon: Monitor },
-                    { key: 'UNITY_WEBGL', label: 'Unity WebGL', Icon: Cpu },
-                    { key: 'FLASH', label: 'Flash', Icon: Zap },
-                  ] as const
-                ).map(({ key, label, Icon }) => (
-                  <button
-                    key={key}
-                    onClick={() => setCategoryFilter(key)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${
-                      categoryFilter === key
-                        ? 'bg-[#8b5cf6]/10 text-[#8b5cf6] border border-[#8b5cf6]/30 tab-active-glow'
-                        : 'text-[#e2e8f0]/60 hover:text-[#e2e8f0] border border-transparent hover:border-[#8b5cf6]/15'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {label}
-                  </button>
-                ))}
+              {/* Genre Category Bar — CrazyGames Style */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-[#8b5cf6] terminal-prefix">category_scan</span>
+                    {categoryFetching && (
+                      <span className="text-xs text-[#06b6d4] flex items-center gap-1.5">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        {categoryFetchProgress || 'Fetching games...'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleFetchCategories}
+                      disabled={categoryFetching}
+                      className="kali-btn-cyan kali-btn-sm text-[10px]"
+                    >
+                      <Database className="w-3 h-3 mr-1" />
+                      {categoryFetching ? 'FETCHING...' : 'FETCH ALL'}
+                    </button>
+                    <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+                      <SelectTrigger className="kali-input w-32 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
+                        <SelectItem value="newest">Newest</SelectItem>
+                        <SelectItem value="popular">Most Played</SelectItem>
+                        <SelectItem value="top-rated">Top Rated</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-                {/* Sort Dropdown */}
-                <div className="ml-auto">
-                  <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-                    <SelectTrigger className="kali-input w-40 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#0d0d1f] border-[#8b5cf6]/15">
-                      <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="popular">Most Played</SelectItem>
-                      <SelectItem value="top-rated">Top Rated</SelectItem>
-                    </SelectContent>
-                  </Select>
+                {/* Horizontal scrollable genre chips */}
+                <div className="relative">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[#8b5cf6]/20 scrollbar-track-transparent">
+                    {genres.filter(g => g.count > 0 || g.name === 'All').map((genre) => (
+                      <button
+                        key={genre.name}
+                        onClick={() => setGenreFilter(genre.name)}
+                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border shrink-0 ${
+                          genreFilter === genre.name
+                            ? 'bg-[#8b5cf6]/15 text-[#a78bfa] border-[#8b5cf6]/40 shadow-[0_0_12px_rgba(139,92,246,0.2)]'
+                            : 'bg-[#0d0d1f]/60 text-[#e2e8f0]/50 border-[#8b5cf6]/8 hover:text-[#e2e8f0] hover:border-[#8b5cf6]/20'
+                        }`}
+                      >
+                        <span>{genre.icon}</span>
+                        <span>{genre.name}</span>
+                        <span className={`text-[10px] ml-0.5 ${genreFilter === genre.name ? 'text-[#8b5cf6]' : 'text-[#94a3b8]/50'}`}>
+                          {genre.count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  {/* Fade edges */}
+                  <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#0a0a14] to-transparent" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#0a0a14] to-transparent" />
                 </div>
               </div>
 
@@ -721,7 +820,17 @@ export default function GamePortal() {
               <section>
                 <div className="flex items-center gap-2 mb-4">
                   <Gamepad2 className="w-5 h-5 text-[#8b5cf6] icon-glow-purple" />
-                  <h2 className="text-xl font-bold kali-text">ALL GAMES</h2>
+                  <h2 className="text-xl font-bold kali-text">
+                    {genreFilter === 'All' ? 'ALL GAMES' : genreFilter.toUpperCase()}
+                  </h2>
+                  {genreFilter !== 'All' && (
+                    <button
+                      onClick={() => setGenreFilter('All')}
+                      className="text-[10px] text-[#94a3b8] hover:text-[#8b5cf6] ml-2 transition-colors"
+                    >
+                      [clear]
+                    </button>
+                  )}
                 </div>
 
                 {loading ? (
@@ -897,7 +1006,7 @@ export default function GamePortal() {
               {/* Table Header */}
               <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-xs text-[#94a3b8] tracking-wider uppercase border-b border-[#8b5cf6]/10">
                 <div className="col-span-4">Title</div>
-                <div className="col-span-2">Category</div>
+                <div className="col-span-2">Genre</div>
                 <div className="col-span-1">Plays</div>
                 <div className="col-span-1">Rating</div>
                 <div className="col-span-4 text-right">Actions</div>
@@ -942,9 +1051,15 @@ export default function GamePortal() {
                           </div>
                         </div>
 
-                        {/* Category */}
+                        {/* Genre/Category */}
                         <div className="md:col-span-2">
-                          <CategoryBadge category={game.category} />
+                          {game.genre ? (
+                            <Badge className="text-[10px] bg-[#8b5cf6]/10 text-[#a78bfa] border border-[#8b5cf6]/20">
+                              {game.genre}
+                            </Badge>
+                          ) : (
+                            <CategoryBadge category={game.category} />
+                          )}
                         </div>
 
                         {/* Plays */}
@@ -1577,9 +1692,15 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
         {/* Gradient overlay at bottom (stronger) */}
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
 
-        {/* Category badge top-left */}
+        {/* Genre/Category badge top-left */}
         <div className="absolute top-2 left-2 z-10">
-          <CategoryBadge category={game.category} />
+          {game.genre ? (
+            <Badge className="text-[10px] bg-[#8b5cf6]/30 text-[#c4b5fd] border border-[#8b5cf6]/25 backdrop-blur-sm">
+              {game.genre}
+            </Badge>
+          ) : (
+            <CategoryBadge category={game.category} />
+          )}
         </div>
 
         {/* Featured star */}

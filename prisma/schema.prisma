@@ -11,8 +11,9 @@ model Game {
   id           String      @id @default(cuid())
   title        String
   description  String
-  category     String      // HTML5, UNITY_WEBGL, FLASH
-  thumbnailUrl String
+  category     String      @default("HTML5") // HTML5, UNITY_WEBGL, FLASH
+  genre        String      @default("")      // Action, Puzzle, Racing, Shooter, etc.
+  thumbnailUrl String      @default("")
   videoUrl     String      @default("")
   gameUrl      String
   plays        Int         @default(0)
@@ -26,6 +27,7 @@ model Game {
   updatedAt    DateTime    @updatedAt
 
   @@index([sourceId])
+  @@index([genre])
 }
 
 model GameSource {

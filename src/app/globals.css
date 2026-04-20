@@ -885,3 +885,1333 @@
 .status-dot-glow {
   animation: statusDotGlow 2s ease-in-out infinite;
 }
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — NEW KEYFRAME ANIMATIONS
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* ── Moving scanline: bright horizontal line traveling top → bottom ── */
+@keyframes scanLine {
+  0% {
+    top: -4px;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* ── Horizontal data stream: binary/hex scrolling right ── */
+@keyframes dataScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── Corner bracket glow pulse ── */
+@keyframes cornerPulse {
+  0%, 100% {
+    text-shadow: 0 0 4px currentColor, 0 0 8px currentColor;
+    opacity: 0.6;
+  }
+  50% {
+    text-shadow: 0 0 8px currentColor, 0 0 16px currentColor, 0 0 24px currentColor;
+    opacity: 1;
+  }
+}
+
+/* ── Hologram flicker: subtle opacity jitter ── */
+@keyframes holoFlicker {
+  0%, 100% { opacity: 1; }
+  3% { opacity: 0.85; }
+  6% { opacity: 1; }
+  7% { opacity: 0.9; }
+  8% { opacity: 1; }
+  40% { opacity: 1; }
+  42% { opacity: 0.88; }
+  43% { opacity: 1; }
+  80% { opacity: 1; }
+  82% { opacity: 0.92; }
+  83% { opacity: 1; }
+}
+
+/* ── Border scan: a bright light sweeping around a border perimeter ── */
+@keyframes borderScan {
+  0% {
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+/* ── Button scan-line sweep on hover ── */
+@keyframes btnScanLine {
+  0% {
+    top: -2px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: calc(100% + 2px);
+    opacity: 0;
+  }
+}
+
+/* ── Card hologram scan sweep ── */
+@keyframes cardScanSweep {
+  0% {
+    left: -30%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — SHADCN BUTTON OVERRIDES
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* ── Base override: ALL shadcn buttons get hacking foundation ── */
+[data-slot="button"] {
+  font-family: var(--font-mono), monospace !important;
+  letter-spacing: 0.05em !important;
+  border-radius: 2px !important;
+  border: 1px solid transparent !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ── Ghost variant (default nav/buttons): terminal accent bar ── */
+[data-slot="button"].bg-transparent,
+[data-slot="button"][class*="ghost"],
+[data-slot="button"][class*="variant-ghost"] {
+  background: transparent !important;
+  border-left: 2px solid rgba(0, 255, 65, 0.4) !important;
+  border-radius: 2px !important;
+  color: #8b949e !important;
+  text-shadow: none !important;
+}
+
+[data-slot="button"].bg-transparent:hover,
+[data-slot="button"][class*="ghost"]:hover,
+[data-slot="button"][class*="variant-ghost"]:hover {
+  background: rgba(0, 255, 65, 0.06) !important;
+  border-left-color: #00ff41 !important;
+  color: #00ff41 !important;
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.4) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.08), inset 0 0 12px rgba(0, 255, 65, 0.03) !important;
+}
+
+/* [> prefix hack feel on hover — uses ::after pseudo-element */
+[data-slot="button"].bg-transparent::after,
+[data-slot="button"][class*="ghost"]::after,
+[data-slot="button"][class*="variant-ghost"]::after {
+  content: '> ';
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  color: #00ff41;
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.6);
+  font-weight: bold;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+[data-slot="button"].bg-transparent:hover::after,
+[data-slot="button"][class*="ghost"]:hover::after,
+[data-slot="button"][class*="variant-ghost"]:hover::after {
+  opacity: 1;
+}
+
+/* Scan-line sweep on hover for ghost buttons */
+[data-slot="button"].bg-transparent::before,
+[data-slot="button"][class*="ghost"]::before,
+[data-slot="button"][class*="variant-ghost"]::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.5), transparent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+[data-slot="button"].bg-transparent:hover::before,
+[data-slot="button"][class*="ghost"]:hover::before,
+[data-slot="button"][class*="variant-ghost"]:hover::before {
+  animation: btnScanLine 0.8s ease-in-out;
+}
+
+/* ── Default variant: dark terminal button ── */
+[data-slot="button"][class*="bg-primary"],
+[data-slot="button"][class*="variant-default"] {
+  background: rgba(0, 255, 65, 0.1) !important;
+  border: 1px solid rgba(0, 255, 65, 0.3) !important;
+  color: #00ff41 !important;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3) !important;
+  border-radius: 2px !important;
+}
+
+[data-slot="button"][class*="bg-primary"]:hover,
+[data-slot="button"][class*="variant-default"]:hover {
+  background: rgba(0, 255, 65, 0.18) !important;
+  border-color: rgba(0, 255, 65, 0.6) !important;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.2), 0 0 25px rgba(0, 255, 65, 0.08), inset 0 0 10px rgba(0, 255, 65, 0.04) !important;
+  text-shadow: 0 0 8px #00ff41 !important;
+}
+
+/* ── Destructive variant: red terminal danger ── */
+[data-slot="button"][class*="destructive"] {
+  background: rgba(255, 68, 68, 0.1) !important;
+  border: 1px solid rgba(255, 68, 68, 0.3) !important;
+  color: #ff4444 !important;
+  text-shadow: 0 0 4px rgba(255, 68, 68, 0.3) !important;
+  border-radius: 2px !important;
+}
+
+[data-slot="button"][class*="destructive"]:hover {
+  background: rgba(255, 68, 68, 0.18) !important;
+  border-color: rgba(255, 68, 68, 0.6) !important;
+  box-shadow: 0 0 12px rgba(255, 68, 68, 0.2), 0 0 25px rgba(255, 68, 68, 0.08) !important;
+  text-shadow: 0 0 8px #ff4444 !important;
+}
+
+/* ── Outline variant ── */
+[data-slot="button"][class*="outline"],
+[data-slot="button"][class*="variant-outline"] {
+  background: transparent !important;
+  border: 1px solid rgba(0, 255, 65, 0.2) !important;
+  color: #8b949e !important;
+  border-radius: 2px !important;
+}
+
+[data-slot="button"][class*="outline"]:hover,
+[data-slot="button"][class*="variant-outline"]:hover {
+  background: rgba(0, 255, 65, 0.06) !important;
+  border-color: rgba(0, 255, 65, 0.5) !important;
+  color: #00ff41 !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.1), inset 0 0 8px rgba(0, 255, 65, 0.03) !important;
+}
+
+/* ── Secondary variant ── */
+[data-slot="button"][class*="secondary"],
+[data-slot="button"][class*="variant-secondary"] {
+  background: rgba(0, 240, 255, 0.06) !important;
+  border: 1px solid rgba(0, 240, 255, 0.2) !important;
+  color: #00f0ff !important;
+  border-radius: 2px !important;
+}
+
+[data-slot="button"][class*="secondary"]:hover,
+[data-slot="button"][class*="variant-secondary"]:hover {
+  background: rgba(0, 240, 255, 0.12) !important;
+  border-color: rgba(0, 240, 255, 0.5) !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15), 0 0 20px rgba(0, 240, 255, 0.06) !important;
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.5) !important;
+}
+
+/* ── Link variant ── */
+[data-slot="button"][class*="link"],
+[data-slot="button"][class*="variant-link"] {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff41 !important;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3) !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+[data-slot="button"][class*="link"]:hover,
+[data-slot="button"][class*="variant-link"]:hover {
+  border-bottom-color: #00ff41 !important;
+  text-shadow: 0 0 8px #00ff41 !important;
+  background: transparent !important;
+}
+
+/* ── Icon-only buttons (sm / icon / lg with size) ── */
+[data-slot="button"][class*="size-icon"],
+[data-slot="button"][class*="h-8"][class*="w-8"],
+[data-slot="button"][class*="h-9"][class*="w-9"],
+[data-slot="button"][class*="h-10"][class*="w-10"] {
+  border: 1px solid rgba(0, 255, 65, 0.15) !important;
+  border-radius: 2px !important;
+}
+
+[data-slot="button"][class*="size-icon"]:hover,
+[data-slot="button"][class*="h-8"][class*="w-8"]:hover,
+[data-slot="button"][class*="h-9"][class*="w-9"]:hover,
+[data-slot="button"][class*="h-10"][class*="w-10"]:hover {
+  border-color: rgba(0, 255, 65, 0.4) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.1) !important;
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — CYBER-BTN VARIANTS
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* ── Base cyber-btn ── */
+.cyber-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 1.25rem;
+  background: rgba(0, 255, 65, 0.06);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-left: 3px solid #00ff41;
+  color: #00ff41;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3);
+}
+
+/* > _ prefix */
+.cyber-btn::before {
+  content: '> _';
+  position: absolute;
+  left: 0.35rem;
+  opacity: 0;
+  color: inherit;
+  font-weight: bold;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.cyber-btn:hover::before {
+  opacity: 0.7;
+}
+
+.cyber-btn:hover {
+  padding-left: 2rem;
+  background: rgba(0, 255, 65, 0.12);
+  border-color: rgba(0, 255, 65, 0.6);
+  border-left-color: #00ff41;
+  box-shadow:
+    0 0 10px rgba(0, 255, 65, 0.2),
+    0 0 20px rgba(0, 255, 65, 0.08),
+    inset 0 0 12px rgba(0, 255, 65, 0.04);
+  text-shadow: 0 0 8px #00ff41;
+}
+
+/* Sweep effect */
+.cyber-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+  pointer-events: none;
+}
+
+.cyber-btn:hover::after {
+  animation: btnSweep 0.6s ease forwards;
+}
+
+/* ── Cyan variant ── */
+.cyber-btn-cyan {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 1.25rem;
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-left: 3px solid #00f0ff;
+  color: #00f0ff;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+  text-shadow: 0 0 4px rgba(0, 240, 255, 0.3);
+}
+
+.cyber-btn-cyan::before {
+  content: '> _';
+  position: absolute;
+  left: 0.35rem;
+  opacity: 0;
+  color: inherit;
+  font-weight: bold;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.cyber-btn-cyan:hover::before {
+  opacity: 0.7;
+}
+
+.cyber-btn-cyan:hover {
+  padding-left: 2rem;
+  background: rgba(0, 240, 255, 0.12);
+  border-color: rgba(0, 240, 255, 0.6);
+  box-shadow:
+    0 0 10px rgba(0, 240, 255, 0.2),
+    0 0 20px rgba(0, 240, 255, 0.08),
+    inset 0 0 12px rgba(0, 240, 255, 0.04);
+  text-shadow: 0 0 8px #00f0ff;
+}
+
+.cyber-btn-cyan::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+  pointer-events: none;
+}
+
+.cyber-btn-cyan:hover::after {
+  animation: btnSweep 0.6s ease forwards;
+}
+
+/* ── Magenta variant ── */
+.cyber-btn-magenta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 1.25rem;
+  background: rgba(255, 0, 255, 0.06);
+  border: 1px solid rgba(255, 0, 255, 0.3);
+  border-left: 3px solid #ff00ff;
+  color: #ff00ff;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+  text-shadow: 0 0 4px rgba(255, 0, 255, 0.3);
+}
+
+.cyber-btn-magenta::before {
+  content: '> _';
+  position: absolute;
+  left: 0.35rem;
+  opacity: 0;
+  color: inherit;
+  font-weight: bold;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.cyber-btn-magenta:hover::before {
+  opacity: 0.7;
+}
+
+.cyber-btn-magenta:hover {
+  padding-left: 2rem;
+  background: rgba(255, 0, 255, 0.12);
+  border-color: rgba(255, 0, 255, 0.6);
+  box-shadow:
+    0 0 10px rgba(255, 0, 255, 0.2),
+    0 0 20px rgba(255, 0, 255, 0.08),
+    inset 0 0 12px rgba(255, 0, 255, 0.04);
+  text-shadow: 0 0 8px #ff00ff;
+}
+
+.cyber-btn-magenta::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.2), transparent);
+  pointer-events: none;
+}
+
+.cyber-btn-magenta:hover::after {
+  animation: btnSweep 0.6s ease forwards;
+}
+
+/* ── Orange variant ── */
+.cyber-btn-orange {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 1.25rem;
+  background: rgba(255, 107, 0, 0.06);
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  border-left: 3px solid #ff6b00;
+  color: #ff6b00;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+  text-shadow: 0 0 4px rgba(255, 107, 0, 0.3);
+}
+
+.cyber-btn-orange::before {
+  content: '> _';
+  position: absolute;
+  left: 0.35rem;
+  opacity: 0;
+  color: inherit;
+  font-weight: bold;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.cyber-btn-orange:hover::before {
+  opacity: 0.7;
+}
+
+.cyber-btn-orange:hover {
+  padding-left: 2rem;
+  background: rgba(255, 107, 0, 0.12);
+  border-color: rgba(255, 107, 0, 0.6);
+  box-shadow:
+    0 0 10px rgba(255, 107, 0, 0.2),
+    0 0 20px rgba(255, 107, 0, 0.08),
+    inset 0 0 12px rgba(255, 107, 0, 0.04);
+  text-shadow: 0 0 8px #ff6b00;
+}
+
+.cyber-btn-orange::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 0, 0.2), transparent);
+  pointer-events: none;
+}
+
+.cyber-btn-orange:hover::after {
+  animation: btnSweep 0.6s ease forwards;
+}
+
+/* ── Danger variant ── */
+.cyber-btn-danger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 1.25rem;
+  background: rgba(255, 68, 68, 0.06);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-left: 3px solid #ff4444;
+  color: #ff4444;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+  text-shadow: 0 0 4px rgba(255, 68, 68, 0.3);
+}
+
+.cyber-btn-danger::before {
+  content: '✕';
+  position: absolute;
+  left: 0.5rem;
+  opacity: 0;
+  color: inherit;
+  font-weight: bold;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.cyber-btn-danger:hover::before {
+  opacity: 0.8;
+}
+
+.cyber-btn-danger:hover {
+  padding-left: 2rem;
+  background: rgba(255, 68, 68, 0.15);
+  border-color: rgba(255, 68, 68, 0.7);
+  box-shadow:
+    0 0 10px rgba(255, 68, 68, 0.25),
+    0 0 20px rgba(255, 68, 68, 0.1),
+    inset 0 0 12px rgba(255, 68, 68, 0.05);
+  text-shadow: 0 0 8px #ff4444;
+}
+
+.cyber-btn-danger::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 68, 68, 0.2), transparent);
+  pointer-events: none;
+}
+
+.cyber-btn-danger:hover::after {
+  animation: btnSweep 0.6s ease forwards;
+}
+
+/* ── Small / compact variant ── */
+.cyber-btn-sm {
+  font-size: 0.75rem !important;
+  padding: 0.25rem 0.75rem !important;
+  letter-spacing: 0.06em !important;
+}
+
+.cyber-btn-sm:hover {
+  padding-left: 1.5rem !important;
+}
+
+.cyber-btn-sm::before {
+  left: 0.25rem !important;
+  font-size: 0.7rem !important;
+}
+
+/* ── Corner decorations for cyber-btn ── */
+.cyber-btn[data-corners="true"],
+.cyber-btn-cyan[data-corners="true"],
+.cyber-btn-magenta[data-corners="true"],
+.cyber-btn-orange[data-corners="true"],
+.cyber-btn-danger[data-corners="true"] {
+  clip-path: polygon(
+    0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px,
+    100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px)
+  );
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — TERMINAL DECORATION CLASSES
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* ── Terminal Header Bar ── */
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: #0d1117;
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+  border-radius: 2px 2px 0 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  color: #8b949e;
+  letter-spacing: 0.05em;
+}
+
+.terminal-header-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-header-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.terminal-header-dots span:nth-child(1) {
+  background: #ff5f57;
+  box-shadow: 0 0 4px rgba(255, 95, 87, 0.4);
+}
+
+.terminal-header-dots span:nth-child(2) {
+  background: #ffbd2e;
+  box-shadow: 0 0 4px rgba(255, 189, 46, 0.4);
+}
+
+.terminal-header-dots span:nth-child(3) {
+  background: #28c940;
+  box-shadow: 0 0 4px rgba(40, 201, 64, 0.4);
+}
+
+.terminal-header-title {
+  flex: 1;
+  text-align: center;
+  color: #00ff41;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3);
+}
+
+/* ── Corner Brackets ── */
+.corner-brackets {
+  position: relative;
+}
+
+.corner-brackets::before,
+.corner-brackets::after {
+  position: absolute;
+  font-family: var(--font-mono), monospace;
+  font-size: 1.2rem;
+  color: #00ff41;
+  pointer-events: none;
+  z-index: 5;
+  animation: cornerPulse 3s ease-in-out infinite;
+}
+
+.corner-brackets::before {
+  content: '[';
+  top: -4px;
+  left: -4px;
+  text-shadow: 0 0 4px #00ff41, 0 0 8px rgba(0, 255, 65, 0.4);
+}
+
+.corner-brackets::after {
+  content: ']';
+  bottom: -4px;
+  right: -4px;
+  text-shadow: 0 0 4px #00ff41, 0 0 8px rgba(0, 255, 65, 0.4);
+}
+
+/* Cyan corner brackets */
+.corner-brackets-cyan::before,
+.corner-brackets-cyan::after {
+  color: #00f0ff !important;
+  text-shadow: 0 0 4px #00f0ff, 0 0 8px rgba(0, 240, 255, 0.4) !important;
+}
+
+/* Magenta corner brackets */
+.corner-brackets-magenta::before,
+.corner-brackets-magenta::after {
+  color: #ff00ff !important;
+  text-shadow: 0 0 4px #ff00ff, 0 0 8px rgba(255, 0, 255, 0.4) !important;
+}
+
+/* ── Hex Decoration ── */
+.hex-decoration {
+  position: relative;
+  font-family: var(--font-mono), monospace;
+}
+
+.hex-decoration::before {
+  content: '0xFF41 0xA3B7 0x00F0 0xDEAD 0xBEEF';
+  position: absolute;
+  top: -1.25rem;
+  right: 0;
+  font-size: 0.6rem;
+  color: rgba(0, 255, 65, 0.2);
+  letter-spacing: 0.15em;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Alternate hex decoration for variety */
+.hex-decoration-alt::before {
+  content: '0xCAFE 0xF00D 0x1DEA 0xFADE 0xC0DE';
+}
+
+/* ── Data Stream ── */
+.data-stream {
+  position: relative;
+  overflow: hidden;
+  height: 1.5rem;
+  white-space: nowrap;
+  background: rgba(0, 255, 65, 0.02);
+  border-top: 1px solid rgba(0, 255, 65, 0.08);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.08);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  color: rgba(0, 255, 65, 0.15);
+  letter-spacing: 0.2em;
+  line-height: 1.5rem;
+  user-select: none;
+  pointer-events: none;
+}
+
+.data-stream-inner {
+  display: inline-block;
+  animation: dataScroll 30s linear infinite;
+  padding-right: 50%;
+}
+
+/* ── CRT Overlay ── */
+.crt-overlay {
+  position: relative;
+}
+
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  box-shadow:
+    inset 0 0 80px rgba(0, 0, 0, 0.4),
+    inset 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — ENHANCED SCANLINES
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* Override the existing scanlines to be more visible */
+.scanlines::after {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.05) 0px,
+    rgba(0, 0, 0, 0.05) 1px,
+    transparent 1px,
+    transparent 2px
+  ) !important;
+}
+
+/* ── Moving scanline (bright horizontal line) ── */
+.scanlines-movable {
+  position: relative;
+}
+
+.scanlines-movable::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 255, 65, 0.06) 10%,
+    rgba(0, 255, 65, 0.15) 50%,
+    rgba(0, 255, 65, 0.06) 90%,
+    transparent 100%
+  );
+  z-index: 9998;
+  pointer-events: none;
+  animation: scanLine 8s linear infinite;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.08);
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — TOAST NOTIFICATION HACKING STYLE
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* Sonner toast override */
+[data-sonner-toast] {
+  font-family: var(--font-mono), monospace !important;
+  border: 1px solid rgba(0, 255, 65, 0.25) !important;
+  border-left: 3px solid #00ff41 !important;
+  border-radius: 2px !important;
+  background: #0d1117 !important;
+  color: #e0e0e0 !important;
+  box-shadow:
+    0 0 10px rgba(0, 255, 65, 0.08),
+    0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  letter-spacing: 0.03em !important;
+  backdrop-filter: none !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border-left-color: #00ff41 !important;
+  border-color: rgba(0, 255, 65, 0.25) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  border-left-color: #ff4444 !important;
+  border-color: rgba(255, 68, 68, 0.25) !important;
+  box-shadow:
+    0 0 10px rgba(255, 68, 68, 0.08),
+    0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-sonner-toast][data-type="info"],
+[data-sonner-toast][data-type="message"] {
+  border-left-color: #00f0ff !important;
+  border-color: rgba(0, 240, 255, 0.25) !important;
+  box-shadow:
+    0 0 10px rgba(0, 240, 255, 0.08),
+    0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-sonner-toast][data-type="warning"] {
+  border-left-color: #ff6b00 !important;
+  border-color: rgba(255, 107, 0, 0.25) !important;
+  box-shadow:
+    0 0 10px rgba(255, 107, 0, 0.08),
+    0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-sonner-toast]:hover {
+  box-shadow:
+    0 0 15px rgba(0, 255, 65, 0.12),
+    0 4px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Toast title */
+[data-sonner-toast] [data-title] {
+  font-family: var(--font-mono), monospace !important;
+  letter-spacing: 0.05em !important;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.2) !important;
+}
+
+/* Toast description */
+[data-sonner-toast] [data-description] {
+  font-family: var(--font-mono), monospace !important;
+  color: #8b949e !important;
+  letter-spacing: 0.03em !important;
+}
+
+/* Toast close button */
+[data-sonner-toast] button[aria-label="Close"] {
+  color: #8b949e !important;
+  opacity: 0.5 !important;
+}
+
+[data-sonner-toast] button[aria-label="Close"]:hover {
+  color: #00ff41 !important;
+  opacity: 1 !important;
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — DIALOG HACKING STYLE
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* Dialog overlay — subtle grid pattern */
+[data-slot="dialog-overlay"] {
+  background: rgba(5, 5, 8, 0.8) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+[data-slot="dialog-overlay"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+
+/* Dialog content */
+[data-slot="dialog-content"] {
+  font-family: var(--font-mono), monospace !important;
+  border: 1px solid rgba(0, 255, 65, 0.25) !important;
+  border-top: 2px solid #00ff41 !important;
+  border-radius: 2px !important;
+  background: #0d1117 !important;
+  color: #e0e0e0 !important;
+  box-shadow:
+    0 0 20px rgba(0, 255, 65, 0.08),
+    0 0 40px rgba(0, 255, 65, 0.03),
+    0 25px 60px rgba(0, 0, 0, 0.6) !important;
+  letter-spacing: 0.03em !important;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Terminal header bar at top of dialog */
+[data-slot="dialog-content"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00ff41, #00f0ff, #ff00ff, #00ff41);
+  background-size: 300% 100%;
+  animation: borderScan 6s linear infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Dialog header */
+[data-slot="dialog-header"] {
+  border-bottom: 1px solid rgba(0, 255, 65, 0.1) !important;
+  padding-bottom: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+/* Dialog title */
+[data-slot="dialog-title"] {
+  font-family: var(--font-mono), monospace !important;
+  letter-spacing: 0.08em !important;
+  color: #00ff41 !important;
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.3) !important;
+}
+
+/* Dialog description */
+[data-slot="dialog-description"] {
+  font-family: var(--font-mono), monospace !important;
+  color: #8b949e !important;
+  letter-spacing: 0.03em !important;
+}
+
+/* Dialog close button */
+[data-slot="dialog-close"] {
+  border: 1px solid rgba(0, 255, 65, 0.15) !important;
+  border-radius: 2px !important;
+  color: #8b949e !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-slot="dialog-close"]:hover {
+  border-color: rgba(255, 68, 68, 0.4) !important;
+  color: #ff4444 !important;
+  box-shadow: 0 0 6px rgba(255, 68, 68, 0.15) !important;
+}
+
+/* Dialog footer */
+[data-slot="dialog-footer"] {
+  border-top: 1px solid rgba(0, 255, 65, 0.1) !important;
+  padding-top: 0.75rem !important;
+  margin-top: 0.75rem !important;
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — SELECT DROPDOWN HACKING STYLE
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* Select trigger */
+[data-slot="select-trigger"] {
+  font-family: var(--font-mono), monospace !important;
+  background: rgba(0, 255, 65, 0.04) !important;
+  border: 1px solid rgba(0, 255, 65, 0.2) !important;
+  border-left: 2px solid rgba(0, 255, 65, 0.5) !important;
+  border-radius: 2px !important;
+  color: #e0e0e0 !important;
+  letter-spacing: 0.05em !important;
+  transition: all 0.25s ease !important;
+}
+
+[data-slot="select-trigger"]:hover {
+  border-color: rgba(0, 255, 65, 0.35) !important;
+  border-left-color: #00ff41 !important;
+  background: rgba(0, 255, 65, 0.07) !important;
+  box-shadow: 0 0 6px rgba(0, 255, 65, 0.06) !important;
+}
+
+[data-slot="select-trigger"][data-state="open"] {
+  border-color: rgba(0, 255, 65, 0.5) !important;
+  border-left-color: #00ff41 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.1), 0 0 20px rgba(0, 255, 65, 0.04) !important;
+}
+
+/* Select value text */
+[data-slot="select-value"] {
+  font-family: var(--font-mono), monospace !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Select content / dropdown */
+[data-slot="select-content"] {
+  font-family: var(--font-mono), monospace !important;
+  background: #0d1117 !important;
+  border: 1px solid rgba(0, 255, 65, 0.25) !important;
+  border-radius: 2px !important;
+  color: #e0e0e0 !important;
+  box-shadow:
+    0 0 12px rgba(0, 255, 65, 0.06),
+    0 8px 30px rgba(0, 0, 0, 0.5) !important;
+  letter-spacing: 0.03em !important;
+  overflow: hidden;
+}
+
+/* Select item */
+[data-slot="select-item"] {
+  font-family: var(--font-mono), monospace !important;
+  letter-spacing: 0.04em !important;
+  border-radius: 1px !important;
+  color: #8b949e !important;
+  transition: all 0.15s ease !important;
+}
+
+[data-slot="select-item"]:hover,
+[data-slot="select-item"][data-highlighted] {
+  background: rgba(0, 255, 65, 0.08) !important;
+  color: #00ff41 !important;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3) !important;
+}
+
+[data-slot="select-item"][data-selected] {
+  color: #00ff41 !important;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.3) !important;
+}
+
+/* Select separator */
+[data-slot="select-separator"] {
+  background: rgba(0, 255, 65, 0.1) !important;
+}
+
+/* Select label */
+[data-slot="select-label"] {
+  font-family: var(--font-mono), monospace !important;
+  color: #00f0ff !important;
+  letter-spacing: 0.06em !important;
+  font-size: 0.7rem !important;
+  text-transform: uppercase;
+}
+
+/* Select scroll up / down buttons */
+[data-slot="select-scroll-up-button"],
+[data-slot="select-scroll-down-button"] {
+  color: #00ff41 !important;
+  border-color: rgba(0, 255, 65, 0.15) !important;
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — ENHANCED CARD HOVER EFFECTS
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* ── Hologram flicker on card hover ── */
+.game-card:hover {
+  animation: holoFlicker 4s ease-in-out infinite;
+}
+
+/* ── Scan-line sweep across card on hover ── */
+.game-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 65, 0.04),
+    rgba(0, 255, 65, 0.08),
+    rgba(0, 255, 65, 0.04),
+    transparent
+  );
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.game-card:hover::after {
+  animation: cardScanSweep 1.5s ease-in-out 0.3s;
+}
+
+/* ── Ensure featured card also gets these effects ── */
+.game-card-featured:hover {
+  animation: holoFlicker 4s ease-in-out infinite;
+}
+
+.game-card-featured::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.03),
+    rgba(255, 215, 0, 0.06),
+    rgba(0, 255, 65, 0.04),
+    transparent
+  );
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.game-card-featured:hover::after {
+  animation: cardScanSweep 1.5s ease-in-out 0.3s;
+}
+
+/* ── Generic hologram hover class for any element ── */
+.holo-hover:hover {
+  animation: holoFlicker 3s ease-in-out infinite;
+}
+
+/* █████████████████████████████████████████████████████████████████████████████████
+   ██  HACKING UI OVERHAUL — ADDITIONAL UTILITY CLASSES
+   █████████████████████████████████████████████████████████████████████████████████ */
+
+/* ── Terminal text prefix utility ── */
+.terminal-prefix::before {
+  content: '$ ';
+  color: #00ff41;
+  font-weight: bold;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.4);
+}
+
+.terminal-prefix-cyan::before {
+  content: '> ';
+  color: #00f0ff;
+  font-weight: bold;
+  text-shadow: 0 0 4px rgba(0, 240, 255, 0.4);
+}
+
+/* ── Blinking block cursor ── */
+.cursor-blink::after {
+  content: '█';
+  animation: blink 1s step-end infinite;
+  color: #00ff41;
+  text-shadow: 0 0 4px #00ff41;
+}
+
+/* ── Subtle green text with monospace ── */
+.terminal-text {
+  font-family: var(--font-mono), monospace;
+  color: #00ff41;
+  letter-spacing: 0.04em;
+}
+
+/* ── Divider line with glow ── */
+.terminal-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 65, 0.3),
+    rgba(0, 255, 65, 0.15),
+    transparent
+  );
+  box-shadow: 0 0 4px rgba(0, 255, 65, 0.06);
+}
+
+.terminal-divider-cyan {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.3),
+    rgba(0, 240, 255, 0.15),
+    transparent
+  );
+  box-shadow: 0 0 4px rgba(0, 240, 255, 0.06);
+}
+
+/* ── Glitch text effect on hover (stronger) ── */
+.glitch-text-hover {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-text-hover:hover {
+  animation: glitch 0.3s ease infinite;
+}
+
+/* ── Data badge: small monospace label ── */
+.data-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1px;
+  background: rgba(0, 255, 65, 0.06);
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  color: #00ff41;
+}
+
+.data-badge-cyan {
+  background: rgba(0, 240, 255, 0.06);
+  border-color: rgba(0, 240, 255, 0.15);
+  color: #00f0ff;
+}
+
+.data-badge-magenta {
+  background: rgba(255, 0, 255, 0.06);
+  border-color: rgba(255, 0, 255, 0.15);
+  color: #ff00ff;
+}
+
+.data-badge-orange {
+  background: rgba(255, 107, 0, 0.06);
+  border-color: rgba(255, 107, 0, 0.15);
+  color: #ff6b00;
+}
+
+.data-badge-danger {
+  background: rgba(255, 68, 68, 0.06);
+  border-color: rgba(255, 68, 68, 0.15);
+  color: #ff4444;
+}
+
+/* ── Border scan animation utility ── */
+.border-scan {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-scan::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-image: linear-gradient(
+    0deg,
+    #00ff41,
+    #00f0ff,
+    #ff00ff,
+    #00ff41
+  ) 1;
+  background-size: 400% 400%;
+  animation: borderScan 4s linear infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.border-scan:hover::after {
+  opacity: 0.6;
+}

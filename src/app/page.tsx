@@ -475,7 +475,7 @@ export default function GamePortal() {
 
   // ─── Render ──────────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen flex flex-col cyber-gradient-bg scanlines grid-bg">
+    <div className="relative min-h-screen flex flex-col cyber-gradient-bg scanlines scanlines-movable grid-bg">
       {/* ── Background Particles ── */}
       {mounted &&
         particles.map((p) => (
@@ -493,7 +493,7 @@ export default function GamePortal() {
         ))}
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-[#050508]/80 backdrop-blur-md header-glow px-4 py-3">
+      <header className="sticky top-0 z-50 bg-[#050508]/80 backdrop-blur-md header-glow px-4 py-3 border-b border-[#00ff41]/20">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2 shrink-0">
@@ -520,50 +520,40 @@ export default function GamePortal() {
           </div>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
+          <div className="hidden md:flex items-center gap-1.5">
+            <button
               onClick={seedDatabase}
-              className="text-[#ff6b00] hover:text-[#ff6b00] hover:bg-[#ff6b00]/10 text-xs"
+              className="cyber-btn-orange cyber-btn-sm"
             >
-              SEED DATA
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
+              <Database className="w-3 h-3 mr-1" /> SEED DATA
+            </button>
+            <button
               onClick={() => setView('sources')}
-              className={`text-xs ${view === 'sources' ? 'text-[#00f0ff] bg-[#00f0ff]/10' : 'text-[#00f0ff]/70 hover:text-[#00f0ff] hover:bg-[#00f0ff]/10'}`}
+              className={`cyber-btn-sm ${view === 'sources' ? 'cyber-btn-cyan-active' : 'cyber-btn-cyan'}`}
             >
-              SOURCES
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
+              <Globe className="w-3 h-3 mr-1" /> SOURCES
+            </button>
+            <button
               onClick={() => setUploadOpen(true)}
-              className="text-[#00ff41] hover:text-[#00ff41] hover:bg-[#00ff41]/10 text-xs"
+              className="cyber-btn-sm"
             >
-              <Upload className="w-4 h-4 mr-1" /> UPLOAD
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
+              <Upload className="w-3 h-3 mr-1" /> UPLOAD
+            </button>
+            <button
               onClick={() => setView('manage')}
-              className={`text-xs ${view === 'manage' ? 'text-[#ff00ff] bg-[#ff00ff]/10' : 'text-[#ff00ff]/70 hover:text-[#ff00ff] hover:bg-[#ff00ff]/10'}`}
+              className={`cyber-btn-sm ${view === 'manage' ? 'cyber-btn-magenta-active' : 'cyber-btn-magenta'}`}
             >
-              <Settings className="w-4 h-4 mr-1" /> MANAGE
-            </Button>
+              <Settings className="w-3 h-3 mr-1" /> MANAGE
+            </button>
           </div>
 
           {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="md:hidden text-[#00ff41]"
+          <button
+            className="md:hidden text-[#00ff41] p-2 rounded hover:bg-[#00ff41]/10 border border-[#00ff41]/20 transition-all"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <Menu className="w-5 h-5" />
-          </Button>
+          </button>
         </div>
 
         {/* Mobile dropdown menu */}
@@ -581,40 +571,20 @@ export default function GamePortal() {
                   placeholder="Search games..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="cyber-input w-full px-3 py-2 rounded-lg text-sm"
+                  className="cyber-input w-full px-3 py-2 rounded text-sm"
                 />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => { seedDatabase(); setMobileMenuOpen(false); }}
-                  className="text-[#ff6b00] hover:bg-[#ff6b00]/10 text-xs justify-start"
-                >
-                  SEED DATA
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => { setView('sources'); setMobileMenuOpen(false); }}
-                  className="text-[#00f0ff] hover:bg-[#00f0ff]/10 text-xs justify-start"
-                >
-                  SOURCES
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }}
-                  className="text-[#00ff41] hover:bg-[#00ff41]/10 text-xs justify-start"
-                >
-                  UPLOAD
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => { setView('manage'); setMobileMenuOpen(false); }}
-                  className="text-[#ff00ff] hover:bg-[#ff00ff]/10 text-xs justify-start"
-                >
-                  MANAGE
-                </Button>
+                <button onClick={() => { seedDatabase(); setMobileMenuOpen(false); }} className="cyber-btn-orange cyber-btn-sm justify-start">
+                  <Database className="w-3 h-3 mr-1" /> SEED DATA
+                </button>
+                <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="cyber-btn-cyan cyber-btn-sm justify-start">
+                  <Globe className="w-3 h-3 mr-1" /> SOURCES
+                </button>
+                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="cyber-btn cyber-btn-sm justify-start">
+                  <Upload className="w-3 h-3 mr-1" /> UPLOAD
+                </button>
+                <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="cyber-btn-magenta cyber-btn-sm justify-start">
+                  <Settings className="w-3 h-3 mr-1" /> MANAGE
+                </button>
               </div>
             </motion.div>
           )}
@@ -637,16 +607,24 @@ export default function GamePortal() {
               className="max-w-7xl mx-auto space-y-8"
             >
               {/* Hero Section */}
-              <section className="relative neon-border rounded-xl p-8 md:p-12 text-center overflow-hidden bg-[#050508]/60">
+              <section className="relative neon-border rounded p-6 md:p-10 text-center overflow-hidden bg-[#050508]/60 corner-brackets">
                 {/* Floating orbs */}
                 <div className="hero-orb-1 absolute top-4 left-8 w-32 h-32 rounded-full bg-[#00ff41]/5 blur-3xl pointer-events-none" />
                 <div className="hero-orb-2 absolute bottom-4 right-8 w-40 h-40 rounded-full bg-[#00f0ff]/5 blur-3xl pointer-events-none" />
 
                 <div className="relative z-10">
-                  {/* Status indicator */}
-                  <div className="flex items-center justify-center gap-2 mb-4">
+                  {/* Terminal header bar */}
+                  <div className="terminal-header mx-auto mb-4">
+                    <span className="terminal-header-dots">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#28ca42]" />
+                    </span>
+                    <span className="terminal-header-title">cyberplay@portal:~$</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 mb-3">
                     <span className="w-2 h-2 rounded-full bg-[#00ff41] status-dot-glow" />
-                    <span className="text-xs text-[#00ff41]/60 tracking-widest uppercase">
+                    <span className="terminal-prefix text-[10px]">
                       System Online
                     </span>
                   </div>
@@ -658,8 +636,8 @@ export default function GamePortal() {
                       <span className="typing-cursor" />
                     )}
                   </h1>
-                  <p className="text-lg text-white/60 mt-4 max-w-2xl mx-auto">
-                    Browse, play, and manage HTML5, Unity WebGL & Flash games.
+                  <p className="text-sm text-[#8b949e] mt-3 max-w-xl mx-auto font-light">
+                    <span className="terminal-prefix-cyan">root@cyberplay</span>{'>'} Browse, play, and manage HTML5, Unity WebGL & Flash games.
                     No downloads required — just click and play.
                   </p>
                 </div>
@@ -705,11 +683,12 @@ export default function GamePortal() {
               </div>
 
               {/* Stats bar */}
-              <div className="text-xs text-[#8b949e] tracking-wider">
+              <div className="flex items-center gap-2 text-xs text-[#8b949e] tracking-wider">
+                <span className="terminal-prefix">$</span>
                 {loading ? (
-                  <span>Loading games...</span>
+                  <span className="text-[#00f0ff]">scanning games_db...</span>
                 ) : (
-                  <span>{allGames.length} GAME{allGames.length !== 1 ? 'S' : ''} FOUND</span>
+                  <span><span className="text-[#00ff41]">{allGames.length}</span> GAME{allGames.length !== 1 ? 'S' : ''} FOUND <span className="hex-decoration">0x{allGames.length.toString(16).toUpperCase()}</span></span>
                 )}
               </div>
 

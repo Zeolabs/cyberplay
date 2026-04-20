@@ -1049,9 +1049,10 @@ export default function GamePortal() {
                         <div className="md:col-span-4 flex items-center gap-3">
                           {game.thumbnailUrl && (
                             <img
-                              src={game.thumbnailUrl}
+                              src={game.thumbnailUrl.startsWith('/') ? game.thumbnailUrl : `/api/proxy?url=${encodeURIComponent(game.thumbnailUrl)}`}
                               alt={game.title}
                               className="w-10 h-10 rounded object-cover shrink-0"
+                              loading="lazy"
                             />
                           )}
                           <div className="min-w-0">
@@ -1668,26 +1669,28 @@ function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }
     >
       {/* Thumbnail / Video area */}
       <div className="relative overflow-hidden bg-[#0c150c] h-40">
-        {/* Thumbnail image — hidden when video is playing */}
+        {/* Thumbnail image — proxied & cached, hidden when video is playing */}
         {game.thumbnailUrl && (
           <img
-            src={game.thumbnailUrl}
+            src={game.thumbnailUrl.startsWith('/') ? game.thumbnailUrl : `/api/proxy?url=${encodeURIComponent(game.thumbnailUrl)}`}
             alt={game.title}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered && game.videoUrl ? 'opacity-0' : 'opacity-100'}`}
             loading="lazy"
+            decoding="async"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
         )}
 
-        {/* Video preview — shown on hover */}
+        {/* Video preview — proxied & cached, shown on hover */}
         {game.videoUrl && (
           <video
             ref={videoRef}
-            src={game.videoUrl}
+            src={game.videoUrl.startsWith('/') ? game.videoUrl : `/api/proxy?url=${encodeURIComponent(game.videoUrl)}`}
             autoPlay
             loop
             muted
             playsInline
+            preload="none"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
           />
         )}

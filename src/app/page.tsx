@@ -11,7 +11,7 @@ import {
   MousePointerClick, Truck, DoorOpen, Crosshair, Skull,
   Dices, Users, Puzzle, Target, Goal, PersonStanding,
   Brain, Castle, LayoutGrid, Package, Pickaxe,
-  ArrowUp, ArrowDown,
+  ArrowUp, ArrowDown, Volume2, VolumeX,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -221,6 +221,9 @@ export default function GamePortal() {
 
 
 
+  // Mute state for game audio
+  const [isMuted, setIsMuted] = useState(false);
+
   // Refs
   const gameFrameRef = useRef<HTMLIFrameElement>(null);
   const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -332,6 +335,7 @@ export default function GamePortal() {
   const playGame = async (game: Game) => {
     setSelectedGame(game);
     setGameLoading(true);
+    setIsMuted(false);
     setView('play');
     try {
       await fetch(`/api/games/${game.id}/play`, { method: 'POST' });
@@ -425,6 +429,18 @@ export default function GamePortal() {
       fullscreenRef.current.requestFullscreen();
     } else {
       document.exitFullscreen();
+    }
+  };
+
+  const toggleMute = () => {
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    if (gameFrameRef.current) {
+      if (newMuted) {
+        gameFrameRef.current.setAttribute('muted', '');
+      } else {
+        gameFrameRef.current.removeAttribute('muted');
+      }
     }
   };
 
@@ -974,6 +990,15 @@ export default function GamePortal() {
 
                 {/* Controls */}
                 <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleMute}
+                    className={`hover:bg-white/5 ${isMuted ? 'text-[#94a3b8]' : 'text-[#e2e8f0]'}`}
+                    title={isMuted ? 'Unmute' : 'Mute'}
+                  >
+                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"

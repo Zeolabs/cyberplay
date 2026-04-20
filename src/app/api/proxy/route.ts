@@ -3,48 +3,20 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from 'fs
 import { join } from 'path';
 import { readFile } from 'fs/promises';
 import { hash } from 'crypto';
-
-// ─── Config ────────────────────────────────────────────────────────
-const CACHE_DIR = join(process.cwd(), '.cache/images');
-const SETTINGS_FILE = join(process.cwd(), '.cache/settings.json');
-const MAX_CACHE_SIZE = 500 * 1024 * 1024;      // 500MB max cache
-
-interface CacheSettings {
-  enabled: boolean;
-  imageTTL: number;  // hours
-  videoTTL: number;  // hours
-}
-
-const DEFAULT_SETTINGS: CacheSettings = {
-  enabled: true,
-  imageTTL: 720,
-  videoTTL: 168,
-};
+import {
+  CACHE_DIR, readSettings,
+} from '@/lib/cache-config';
 
 // ─── Helpers ───────────────────────────────────────────────────────
-function readSettings(): CacheSettings {
-  try {
-    if (existsSync(SETTINGS_FILE)) {
-      const raw = readFileSync(SETTINGS_FILE, 'utf-8');
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
-    }
-  } catch {
-    // corrupted settings, use defaults
-  }
-  return DEFAULT_SETTINGS;
-}
-
 function hashUrl(url: string): string {
   return hash('sha256', url).toString('hex').slice(0, 16);
 }
 
 function getExt(url: string, contentType: string): string {
-  // Try from URL
   const urlExt = url.split('?')[0].split('.').pop()?.toLowerCase();
   if (urlExt && ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'mp4', 'webm'].includes(urlExt)) {
     return urlExt;
   }
-  // From content-type
   if (contentType.includes('png')) return 'png';
   if (contentType.includes('jpeg') || contentType.includes('jpg')) return 'jpg';
   if (contentType.includes('webp')) return 'webp';
@@ -66,7 +38,7 @@ function getCachedPath(urlHash: string, ext: string): string {
 function getMaxAge(url: string): number {
   const settings = readSettings();
   const ttlHours = isVideo(url) ? settings.videoTTL : settings.imageTTL;
-  return ttlHours * 60 * 60; // convert hours to seconds
+  return ttlHours * 60 * 60;
 }
 
 function getContentType(ext: string): string {
@@ -92,7 +64,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing ?url= parameter' }, { status: 400 });
   }
 
-  // Validate URL
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(url);
@@ -100,7 +71,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
   }
 
-  // Only allow known CDN domains
   const allowedHosts = [
     'images.crazygames.com',
     'imgs.crazygames.com',
@@ -114,7 +84,6 @@ export async function GET(request: NextRequest) {
 
   const settings = readSettings();
 
-  // If cache is disabled, bypass entirely
   if (!settings.enabled) {
     try {
       const res = await fetch(url, {
@@ -159,8 +128,6 @@ export async function GET(request: NextRequest) {
   const urlHash = hashUrl(url);
   const maxAge = getMaxAge(url);
 
-  // 1) Check disk cache
-  // Try common image/video extensions
   const possibleExts = isVideo(url)
     ? ['mp4', 'webm']
     : ['webp', 'jpg', 'png', 'gif', 'svg', 'bin'];
@@ -170,7 +137,6 @@ export async function GET(request: NextRequest) {
     if (existsSync(cachedPath)) {
       try {
         const stat = statSync(cachedPath);
-        // Check if cache is still fresh
         const ageSec = (Date.now() - stat.mtimeMs) / 1000;
         if (ageSec < maxAge) {
           const data = readFileSync(cachedPath);
@@ -190,7 +156,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // 2) Fetch from remote
   try {
     const res = await fetch(url, {
       signal: AbortSignal.timeout(15000),
@@ -214,19 +179,17 @@ export async function GET(request: NextRequest) {
     const ext = getExt(url, contentType);
     const buffer = Buffer.from(await res.arrayBuffer());
 
-    // 3) Save to disk cache (async, don't block response)
-    if (buffer.length < 50 * 1024 * 1024) { // Max 50MB per file
+    if (buffer.length < 50 * 1024 * 1024) {
       const cachedPath = getCachedPath(urlHash, ext);
       setImmediate(() => {
         try {
           writeFileSync(cachedPath, buffer);
         } catch {
-          // Disk full or permission error — skip cache
+          // Disk full or permission error
         }
       });
     }
 
-    // 4) Return to client
     return new NextResponse(buffer, {
       status: 200,
       headers: {

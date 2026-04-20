@@ -1,12 +1,6 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
-
-// Browser-like headers for direct fetch (no SDK needed!)
-const FETCH_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Accept-Language': 'en-US,en;q=0.9',
-};
+import { sleep, extractSlug, decodeHtmlEntities, fetchPage } from '@/lib/fetch-utils';
 
 interface VideoSize {
   width: number;
@@ -14,50 +8,17 @@ interface VideoSize {
   location: string;
 }
 
-async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-// Fetch CrazyGames game page directly (no SDK!)
-async function fetchGamePage(url: string): Promise<string> {
-  try {
-    const res = await fetch(url, {
-      headers: FETCH_HEADERS,
-      redirect: 'follow',
-      signal: AbortSignal.timeout(15000),
-    });
-    if (res.ok) return await res.text();
-    console.error(`[fix-urls] HTTP ${res.status} for ${url}`);
-  } catch (err) {
-    console.error(`[fix-urls] Failed to fetch ${url}:`, err);
-  }
-  return '';
-}
-
-// Extract slug from CrazyGames URL
-function extractSlugFromUrl(gameUrl: string): string {
-  try {
-    const url = new URL(gameUrl);
-    const parts = url.pathname.split('/').filter(Boolean);
-    return parts[parts.length - 1] || '';
-  } catch {
-    return '';
-  }
-}
-
 async function processGame(game: { id: string; gameUrl: string }) {
-  const slug = extractSlugFromUrl(game.gameUrl);
+  const slug = extractSlug(game.gameUrl);
   const pageUrl = `https://www.crazygames.com/game/${slug}`;
   console.log(`[fix-urls] Fetching: ${pageUrl}`);
 
-  // Fetch the page directly — no SDK!
-  const html = await fetchGamePage(pageUrl);
+  const html = await fetchPage(pageUrl);
 
   if (!html) {
     return { id: game.id, success: false, error: 'fetch_failed' };
   }
 
-  // Extract __NEXT_DATA__ JSON
   const nextDataMatch = html.match(/<script[^>]*id=['"]__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
   if (!nextDataMatch?.[1]) {
     return { id: game.id, success: false, error: 'no_next_data' };
@@ -65,13 +26,7 @@ async function processGame(game: { id: string; gameUrl: string }) {
 
   let nextData: Record<string, unknown>;
   try {
-    nextData = JSON.parse(
-      nextDataMatch[1]
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-    );
+    nextData = JSON.parse(decodeHtmlEntities(nextDataMatch[1]));
   } catch {
     return { id: game.id, success: false, error: 'parse_error' };
   }
@@ -85,7 +40,6 @@ async function processGame(game: { id: string; gameUrl: string }) {
   const allowEmbed = gameData.allowEmbed as boolean | undefined;
   const desktopUrl = gameData.desktopUrl as string | undefined;
 
-  // Extract video URL
   let videoUrl = '';
   const videos = gameData.videos as Record<string, unknown> | undefined;
   if (videos) {
@@ -105,7 +59,6 @@ async function processGame(game: { id: string; gameUrl: string }) {
     }
   }
 
-  // Build update data
   const updateData: Record<string, string> = {};
   let fixedUrl = false;
   let fixedVideo = false;
@@ -135,7 +88,6 @@ async function processGame(game: { id: string; gameUrl: string }) {
 
 export async function POST(request: Request) {
   try {
-    // Find all games with broken CrazyGames page URLs
     const games = await db.game.findMany({
       where: {
         gameUrl: { contains: 'crazygames.com/game/' },
@@ -159,7 +111,6 @@ export async function POST(request: Request) {
       failed: 0,
     };
 
-    // Process games (no SDK = no rate limits! Just be polite with small delays)
     const batchSize = 3;
     for (let i = 0; i < games.length; i += batchSize) {
       const batch = games.slice(i, i + batchSize);
@@ -174,7 +125,6 @@ export async function POST(request: Request) {
         }
       }
 
-      // Small delay between batches
       if (i + batchSize < games.length) {
         await sleep(500);
       }

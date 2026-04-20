@@ -1,9 +1,9 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { FETCH_HEADERS, PAGE_FETCH_TIMEOUT, sleep, decodeHtmlEntities, fetchPage, POLITE_DELAY } from '@/lib/fetch-utils';
+import { CRAZYGAMES_BASE, CRAZYGAMES_GAMES, CRAZYGAMES_IMAGES, CRAZYGAMES_VIDEOS, FALLBACK_DESCRIPTION } from '@/lib/constants';
 
 // CrazyGames tags — fetched dynamically from sidebar, with icon mapping
-// prefix: '/c' = category page, '/t' = tag page, '' = special (e.g. /multiplayer)
-// CrazyGames uses /c/{slug} for categories and /t/{slug} for tags — they are NOT interchangeable
 const CRAZYGAMES_TAGS = [
   { name: 'Action',        slug: 'action',               icon: 'Swords',         prefix: '/c' },
   { name: 'Adventure',     slug: 'adventure',            icon: 'Compass',        prefix: '/c' },
@@ -55,32 +55,6 @@ const fetchStatus: FetchStatus = {
   genresTotal: CRAZYGAMES_TAGS.length,
 };
 
-function delay(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-// ─── Native HTTP fetch with browser-like headers (NO SDK!) ────────────
-const HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Accept-Language': 'en-US,en;q=0.9',
-};
-
-async function fetchPage(url: string): Promise<string> {
-  try {
-    const res = await fetch(url, {
-      headers: HEADERS,
-      redirect: 'follow',
-      signal: AbortSignal.timeout(30000),
-    });
-    if (res.ok) return await res.text();
-    console.error(`[fetch] HTTP ${res.status} for ${url}`);
-  } catch (err) {
-    console.error(`[fetch] Failed: ${url}:`, err);
-  }
-  return '';
-}
-
 // ─── Parse CrazyGames tag page → extract games ─────────────────────────
 interface CrazyGame {
   name: string;
@@ -93,15 +67,13 @@ interface CrazyGame {
 }
 
 function parseTagPage(html: string): CrazyGame[] {
-  // Flexible regex: handles crossorigin and other attributes on script tag
   const match = html.match(/<script[^>]*id=['"]__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/);
   if (!match) return [];
 
   try {
-    const jsonStr = match[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+    const jsonStr = decodeHtmlEntities(match[1]);
     const data = JSON.parse(jsonStr);
 
-    // Direct path: props.pageProps.games.items
     const raw = (data as Record<string, unknown>)?.props;
     const pp = raw as Record<string, unknown> | undefined;
     const gameContainer = pp?.pageProps as Record<string, unknown> | undefined;
@@ -120,19 +92,18 @@ function parseTagPage(html: string): CrazyGame[] {
 // ─── Build URLs from game data ────────────────────────────────────────
 function buildThumbnailUrl(cover: string): string {
   if (!cover) return '';
-  return `https://images.crazygames.com/${cover}?metadata=none&quality=85&width=480&fit=crop`;
+  return `${CRAZYGAMES_IMAGES}/${cover}?metadata=none&quality=85&width=480&fit=crop`;
 }
 
 function buildVideoUrl(videos: CrazyGame['videos']): string {
   if (!videos?.sizes?.length) return '';
-  // Find the 494px width (perfect for card hover) or closest
   const ideal = videos.sizes.find(s => s.width >= 364 && s.width <= 600);
   const size = ideal || videos.sizes[videos.sizes.length - 1];
-  return size ? `https://videos.crazygames.com/${size.location}` : '';
+  return size ? `${CRAZYGAMES_VIDEOS}/${size.location}` : '';
 }
 
 function buildGameUrl(slug: string): string {
-  return `https://games.crazygames.com/en_US/${slug}/index.html`;
+  return `${CRAZYGAMES_GAMES}/en_US/${slug}/index.html`;
 }
 
 // ─── GET: status, genres, or tag list ─────────────────────────────────
@@ -202,14 +173,14 @@ async function fetchBulkTags(tags: readonly typeof CRAZYGAMES_TAGS) {
     fetchStatus.message = `Fetching ${tag.name}...`;
 
     try {
-      const url = `https://www.crazygames.com${tag.prefix}/${tag.slug}`;
+      const url = `${CRAZYGAMES_BASE}${tag.prefix}/${tag.slug}`;
       console.log(`[fetch] ${tag.name}: ${url}`);
 
-      const html = await fetchPage(url);
+      const html = await fetchPage(url, PAGE_FETCH_TIMEOUT);
       if (!html) {
         fetchStatus.genresDone++;
         fetchStatus.message = `${tag.name}: Empty response`;
-        await delay(500);
+        await sleep(POLITE_DELAY);
         continue;
       }
 
@@ -230,11 +201,10 @@ async function fetchBulkTags(tags: readonly typeof CRAZYGAMES_TAGS) {
         const thumbnailUrl = buildThumbnailUrl(game.cover);
         const videoUrl = buildVideoUrl(game.videos);
         const gameUrl = buildGameUrl(game.slug);
-        const description = `${game.name} — Play free on CYBERPLAY!`;
+        const description = `${game.name} — ${FALLBACK_DESCRIPTION}`;
         const tagsText = game.name.toLowerCase().split(/\s+/).filter(w => w.length > 2).slice(0, 5).join(', ');
 
         if (existing) {
-          // Update genre
           if (!existing.genre) {
             await db.game.update({ where: { id: existing.id }, data: { genre: tag.name } });
           } else {
@@ -244,7 +214,6 @@ async function fetchBulkTags(tags: readonly typeof CRAZYGAMES_TAGS) {
               await db.game.update({ where: { id: existing.id }, data: { genre: genres.slice(0, 3).join(', ') } });
             }
           }
-          // Update missing fields
           const updates: Record<string, string> = {};
           if (!existing.thumbnailUrl && thumbnailUrl) updates.thumbnailUrl = thumbnailUrl;
           if (!existing.videoUrl && videoUrl) updates.videoUrl = videoUrl;
@@ -276,13 +245,12 @@ async function fetchBulkTags(tags: readonly typeof CRAZYGAMES_TAGS) {
       fetchStatus.message = `${tag.name}: +${savedInTag} new (${games.length} total)`;
       console.log(`[fetch] ${tag.name}: +${savedInTag} new`);
 
-      // Polite delay (1s between tags — no SDK rate limit!)
-      await delay(1000);
+      await sleep(1000);
     } catch (err) {
       console.error(`[fetch] ${tag.name} error:`, err);
       fetchStatus.message = `${tag.name}: Error`;
       fetchStatus.genresDone++;
-      await delay(500);
+      await sleep(POLITE_DELAY);
     }
   }
 

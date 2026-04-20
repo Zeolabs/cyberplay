@@ -34,6 +34,8 @@ import {
   AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { DEFAULT_SETTINGS as CACHE_DEFAULTS } from '@/lib/cache-config';
+import { CRAZYGAMES_BASE, SOURCE_POLL_INTERVAL, CATEGORY_POLL_INTERVAL, PROGRESS_CLEAR_DELAY, CATEGORY_PROGRESS_CLEAR_DELAY } from '@/lib/constants';
 
 // ─── Genre Icon Map ──────────────────────────────────────────────
 const GENRE_ICON_MAP: Record<string, LucideIcon> = {
@@ -164,7 +166,7 @@ export default function GamePortal() {
   const [mounted, setMounted] = useState(false);
   const [loadingOverlayDone, setLoadingOverlayDone] = useState(false);
 
-  // Cache settings
+  // Cache settings (synced with DEFAULT_SETTINGS from cache-config)
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [cacheEnabled, setCacheEnabled] = useState(true);
   const [cacheImageTTL, setCacheImageTTL] = useState(720);
@@ -208,7 +210,7 @@ export default function GamePortal() {
   const [addSourceForm, setAddSourceForm] = useState({
     name: '',
     type: 'CRAZYGAMES' as string,
-    baseUrl: 'https://www.crazygames.com',
+    baseUrl: CRAZYGAMES_BASE,
     searchQuery: '',
   });
   const [fetchingSourceId, setFetchingSourceId] = useState<string | null>(null);
@@ -464,13 +466,13 @@ export default function GamePortal() {
               } else {
                 toast.error(progress.message);
               }
-              setTimeout(() => setFetchProgress(null), 3000);
+              setTimeout(() => setFetchProgress(null), PROGRESS_CLEAR_DELAY);
             }
           }
         } catch {
           // continue polling
         }
-      }, 1500);
+      }, SOURCE_POLL_INTERVAL);
     } catch {
       toast.error('Failed to start fetch');
       setFetchingSourceId(null);
@@ -490,7 +492,7 @@ export default function GamePortal() {
         setAddSourceForm({
           name: '',
           type: 'CRAZYGAMES',
-          baseUrl: 'https://www.crazygames.com',
+          baseUrl: CRAZYGAMES_BASE,
           searchQuery: '',
         });
         fetchSources();
@@ -589,7 +591,7 @@ export default function GamePortal() {
             if (status.status === 'done' || status.status === 'error') {
               clearInterval(pollInterval);
               setCategoryFetching(false);
-              setTimeout(() => setCategoryFetchProgress(null), 5000);
+              setTimeout(() => setCategoryFetchProgress(null), CATEGORY_PROGRESS_CLEAR_DELAY);
               fetchGenres();
               fetchGames();
               if (status.status === 'done') {
@@ -602,7 +604,7 @@ export default function GamePortal() {
         } catch {
           // Continue polling
         }
-      }, 2000);
+      }, CATEGORY_POLL_INTERVAL);
     } catch {
       toast.error('Failed to start fetch');
       setCategoryFetching(false);
@@ -1396,7 +1398,7 @@ export default function GamePortal() {
                     type: v,
                     baseUrl:
                       v === 'CRAZYGAMES'
-                        ? 'https://www.crazygames.com'
+                        ? CRAZYGAMES_BASE
                         : v === 'POKI'
                           ? 'https://www.poki.com'
                           : addSourceForm.baseUrl,

@@ -1,45 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { existsSync, readFileSync, writeFileSync, readdirSync, statSync, rmSync, mkdirSync } from 'fs';
+import { existsSync, readdirSync, statSync, rmSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
-
-// ─── Config ────────────────────────────────────────────────────────
-const CACHE_DIR = join(process.cwd(), '.cache/images');
-const SETTINGS_FILE = join(process.cwd(), '.cache/settings.json');
-
-interface CacheSettings {
-  enabled: boolean;
-  imageTTL: number;  // hours
-  videoTTL: number;  // hours
-}
-
-const DEFAULT_SETTINGS: CacheSettings = {
-  enabled: true,
-  imageTTL: 720,
-  videoTTL: 168,
-};
+import {
+  CACHE_DIR, SETTINGS_FILE, DEFAULT_SETTINGS,
+  readSettings, type CacheSettings,
+} from '@/lib/cache-config';
 
 // ─── Helpers ───────────────────────────────────────────────────────
-function readSettings(): CacheSettings {
-  try {
-    if (existsSync(SETTINGS_FILE)) {
-      const raw = readFileSync(SETTINGS_FILE, 'utf-8');
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
-    }
-  } catch {
-    // corrupted settings, use defaults
-  }
-  // Create default settings file
-  if (!existsSync(SETTINGS_FILE)) {
-    try {
-      mkdirSync(join(process.cwd(), '.cache'), { recursive: true });
-      writeFileSync(SETTINGS_FILE, JSON.stringify(DEFAULT_SETTINGS, null, 2));
-    } catch {
-      // ignore write errors
-    }
-  }
-  return DEFAULT_SETTINGS;
-}
-
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;

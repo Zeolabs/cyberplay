@@ -11,6 +11,7 @@ import {
   MousePointerClick, Truck, DoorOpen, Crosshair, Skull,
   Dices, Users, Puzzle, Target, Goal, PersonStanding,
   Brain, Castle, LayoutGrid, Package, Pickaxe,
+  ArrowUp, ArrowDown,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -1761,16 +1762,31 @@ export default function GamePortal() {
       <footer className="footer-glow fixed bottom-0 left-0 right-0 z-40 px-4 py-2.5 bg-[#050a05]/90 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-[#94a3b8]">
           <div className="flex items-center gap-2">
-            <div className="text-[#00ff41] header-logo-glow">
-              <Gamepad2 className="w-4 h-4" strokeWidth={1.5} />
+            <div className="text-[#00ff41] header-logo-glow font-bold">
+              <Gamepad2 className="w-4 h-4" strokeWidth={2.5} />
             </div>
-            <span className="kali-text text-[10px]">CYBERPLAY</span>
+            <span className="kali-text text-[10px] font-bold">CYBERPLAY</span>
             <span className="text-[10px] text-[#00ff41]/80 font-bold kali-text tracking-wider">
               - COPYRIGHT © 2026 ZEOLABS STUDIO
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
           </div>
-          <span>{games.length} GAME{games.length !== 1 ? 'S' : ''} AVAILABLE</span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="w-7 h-7 flex items-center justify-center rounded border border-[#00ff41]/20 text-[#00ff41] hover:bg-[#00ff41]/10 transition-all"
+              title="Scroll to top"
+            >
+              <ArrowUp className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
+              className="w-7 h-7 flex items-center justify-center rounded border border-[#00ff41]/20 text-[#00ff41] hover:bg-[#00ff41]/10 transition-all"
+              title="Scroll to bottom"
+            >
+              <ArrowDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </footer>
     </div>

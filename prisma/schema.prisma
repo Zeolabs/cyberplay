@@ -4,7 +4,9 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  // Hardcoded dummy URL - Prisma only uses this for schema validation.
+  // Actual DB connection is handled by the adapter in src/lib/db.ts
+  url      = "file:./dummy.db"
 }
 
 model Game {

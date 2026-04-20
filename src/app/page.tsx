@@ -648,7 +648,7 @@ export default function GamePortal() {
           {/* Logo */}
           <div className="flex items-center gap-2.5 shrink-0">
             <div className="text-[#00ff41] header-logo-glow">
-              <Gamepad2 className="w-7 h-7" strokeWidth={1.5} />
+              <Gamepad2 className="w-7 h-7" strokeWidth={2.5} />
             </div>
             <span className="text-xl font-bold kali-text cursor-pointer tracking-wider">
               CYBERPLAY

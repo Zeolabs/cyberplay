@@ -6,11 +6,34 @@ import { hash } from 'crypto';
 
 // ─── Config ────────────────────────────────────────────────────────
 const CACHE_DIR = join(process.cwd(), '.cache/images');
-const MAX_AGE_IMAGE = 60 * 60 * 24 * 30;     // 30 days
-const MAX_AGE_VIDEO = 60 * 60 * 24 * 7;       // 7 days
+const SETTINGS_FILE = join(process.cwd(), '.cache/settings.json');
 const MAX_CACHE_SIZE = 500 * 1024 * 1024;      // 500MB max cache
 
+interface CacheSettings {
+  enabled: boolean;
+  imageTTL: number;  // hours
+  videoTTL: number;  // hours
+}
+
+const DEFAULT_SETTINGS: CacheSettings = {
+  enabled: true,
+  imageTTL: 720,
+  videoTTL: 168,
+};
+
 // ─── Helpers ───────────────────────────────────────────────────────
+function readSettings(): CacheSettings {
+  try {
+    if (existsSync(SETTINGS_FILE)) {
+      const raw = readFileSync(SETTINGS_FILE, 'utf-8');
+      return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    }
+  } catch {
+    // corrupted settings, use defaults
+  }
+  return DEFAULT_SETTINGS;
+}
+
 function hashUrl(url: string): string {
   return hash('sha256', url).toString('hex').slice(0, 16);
 }
@@ -41,7 +64,9 @@ function getCachedPath(urlHash: string, ext: string): string {
 }
 
 function getMaxAge(url: string): number {
-  return isVideo(url) ? MAX_AGE_VIDEO : MAX_AGE_IMAGE;
+  const settings = readSettings();
+  const ttlHours = isVideo(url) ? settings.videoTTL : settings.imageTTL;
+  return ttlHours * 60 * 60; // convert hours to seconds
 }
 
 function getContentType(ext: string): string {
@@ -85,6 +110,50 @@ export async function GET(request: NextRequest) {
   ];
   if (!allowedHosts.includes(parsedUrl.hostname)) {
     return NextResponse.json({ error: 'Domain not allowed' }, { status: 403 });
+  }
+
+  const settings = readSettings();
+
+  // If cache is disabled, bypass entirely
+  if (!settings.enabled) {
+    try {
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(15000),
+        redirect: 'follow',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': isVideo(url)
+            ? 'video/mp4,video/webm,*/*;q=0.8'
+            : 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+        },
+      });
+
+      if (!res.ok) {
+        return NextResponse.json(
+          { error: `Upstream returned ${res.status}` },
+          { status: res.status }
+        );
+      }
+
+      const contentType = res.headers.get('content-type') || '';
+      const buffer = Buffer.from(await res.arrayBuffer());
+
+      return new NextResponse(buffer, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Content-Length': String(buffer.length),
+          'Cache-Control': 'no-cache',
+          'X-Cache': 'BYPASS',
+        },
+      });
+    } catch (err) {
+      console.error(`[proxy] Failed to fetch ${url}:`, err);
+      return NextResponse.json(
+        { error: 'Failed to fetch remote resource' },
+        { status: 502 }
+      );
+    }
   }
 
   const urlHash = hashUrl(url);

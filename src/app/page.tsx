@@ -162,6 +162,15 @@ export default function GamePortal() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Cache settings
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [cacheEnabled, setCacheEnabled] = useState(true);
+  const [cacheImageTTL, setCacheImageTTL] = useState(720);
+  const [cacheVideoTTL, setCacheVideoTTL] = useState(168);
+  const [cacheStats, setCacheStats] = useState<{ totalFiles: number; totalSize: number; totalSizeFormatted: string } | null>(null);
+  const [cacheClearing, setCacheClearing] = useState(false);
+  const [cacheSaving, setCacheSaving] = useState(false);
+
   // Upload dialog
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadForm, setUploadForm] = useState({
@@ -505,6 +514,49 @@ export default function GamePortal() {
     }
   };
 
+  const fetchCacheStats = useCallback(async () => {
+    try {
+      const res = await fetch('/api/cache');
+      if (res.ok) {
+        const data = await res.json();
+        setCacheEnabled(data.enabled);
+        setCacheImageTTL(data.imageTTL);
+        setCacheVideoTTL(data.videoTTL);
+        setCacheStats({ totalFiles: data.totalFiles, totalSize: data.totalSize, totalSizeFormatted: data.totalSizeFormatted });
+      }
+    } catch { /* silent */ }
+  }, []);
+
+  const handleSaveCacheSettings = async () => {
+    try {
+      setCacheSaving(true);
+      const res = await fetch('/api/cache', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: cacheEnabled, imageTTL: cacheImageTTL, videoTTL: cacheVideoTTL }),
+      });
+      if (res.ok) toast.success('Cache settings updated!');
+      else toast.error('Failed to update settings');
+    } catch { toast.error('Failed to update settings'); }
+    finally { setCacheSaving(false); }
+  };
+
+  const handleClearCache = async () => {
+    try {
+      setCacheClearing(true);
+      const res = await fetch('/api/cache', { method: 'DELETE' });
+      if (res.ok) {
+        toast.success('Cache cleared!');
+        await fetchCacheStats();
+      } else toast.error('Failed to clear cache');
+    } catch { toast.error('Failed to clear cache'); }
+    finally { setCacheClearing(false); }
+  };
+
+  useEffect(() => {
+    if (settingsOpen) fetchCacheStats();
+  }, [settingsOpen, fetchCacheStats]);
+
   const handleFetchCategories = async () => {
     try {
       setCategoryFetching(true);
@@ -621,7 +673,7 @@ export default function GamePortal() {
           <div className="hidden md:flex items-center gap-1.5">
             <button
               onClick={() => setView('sources')}
-              className={`kali-btn-sm ${view === 'sources' ? 'kali-btn-cyan-active' : 'kali-btn-cyan'}`}
+              className={`kali-btn-sm ${view === 'sources' ? 'kali-btn-green-active' : 'kali-btn-green'}`}
             >
               <Globe className="w-3 h-3 mr-1" /> SOURCES
             </button>
@@ -636,6 +688,12 @@ export default function GamePortal() {
               className={`kali-btn-sm ${view === 'manage' ? 'kali-btn-green-active' : 'kali-btn-green'}`}
             >
               <Settings className="w-3 h-3 mr-1" /> MANAGE
+            </button>
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="kali-btn-outline kali-btn-sm"
+            >
+              <Settings className="w-3 h-3 mr-1" /> SETTINGS
             </button>
           </div>
 
@@ -665,7 +723,7 @@ export default function GamePortal() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="kali-input w-full px-3 py-2 rounded text-sm"
                 />
-                <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="kali-btn-cyan kali-btn-sm justify-start">
+                <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="kali-btn-green kali-btn-sm justify-start">
                   <Globe className="w-3 h-3 mr-1" /> SOURCES
                 </button>
                 <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="kali-btn-green kali-btn-sm justify-start">
@@ -673,6 +731,9 @@ export default function GamePortal() {
                 </button>
                 <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="kali-btn-green kali-btn-sm justify-start">
                   <Settings className="w-3 h-3 mr-1" /> MANAGE
+                </button>
+                <button onClick={() => { setSettingsOpen(true); setMobileMenuOpen(false); }} className="kali-btn-outline kali-btn-sm justify-start">
+                  <Settings className="w-3 h-3 mr-1" /> SETTINGS
                 </button>
               </div>
             </motion.div>
@@ -1011,7 +1072,10 @@ export default function GamePortal() {
               transition={{ duration: 0.3 }}
               className="max-w-7xl mx-auto"
             >
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-3 mb-6">
+                <Button variant="ghost" size="sm" onClick={() => setView('home')} className="text-[#00ff41] hover:bg-[#00ff41]/10">
+                  <ArrowLeft className="w-4 h-4 mr-1" /> Back
+                </Button>
                 <Settings className="w-5 h-5 text-[#39ff14] icon-glow-gold" />
                 <h2 className="text-xl font-bold kali-text-green">GAME MANAGER</h2>
               </div>
@@ -1159,11 +1223,14 @@ export default function GamePortal() {
               transition={{ duration: 0.3 }}
               className="max-w-7xl mx-auto space-y-6"
             >
+              <div className="flex items-center gap-3 mb-6">
+                <Button variant="ghost" size="sm" onClick={() => setView('home')} className="text-[#00ff41] hover:bg-[#00ff41]/10">
+                  <ArrowLeft className="w-4 h-4 mr-1" /> Back
+                </Button>
+                <Globe className="w-5 h-5 text-[#39ff14] icon-glow-green" />
+                <h2 className="text-xl font-bold kali-text-green">GAME SOURCES</h2>
+              </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-[#06b6d4] icon-glow-blue" />
-                  <h2 className="text-xl font-bold kali-text-cyan">GAME SOURCES</h2>
-                </div>
                 <Button
                   onClick={() => setAddSourceOpen(true)}
                   className="kali-btn text-xs"
@@ -1593,6 +1660,101 @@ export default function GamePortal() {
             <Button onClick={handleEdit} className="kali-btn text-xs">
               Save Changes
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Settings Dialog ── */}
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent className="bg-[#080f08] border-[#00ff41]/20 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[#00ff41] flex items-center gap-2">
+              <Settings className="w-4 h-4" /> CACHE SETTINGS
+            </DialogTitle>
+            <DialogDescription className="text-[#94a3b8] text-xs">
+              Manage image &amp; video proxy cache
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-5 py-2">
+            {/* Cache toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm text-[#e2e8f0]">Enable Cache</Label>
+                <p className="text-[10px] text-[#94a3b8]">Cache thumbnails &amp; video previews locally</p>
+              </div>
+              <Switch checked={cacheEnabled} onCheckedChange={setCacheEnabled} />
+            </div>
+
+            {/* Image TTL */}
+            <div className="space-y-2">
+              <Label className="text-sm text-[#e2e8f0]">Image Cache TTL</Label>
+              <Select value={String(cacheImageTTL)} onValueChange={(v) => setCacheImageTTL(Number(v))}>
+                <SelectTrigger className="kali-input text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#080f08] border-[#00ff41]/15">
+                  <SelectItem value="24">24 hours</SelectItem>
+                  <SelectItem value="168">7 days</SelectItem>
+                  <SelectItem value="336">14 days</SelectItem>
+                  <SelectItem value="720">30 days</SelectItem>
+                  <SelectItem value="2160">90 days</SelectItem>
+                  <SelectItem value="4320">180 days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Video TTL */}
+            <div className="space-y-2">
+              <Label className="text-sm text-[#e2e8f0]">Video Cache TTL</Label>
+              <Select value={String(cacheVideoTTL)} onValueChange={(v) => setCacheVideoTTL(Number(v))}>
+                <SelectTrigger className="kali-input text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#080f08] border-[#00ff41]/15">
+                  <SelectItem value="24">24 hours</SelectItem>
+                  <SelectItem value="72">3 days</SelectItem>
+                  <SelectItem value="168">7 days</SelectItem>
+                  <SelectItem value="336">14 days</SelectItem>
+                  <SelectItem value="720">30 days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Stats */}
+            {cacheStats && (
+              <div className="kali-border rounded-lg p-3 space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#94a3b8]">Cached Files</span>
+                  <span className="text-[#00ff41] font-mono">{cacheStats.totalFiles}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#94a3b8]">Total Size</span>
+                  <span className="text-[#00ff41] font-mono">{cacheStats.totalSizeFormatted}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex justify-between">
+            <Button
+              variant="ghost"
+              onClick={handleClearCache}
+              disabled={cacheClearing || !cacheStats?.totalFiles}
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs"
+            >
+              {cacheClearing ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Trash2 className="w-3 h-3 mr-1" />}
+              Clear Cache
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={() => setSettingsOpen(false)} className="text-[#94a3b8] hover:text-white text-xs">
+                Cancel
+              </Button>
+              <Button onClick={handleSaveCacheSettings} disabled={cacheSaving} className="kali-btn text-xs">
+                {cacheSaving ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+                Save
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -822,12 +822,13 @@ export default function GamePortal() {
                 </div>
               </div>
 
-              {/* Game Frame */}
+              {/* Game Frame — iframe offset clips CrazyGames watermark banner */}
               <div ref={fullscreenRef} className="relative flex-1 rounded-xl overflow-hidden kali-border bg-black">
                 <iframe
                   ref={gameFrameRef}
                   src={selectedGame.gameUrl}
-                  className="w-full h-full border-0"
+                  className="w-full border-0"
+                  style={{ height: 'calc(100% + 48px)', marginTop: '-48px' }}
                   allowFullScreen
                   allow="autoplay; fullscreen; gamepad"
                   title={selectedGame.title}

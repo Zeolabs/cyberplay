@@ -1774,7 +1774,7 @@ export default function GamePortal() {
             </div>
             <span className="kali-text text-[10px]">CYBERPLAY</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
-            <span className="text-[10px] text-[#94a3b8]/50 ml-1">
+            <span className="text-[10px] text-[#00ff41]/70 ml-1 font-bold copyright-glow">
               © {new Date().getFullYear()} Zeolabs Studio.
             </span>
           </div>
@@ -1875,6 +1875,7 @@ function LoadingOverlay({ onComplete }: { onComplete: () => void }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.1 }}
                     className={`leading-relaxed ${
+                      !line ? 'text-[#94a3b8]' :
                       line.includes('[OK]')
                         ? 'text-[#00ff41]'
                         : line.includes('[>>>]')
@@ -1884,7 +1885,7 @@ function LoadingOverlay({ onComplete }: { onComplete: () => void }) {
                         : 'text-[#94a3b8]'
                     }`}
                   >
-                    {line}
+                    {line || ''}
                     {idx === lines.length - 1 && phase === 'boot' && (
                       <span className="inline-block w-2 h-3.5 bg-[#00ff41] ml-0.5 animate-pulse" />
                     )}

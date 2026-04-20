@@ -112,3 +112,27 @@ Stage Summary:
 - All button states (purple/cyan active) now properly styled
 - All text glow variants (purple, blue, cyan, gold) working
 - Zero lint errors, clean compile
+
+---
+Task ID: 5
+Agent: Main Agent
+Task: Change SVG color to purple with glow animation + fix upload button style
+
+Work Log:
+- Updated `public/dragon.svg` fill from `currentColor` to `#8b5cf6` (purple) with SVG `<animate>` element cycling through purple shades (#8b5cf6 → #a78bfa → #c084fc) on a 3s loop
+- Updated `public/logo.svg` to use purple color scheme: border stroke `#8b5cf6`, fill `#8b5cf6`, background `#1a1033`, with CSS `logoGlow` keyframe animation for purple glow
+- Updated DragonLogo component in `page.tsx` to use explicit purple fill `#8b5cf6` instead of `currentColor`, with inline `<animate>` for purple color cycling
+- Updated CSS `.dragon-bg-watermark` filter: `hue-rotate(248deg)`, `saturate(3500%)`, opacity `0.06` for stronger purple watermark
+- Updated CSS `.dragon-bg-watermark-cyan` filter: `hue-rotate(270deg)` for violet/magenta secondary watermark
+- Updated CSS `.dragon-page-bg` filter: purple-tinted filter with opacity `0.04`
+- Created `.kali-btn-purple` CSS class: full purple gradient button matching `kali-btn` base style with hover sweep, glow, and transform
+- Created `.kali-btn-cyan-active` and `.kali-btn-purple-active` CSS classes for active nav button states
+- Fixed desktop UPLOAD button: changed from bare `kali-btn-sm` (no color) to `kali-btn-purple kali-btn-sm` (purple gradient)
+- Fixed mobile UPLOAD button: changed from `kali-btn kali-btn-sm` to `kali-btn-purple kali-btn-sm` for consistency
+- Verified: lint passes, dev server compiles with 0 errors
+
+Stage Summary:
+- All SVG logos now display in purple (#8b5cf6) with animated glow/color-cycling
+- Upload button now has proper purple gradient styling matching the hacking theme
+- Active states for SOURCES and MANAGE nav buttons now properly defined
+- No build or lint errors

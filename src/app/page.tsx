@@ -130,12 +130,14 @@ function DragonLogo({ className = '', size = 28 }: { className?: string; size?: 
       viewBox="0 0 32 32"
       width={size}
       height={size}
-      fill="currentColor"
+      fill="#8b5cf6"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
       <title>kalilinux</title>
-      <path d={DRAGON_PATH} />
+      <path d={DRAGON_PATH}>
+        <animate attributeName="fill" values="#8b5cf6;#a78bfa;#c084fc;#a78bfa;#8b5cf6" dur="3s" repeatCount="indefinite" />
+      </path>
     </svg>
   );
 }
@@ -565,7 +567,7 @@ export default function GamePortal() {
             </button>
             <button
               onClick={() => setUploadOpen(true)}
-              className="kali-btn-sm"
+              className="kali-btn-purple kali-btn-sm"
             >
               <Upload className="w-3 h-3 mr-1" /> UPLOAD
             </button>
@@ -609,7 +611,7 @@ export default function GamePortal() {
                 <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="kali-btn-cyan kali-btn-sm justify-start">
                   <Globe className="w-3 h-3 mr-1" /> SOURCES
                 </button>
-                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="kali-btn kali-btn-sm justify-start">
+                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="kali-btn-purple kali-btn-sm justify-start">
                   <Upload className="w-3 h-3 mr-1" /> UPLOAD
                 </button>
                 <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="kali-btn-purple kali-btn-sm justify-start">

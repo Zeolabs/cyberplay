@@ -583,6 +583,73 @@
   letter-spacing: 0.05em;
 }
 
+/* Purple button variant (same as kali-btn base, explicit name) */
+.kali-btn-purple {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono), 'Fira Code', monospace;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 0.55rem 1.5rem;
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: #ffffff;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.25rem;
+  text-shadow: 0 0 4px rgba(139, 92, 246, 0.3);
+  animation: btnGlowIdle 3s ease-in-out infinite;
+}
+
+.kali-btn-purple::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  pointer-events: none;
+}
+
+.kali-btn-purple:hover::before {
+  animation: btnSweep 0.6s ease forwards;
+}
+
+.kali-btn-purple:hover {
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  border-color: rgba(139, 92, 246, 0.8);
+  box-shadow:
+    0 0 12px rgba(139, 92, 246, 0.4),
+    0 0 25px rgba(139, 92, 246, 0.2),
+    0 0 50px rgba(139, 92, 246, 0.1),
+    inset 0 0 15px rgba(139, 92, 246, 0.05);
+  text-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Active states for nav buttons */
+.kali-btn-cyan-active {
+  background: rgba(6, 182, 212, 0.15) !important;
+  border: 1px solid rgba(6, 182, 212, 0.5) !important;
+  color: #22d3ee !important;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2), inset 0 0 8px rgba(6, 182, 212, 0.04) !important;
+  text-shadow: 0 0 6px rgba(6, 182, 212, 0.5) !important;
+}
+
+.kali-btn-purple-active {
+  background: rgba(139, 92, 246, 0.15) !important;
+  border: 1px solid rgba(139, 92, 246, 0.5) !important;
+  color: #a78bfa !important;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2), inset 0 0 8px rgba(139, 92, 246, 0.04) !important;
+  text-shadow: 0 0 6px rgba(139, 92, 246, 0.5) !important;
+}
+
 .kali-btn-sm.kali-btn-purple,
 .kali-btn-sm.kali-btn-cyan,
 .kali-btn-sm.kali-btn-blue {
@@ -1293,13 +1360,13 @@
   position: absolute;
   pointer-events: none;
   animation: dragonDrift 20s ease-in-out infinite;
-  filter: brightness(0) invert(35%) sepia(95%) saturate(3000%) hue-rotate(252deg) brightness(0.9);
-  opacity: 0.04;
+  filter: brightness(0) invert(25%) sepia(95%) saturate(3500%) hue-rotate(248deg) brightness(1.2);
+  opacity: 0.06;
   z-index: 0;
 }
 
 .dragon-bg-watermark-cyan {
-  filter: brightness(0) invert(70%) sepia(60%) saturate(2000%) hue-rotate(130deg) brightness(0.8);
+  filter: brightness(0) invert(20%) sepia(90%) saturate(3000%) hue-rotate(270deg) brightness(1.1);
 }
 
 /* Page-wide dragon background */
@@ -1313,8 +1380,8 @@
   pointer-events: none;
   z-index: 0;
   animation: dragonBgFloat 30s ease-in-out infinite;
-  filter: brightness(0) invert(30%) sepia(90%) saturate(2500%) hue-rotate(252deg) brightness(0.6);
-  opacity: 0.025;
+  filter: brightness(0) invert(25%) sepia(95%) saturate(3500%) hue-rotate(248deg) brightness(1.0);
+  opacity: 0.04;
   mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%);
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%);
 }

@@ -7,7 +7,12 @@ import {
   Edit3, Zap, Monitor, Cpu, Menu, Grid3X3, Trophy, ArrowLeft,
   ExternalLink, Maximize2, Globe, Database,
   Plus, Loader2,
+  Swords, Compass, CircleDot, Bike, Car, Layers, Smile,
+  MousePointerClick, Truck, DoorOpen, Crosshair, Skull,
+  Dices, Users, Puzzle, Target, Goal, PersonStanding,
+  Brain, Castle, LayoutGrid, Package, Pickaxe,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,6 +33,15 @@ import {
   AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+
+// ─── Genre Icon Map ──────────────────────────────────────────────
+const GENRE_ICON_MAP: Record<string, LucideIcon> = {
+  Swords, Compass, CircleDot, Bike, Car, Layers, Smile,
+  MousePointerClick, Gamepad2, Truck, DoorOpen, Zap,
+  Crosshair, Skull, Globe, Grid3X3, Dices, Users, Puzzle,
+  Target, Goal, Trophy, PersonStanding, Brain, Castle, Pickaxe,
+  LayoutGrid, Package,
+};
 
 // ─── Types ──────────────────────────────────────────────────────────
 interface Game {
@@ -780,7 +794,12 @@ export default function GamePortal() {
                             : 'bg-[#0d0d1f]/60 text-[#e2e8f0]/50 border-[#8b5cf6]/8 hover:text-[#e2e8f0] hover:border-[#8b5cf6]/20'
                         }`}
                       >
-                        <span>{genre.icon}</span>
+                        <span className="shrink-0">
+                          {(() => {
+                            const IconComponent = GENRE_ICON_MAP[genre.icon] || Gamepad2;
+                            return <IconComponent className="w-3.5 h-3.5" />;
+                          })()}
+                        </span>
                         <span>{genre.name}</span>
                         <span className={`text-[10px] ml-0.5 ${genreFilter === genre.name ? 'text-[#8b5cf6]' : 'text-[#94a3b8]/50'}`}>
                           {genre.count}

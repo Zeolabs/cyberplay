@@ -671,19 +671,19 @@ export default function GamePortal() {
           <div className="hidden md:flex items-center gap-1.5">
             <button
               onClick={() => setView('sources')}
-              className={`kali-btn-sm ${view === 'sources' ? 'kali-btn-green-active' : 'kali-btn-green'}`}
+              className={`kali-btn-sm ${view === 'sources' ? 'kali-btn-active' : 'kali-btn'}`}
             >
               <Globe className="w-3 h-3 mr-1" /> SOURCES
             </button>
             <button
               onClick={() => setUploadOpen(true)}
-              className="kali-btn-green kali-btn-sm"
+              className="kali-btn kali-btn-sm"
             >
               <Upload className="w-3 h-3 mr-1" /> UPLOAD
             </button>
             <button
               onClick={() => setView('manage')}
-              className={`kali-btn-sm ${view === 'manage' ? 'kali-btn-green-active' : 'kali-btn-green'}`}
+              className={`kali-btn-sm ${view === 'manage' ? 'kali-btn-active' : 'kali-btn'}`}
             >
               <Settings className="w-3 h-3 mr-1" /> MANAGE
             </button>
@@ -697,7 +697,7 @@ export default function GamePortal() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-[#00ff41] p-2 rounded hover:bg-[#00ff41]/10 border border-[#00ff41]/20 transition-all"
+            className="md:hidden kali-btn-outline w-8 h-8"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <Menu className="w-5 h-5" />
@@ -721,13 +721,13 @@ export default function GamePortal() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="kali-input w-full px-3 py-2 rounded text-sm"
                 />
-                <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="kali-btn-green kali-btn-sm justify-start">
+                <button onClick={() => { setView('sources'); setMobileMenuOpen(false); }} className="kali-btn kali-btn-sm justify-start">
                   <Globe className="w-3 h-3 mr-1" /> SOURCES
                 </button>
-                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="kali-btn-green kali-btn-sm justify-start">
+                <button onClick={() => { setUploadOpen(true); setMobileMenuOpen(false); }} className="kali-btn kali-btn-sm justify-start">
                   <Upload className="w-3 h-3 mr-1" /> UPLOAD
                 </button>
-                <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="kali-btn-green kali-btn-sm justify-start">
+                <button onClick={() => { setView('manage'); setMobileMenuOpen(false); }} className="kali-btn kali-btn-sm justify-start">
                   <Settings className="w-3 h-3 mr-1" /> MANAGE
                 </button>
                 <button onClick={() => { setSettingsOpen(true); setMobileMenuOpen(false); }} className="kali-btn-outline kali-btn-sm justify-start">
@@ -821,7 +821,7 @@ export default function GamePortal() {
                     <button
                       onClick={handleFetchCategories}
                       disabled={categoryFetching}
-                      className="kali-btn-green kali-btn-sm text-[10px]"
+                      className="kali-btn kali-btn-sm text-[10px]"
                       title="Fetch all games from CrazyGames (direct HTTP, no SDK)"
                     >
                       <Database className="w-3 h-3 mr-1" />
@@ -1180,12 +1180,12 @@ export default function GamePortal() {
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-[#0c150c] border-[#00ff41]/15 text-[#e2e8f0] hover:bg-[#0c1a0c]">
+                                <AlertDialogCancel className="kali-btn-outline kali-btn-sm">
                                   Cancel
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleDelete(game.id)}
-                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                  className="kali-btn-sm bg-red-600/80 hover:bg-red-600 text-white border border-red-500/40 hover:border-red-400/60"
                                 >
                                   Delete
                                 </AlertDialogAction>
@@ -1337,12 +1337,12 @@ export default function GamePortal() {
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel className="bg-[#0c150c] border-[#00ff41]/15 text-[#e2e8f0] hover:bg-[#0c1a0c]">
+                              <AlertDialogCancel className="kali-btn-outline kali-btn-sm">
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() => handleDeleteSource(source.id)}
-                                className="bg-red-600 hover:bg-red-700 text-white"
+                                className="kali-btn-sm bg-red-600/80 hover:bg-red-600 text-white border border-red-500/40 hover:border-red-400/60"
                               >
                                 Delete
                               </AlertDialogAction>
@@ -1731,7 +1731,7 @@ export default function GamePortal() {
               variant="ghost"
               onClick={handleClearCache}
               disabled={cacheClearing || !cacheStats?.totalFiles}
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs"
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 hover:border-red-500/30 text-xs"
             >
               {cacheClearing ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Trash2 className="w-3 h-3 mr-1" />}
               Clear Cache
@@ -1770,14 +1770,14 @@ export default function GamePortal() {
           <div className="flex items-center gap-1">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="w-7 h-7 flex items-center justify-center rounded border border-[#00ff41]/20 text-[#00ff41] hover:bg-[#00ff41]/10 hover:border-[#00ff41]/50 cursor-pointer transition-all"
+              className="kali-btn-outline kali-btn-icon"
               title="Scroll to top"
             >
               <ArrowUp className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
-              className="w-7 h-7 flex items-center justify-center rounded border border-[#00ff41]/20 text-[#00ff41] hover:bg-[#00ff41]/10 hover:border-[#00ff41]/50 cursor-pointer transition-all"
+              className="kali-btn-outline kali-btn-icon"
               title="Scroll to bottom"
             >
               <ArrowDown className="w-3.5 h-3.5" />

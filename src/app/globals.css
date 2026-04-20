@@ -343,26 +343,41 @@
   letter-spacing: 0.05em;
 }
 
-/* Green matrix button — alias for .kali-btn (single source of truth) */
-.kali-btn-green {
-  composes: kali-btn;
+/* Icon-only button (square, no gap/padding) */
+.kali-btn-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  gap: 0;
+  justify-content: center;
 }
 
-.kali-btn-green-active {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 0 !important;
-  background: rgba(0, 255, 65, 0.15) !important;
-  border: 1px solid rgba(0, 255, 65, 0.5) !important;
-  color: #39ff14 !important;
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2), inset 0 0 8px rgba(0, 255, 65, 0.04) !important;
-  text-shadow: 0 0 6px rgba(0, 255, 65, 0.5) !important;
-}
-
-.kali-btn-sm.kali-btn-green {
-  padding: 0.3rem 0.85rem;
+/* Active/selected state for .kali-btn */
+.kali-btn-active {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-family: var(--font-mono), 'Fira Code', monospace;
   font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.85rem;
+  background: rgba(0, 255, 65, 0.15);
+  border: 1px solid rgba(0, 255, 65, 0.5);
+  color: #39ff14;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2), inset 0 0 8px rgba(0, 255, 65, 0.04);
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kali-btn-active:hover {
+  background: rgba(0, 255, 65, 0.22);
+  border-color: rgba(0, 255, 65, 0.7);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3), inset 0 0 10px rgba(0, 255, 65, 0.06);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1108,49 +1123,26 @@
 }
 
 /* Ghost variant */
-[data-slot="button"].bg-transparent,
-[data-slot="button"][class*="ghost"],
-[data-slot="button"][class*="variant-ghost"] {
+[data-slot="button"][class*="ghost"] {
   background: transparent !important;
-  border-left: 2px solid rgba(0, 255, 65, 0.4) !important;
+  border: 1px solid transparent !important;
   border-radius: 0.25rem !important;
   color: #94a3b8 !important;
   text-shadow: none !important;
 }
 
-[data-slot="button"].bg-transparent:hover,
-[data-slot="button"][class*="ghost"]:hover,
-[data-slot="button"][class*="variant-ghost"]:hover {
+[data-slot="button"][class*="ghost"]:hover {
   background: rgba(0, 255, 65, 0.06) !important;
-  border-left-color: #00ff41 !important;
+  border-color: rgba(0, 255, 65, 0.3) !important;
   color: #00ff41 !important;
   text-shadow: 0 0 6px rgba(0, 255, 65, 0.4) !important;
   box-shadow: 0 0 8px rgba(0, 255, 65, 0.08), inset 0 0 12px rgba(0, 255, 65, 0.03) !important;
 }
 
-[data-slot="button"].bg-transparent::after,
-[data-slot="button"][class*="ghost"]::after,
-[data-slot="button"][class*="variant-ghost"]::after {
-  content: '> ';
-  position: absolute;
-  left: 0;
-  opacity: 0;
-  color: #00ff41;
-  text-shadow: 0 0 6px rgba(0, 255, 65, 0.6);
-  font-weight: bold;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
+/* Ghost hover: no pseudo-content prefix — keep button text clean */
 
-[data-slot="button"].bg-transparent:hover::after,
-[data-slot="button"][class*="ghost"]:hover::after,
-[data-slot="button"][class*="variant-ghost"]:hover::after {
-  opacity: 1;
-}
-
-[data-slot="button"].bg-transparent::before,
-[data-slot="button"][class*="ghost"]::before,
-[data-slot="button"][class*="variant-ghost"]::before {
+/* Ghost hover: scan line effect */
+[data-slot="button"][class*="ghost"]:hover::before {
   content: '';
   position: absolute;
   top: -2px;
@@ -1158,14 +1150,8 @@
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.5), transparent);
-  opacity: 0;
   pointer-events: none;
   z-index: 2;
-}
-
-[data-slot="button"].bg-transparent:hover::before,
-[data-slot="button"][class*="ghost"]:hover::before,
-[data-slot="button"][class*="variant-ghost"]:hover::before {
   animation: btnScanLine 0.8s ease-in-out;
 }
 

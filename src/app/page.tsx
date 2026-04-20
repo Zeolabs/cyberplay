@@ -161,6 +161,7 @@ export default function GamePortal() {
   const [gameLoading, setGameLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [loadingOverlayDone, setLoadingOverlayDone] = useState(false);
 
   // Cache settings
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -742,7 +743,7 @@ export default function GamePortal() {
       </header>
 
       {/* ── Main Content ── */}
-      <main className="flex-1 px-4 py-6">
+      <main className="flex-1 px-4 py-6 pb-14">
         <AnimatePresence mode="wait">
           {/* ═══════════════════════════════════════════════════════════
               HOME VIEW
@@ -1759,8 +1760,13 @@ export default function GamePortal() {
         </DialogContent>
       </Dialog>
 
+      {/* ── Loading Overlay ── */}
+      {mounted && !loadingOverlayDone && (
+        <LoadingOverlay onComplete={() => setLoadingOverlayDone(true)} />
+      )}
+
       {/* ── Footer ── */}
-      <footer className="footer-glow mt-auto px-4 py-3 bg-[#050a05]/80 backdrop-blur-sm">
+      <footer className="footer-glow fixed bottom-0 left-0 right-0 z-40 px-4 py-2.5 bg-[#050a05]/90 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-[#94a3b8]">
           <div className="flex items-center gap-2">
             <div className="text-[#00ff41] header-logo-glow">
@@ -1768,11 +1774,151 @@ export default function GamePortal() {
             </div>
             <span className="kali-text text-[10px]">CYBERPLAY</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
+            <span className="text-[10px] text-[#94a3b8]/50 ml-1">
+              © {new Date().getFullYear()} Zeolabs Studio.
+            </span>
           </div>
           <span>{games.length} GAME{games.length !== 1 ? 'S' : ''} AVAILABLE</span>
         </div>
       </footer>
     </div>
+  );
+}
+
+// ─── LoadingOverlay Component (Hacking Boot Style) ──────────────────
+function LoadingOverlay({ onComplete }: { onComplete: () => void }) {
+  const [lines, setLines] = useState<string[]>([]);
+  const [phase, setPhase] = useState<'boot' | 'logo' | 'done'>('boot');
+  const [visible, setVisible] = useState(true);
+
+  const bootSequence = useMemo(() => [
+    '[BOOT] Initializing system...',
+    '[OK]   Kernel loaded',
+    '[OK]   Mounting filesystem...',
+    '[OK]   Database connected',
+    '[OK]   Cache layer online',
+    '[....] Scanning game library...',
+    '[OK]   Game engine ready',
+    '[OK]   Network secured',
+    '[OK]   All systems nominal',
+    '[>>>]  CYBERPLAY ONLINE',
+  ], []);
+
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < bootSequence.length) {
+        setLines((prev) => [...prev, bootSequence[i]]);
+        i++;
+      } else {
+        clearInterval(interval);
+        setPhase('logo');
+        setTimeout(() => {
+          setPhase('done');
+          setTimeout(() => {
+            setVisible(false);
+            setTimeout(onComplete, 400);
+          }, 500);
+        }, 1200);
+      }
+    }, 180);
+    return () => clearInterval(interval);
+  }, [bootSequence, onComplete]);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="fixed inset-0 z-[9999] bg-[#030803] flex items-center justify-center"
+        >
+          {/* Matrix rain background */}
+          <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+            {Array.from({ length: 30 }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute top-0 text-[#00ff41]/40 text-xs font-mono animate-pulse"
+                style={{
+                  left: `${(i / 30) * 100}%`,
+                  animation: `matrixFall ${2 + Math.random() * 3}s linear ${Math.random() * 2}s infinite`,
+                  fontSize: '10px',
+                }}
+              >
+                {Array.from({ length: 15 }).map((__, j) => (
+                  <div key={j}>
+                    {String.fromCharCode(0x30A0 + Math.random() * 96)}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <div className="relative z-10 w-full max-w-lg px-6">
+            {/* Terminal window */}
+            <div className="rounded-lg border border-[#00ff41]/20 bg-[#0a0f0a]/90 shadow-[0_0_60px_rgba(0,255,65,0.08)] overflow-hidden">
+              {/* Terminal header */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-[#0c150c] border-b border-[#00ff41]/10">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#28ca42]" />
+                <span className="ml-2 text-[10px] text-[#00ff41]/50 font-mono">cyberplay@boot:~$</span>
+              </div>
+
+              {/* Terminal body */}
+              <div className="p-4 font-mono text-xs min-h-[220px] max-h-[260px] overflow-hidden">
+                {lines.map((line, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.1 }}
+                    className={`leading-relaxed ${
+                      line.includes('[OK]')
+                        ? 'text-[#00ff41]'
+                        : line.includes('[>>>]')
+                        ? 'text-[#39ff14] font-bold'
+                        : line.includes('[....]')
+                        ? 'text-[#fbbf24]'
+                        : 'text-[#94a3b8]'
+                    }`}
+                  >
+                    {line}
+                    {idx === lines.length - 1 && phase === 'boot' && (
+                      <span className="inline-block w-2 h-3.5 bg-[#00ff41] ml-0.5 animate-pulse" />
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Logo reveal */}
+            <AnimatePresence>
+              {(phase === 'logo' || phase === 'done') && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  animate={{
+                    opacity: phase === 'done' ? 0.5 : 1,
+                    scale: 1,
+                    y: 0,
+                  }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  className="flex flex-col items-center gap-3 mt-6"
+                >
+                  <div className="relative">
+                    <Gamepad2 className="w-10 h-10 text-[#00ff41] icon-glow-green" strokeWidth={1.5} />
+                    <span className="absolute inset-0 rounded-full bg-[#00ff41]/20 animate-ping" />
+                  </div>
+                  <span className="text-2xl font-bold kali-text tracking-[0.2em]">CYBERPLAY</span>
+                  <span className="text-[10px] text-[#94a3b8]/60 tracking-widest">GAME PORTAL SYSTEM</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

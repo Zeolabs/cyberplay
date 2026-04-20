@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String   // HTML5, UNITY_WEBGL, FLASH
+  thumbnailUrl String
+  gameUrl     String
+  plays       Int      @default(0)
+  rating      Float    @default(0)
+  featured    Boolean  @default(false)
+  tags        String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import localFont from "next/font/local";
+import { Geist, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -9,31 +8,11 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const firaCode = localFont({
-  src: [
-    {
-      path: "../../public/fonts/FiraCode-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/FiraCode-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/FiraCode-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/FiraCode-SemiBold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-  ],
+const firaCode = Fira_Code({
+  subsets: ["latin"],
   variable: "--font-fira-code",
   display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {

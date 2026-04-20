@@ -67,6 +67,32 @@ function formatPlays(num: number): string {
   return num.toString();
 }
 
+// ─── Typing Animation Hook ─────────────────────────────────────────
+function useTypingEffect(text: string, speed = 100, startDelay = 300) {
+  const [displayed, setDisplayed] = useState('');
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let i = 0;
+    setDisplayed('');
+    setDone(false);
+    const timeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(interval);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(interval);
+    }, startDelay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, startDelay]);
+
+  return { displayed, done };
+}
+
 // ─── Main App ────────────────────────────────────────────────────────
 export default function GamePortal() {
   const [games, setGames] = useState<Game[]>([]);
@@ -82,6 +108,8 @@ export default function GamePortal() {
   const [mounted, setMounted] = useState(false);
   const gameFrameRef = useRef<HTMLIFrameElement>(null);
   const fullscreenRef = useRef<HTMLDivElement>(null);
+
+  const heroTyping = useTypingEffect('PLAY ANY GAME', 120, 400);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -385,11 +413,25 @@ export default function GamePortal() {
                     <span className="inline-block w-2 h-2 bg-[#00ff41] rounded-full animate-pulse" />
                     <span className="text-xs font-mono text-[#00ff41]/60 tracking-widest">SYSTEM ONLINE</span>
                   </div>
-                  <h2 className="text-3xl md:text-5xl font-bold font-mono mb-3 leading-tight">
-                    <span className="neon-text">PLAY</span>{' '}
-                    <span className="text-[#e0e0e0]">ANY</span>{' '}
-                    <span className="neon-text-cyan">GAME</span>
-                    <span className="typing-cursor" />
+                  <h2 className="text-3xl md:text-5xl font-bold font-mono mb-3 leading-tight min-h-[1.2em]">
+                    {heroTyping.displayed.split(' ').map((word, wi) => {
+                      const colors = ['neon-text', 'text-[#e0e0e0]', 'neon-text-cyan'];
+                      return (
+                        <span key={wi}>
+                          <span className={colors[wi] || 'text-[#e0e0e0]'}>
+                            {word}
+                          </span>
+                          {wi < heroTyping.displayed.split(' ').length - 1 && '\u00A0'}
+                        </span>
+                      );
+                    })}
+                    <span
+                      className="inline-block w-[3px] h-[0.85em] bg-[#00ff41] ml-1 align-middle"
+                      style={{
+                        animation: 'blink 1s step-end infinite',
+                        opacity: heroTyping.displayed.length > 0 ? 1 : 0,
+                      }}
+                    />
                   </h2>
                   <p className="text-[#8b949e] font-mono text-sm md:text-base max-w-xl">
                     {'>'} Access {games.length}+ games. HTML5, Unity WebGL, Flash. No downloads. No limits. Just play.

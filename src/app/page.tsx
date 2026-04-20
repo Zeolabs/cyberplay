@@ -288,7 +288,7 @@ export default function GamePortal() {
       )}
 
       {/* ─── HEADER ──────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#050508]/80 border-b border-[rgba(0,255,65,0.15)]">
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#050508]/80 header-glow">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
@@ -297,12 +297,12 @@ export default function GamePortal() {
               className="flex items-center gap-2 group flex-shrink-0"
             >
               <div className="relative">
-                <Gamepad2 className="w-8 h-8 text-[#00ff41] transition-all group-hover:drop-shadow-[0_0_8px_#00ff41]" />
+                <Gamepad2 className="w-8 h-8 text-[#00ff41] icon-glow-green transition-all" />
                 <div className="absolute inset-0 w-8 h-8 bg-[#00ff41]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold font-mono neon-text glitch-hover leading-none">
-                  CYBER<span className="text-[#00f0ff]" style={{ textShadow: '0 0 7px #00f0ff, 0 0 10px #00f0ff, 0 0 21px #00f0ff' }}>PLAY</span>
+                  CYBER<span className="neon-text-cyan">PLAY</span>
                 </h1>
                 <p className="text-[10px] text-[#8b949e] font-mono tracking-widest">GAME PORTAL v2.0</p>
               </div>
@@ -330,7 +330,7 @@ export default function GamePortal() {
               <Button
                 onClick={() => seedDatabase()}
                 size="sm"
-                className="hidden md:flex gap-1.5 bg-transparent border border-[rgba(255,107,0,0.3)] text-[#ff6b00] hover:bg-[rgba(255,107,0,0.1)] hover:shadow-[0_0_10px_rgba(255,107,0,0.2)] font-mono text-xs transition-all"
+                className="hidden md:flex gap-1.5 bg-transparent border border-[rgba(255,107,0,0.3)] text-[#ff6b00] hover:bg-[rgba(255,107,0,0.1)] hover:shadow-[0_0_12px_rgba(255,107,0,0.25)] hover:border-[rgba(255,107,0,0.5)] font-mono text-xs transition-all"
               >
                 <ZapIcon className="w-3 h-3" /> SEED DATA
               </Button>
@@ -338,7 +338,7 @@ export default function GamePortal() {
               <Button
                 onClick={() => setUploadOpen(true)}
                 size="sm"
-                className="gap-1.5 bg-transparent border border-[#00ff41]/50 text-[#00ff41] hover:bg-[rgba(0,255,65,0.1)] hover:shadow-[0_0_10px_rgba(0,255,65,0.2)] font-mono text-xs transition-all"
+                className="gap-1.5 bg-transparent border border-[#00ff41]/50 text-[#00ff41] hover:bg-[rgba(0,255,65,0.1)] hover:shadow-[0_0_12px_rgba(0,255,65,0.25)] hover:border-[#00ff41]/70 font-mono text-xs transition-all"
               >
                 <Upload className="w-3 h-3" /> <span className="hidden sm:inline">UPLOAD</span>
               </Button>
@@ -347,7 +347,7 @@ export default function GamePortal() {
                 onClick={() => setView(view === 'manage' ? 'home' : 'manage')}
                 size="sm"
                 variant="ghost"
-                className={`gap-1.5 font-mono text-xs transition-all ${view === 'manage' ? 'text-[#ff00ff] border border-[#ff00ff]/50' : 'text-[#8b949e] hover:text-[#e0e0e0]'}`}
+                className={`gap-1.5 font-mono text-xs transition-all ${view === 'manage' ? 'text-[#ff00ff] border border-[#ff00ff]/50 shadow-[0_0_10px_rgba(255,0,255,0.2)]' : 'text-[#8b949e] hover:text-[#e0e0e0]'}`}
               >
                 <Settings className="w-3 h-3" /> <span className="hidden sm:inline">MANAGE</span>
               </Button>
@@ -406,11 +406,12 @@ export default function GamePortal() {
             >
               {/* Hero Section */}
               <section className="relative overflow-hidden rounded-2xl neon-border p-6 md:p-10 bg-gradient-to-br from-[#0d1117] via-[#0a0f0a] to-[#0a0a14]">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#00ff41]/5 rounded-full blur-[100px]" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#00f0ff]/5 rounded-full blur-[80px]" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#00ff41]/8 rounded-full blur-[100px] hero-orb-1" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#00f0ff]/8 rounded-full blur-[80px] hero-orb-2" />
+                <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-[#ff00ff]/5 rounded-full blur-[60px] hero-orb-1" />
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="inline-block w-2 h-2 bg-[#00ff41] rounded-full animate-pulse" />
+                    <span className="inline-block w-2 h-2 bg-[#00ff41] rounded-full status-dot-glow" />
                     <span className="text-xs font-mono text-[#00ff41]/60 tracking-widest">SYSTEM ONLINE</span>
                   </div>
                   <h2 className="text-3xl md:text-5xl font-bold font-mono mb-3 leading-tight min-h-[1.2em]">
@@ -438,15 +439,15 @@ export default function GamePortal() {
                   </p>
                   <div className="flex gap-4 mt-6">
                     <div className="flex items-center gap-2 text-xs font-mono text-[#8b949e]">
-                      <Monitor className="w-4 h-4 text-[#00ff41]" />
+                      <Monitor className="w-4 h-4 text-[#00ff41] icon-glow-green" />
                       <span>HTML5</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs font-mono text-[#8b949e]">
-                      <Cpu className="w-4 h-4 text-[#00f0ff]" />
+                      <Cpu className="w-4 h-4 text-[#00f0ff] icon-glow-cyan" />
                       <span>Unity WebGL</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs font-mono text-[#8b949e]">
-                      <Zap className="w-4 h-4 text-[#ff6b00]" />
+                      <Zap className="w-4 h-4 text-[#ff6b00] icon-glow-orange" />
                       <span>Flash</span>
                     </div>
                   </div>
@@ -469,7 +470,7 @@ export default function GamePortal() {
                         onClick={() => setCategoryFilter(cat.key)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
                           categoryFilter === cat.key
-                            ? 'bg-[#00ff41]/15 border border-[#00ff41]/40 text-[#00ff41] shadow-[0_0_10px_rgba(0,255,65,0.15)]'
+                            ? 'bg-[#00ff41]/15 border border-[#00ff41]/40 text-[#00ff41] tab-active-glow'
                             : 'bg-transparent border border-[rgba(255,255,255,0.05)] text-[#8b949e] hover:border-[rgba(255,255,255,0.1)] hover:text-[#e0e0e0]'
                         }`}
                       >
@@ -513,8 +514,8 @@ export default function GamePortal() {
               {featuredGames.length > 0 && categoryFilter === 'ALL' && !searchQuery && (
                 <section>
                   <div className="flex items-center gap-2 mb-4">
-                    <Trophy className="w-4 h-4 text-[#ffd700]" />
-                    <h3 className="text-sm font-mono font-bold text-[#ffd700] tracking-wider">FEATURED GAMES</h3>
+                    <Trophy className="w-4 h-4 text-[#ffd700] icon-glow-gold" />
+                    <h3 className="text-sm font-mono font-bold text-[#ffd700] neon-text-gold tracking-wider">FEATURED GAMES</h3>
                     <div className="flex-1 h-px bg-gradient-to-r from-[#ffd700]/30 to-transparent" />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -529,8 +530,8 @@ export default function GamePortal() {
               <section>
                 {(featuredGames.length > 0 && categoryFilter === 'ALL' && !searchQuery) && (
                   <div className="flex items-center gap-2 mb-4">
-                    <Gamepad2 className="w-4 h-4 text-[#00ff41]" />
-                    <h3 className="text-sm font-mono font-bold text-[#00ff41] tracking-wider">ALL GAMES</h3>
+                    <Gamepad2 className="w-4 h-4 text-[#00ff41] icon-glow-green" />
+                    <h3 className="text-sm font-mono font-bold text-[#00ff41] neon-text tracking-wider">ALL GAMES</h3>
                     <div className="flex-1 h-px bg-gradient-to-r from-[#00ff41]/30 to-transparent" />
                   </div>
                 )}
@@ -539,18 +540,18 @@ export default function GamePortal() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {Array.from({ length: 8 }).map((_, i) => (
                       <div key={i} className="rounded-xl bg-[#0d1117] border border-[rgba(0,255,65,0.1)] overflow-hidden">
-                        <div className="aspect-[16/10] bg-[#161b22] animate-pulse" />
+                        <div className="aspect-[16/10] bg-[#161b22] skeleton-glow" />
                         <div className="p-4 space-y-2">
-                          <div className="h-4 bg-[#161b22] rounded animate-pulse w-3/4" />
-                          <div className="h-3 bg-[#161b22] rounded animate-pulse w-full" />
-                          <div className="h-3 bg-[#161b22] rounded animate-pulse w-1/2" />
+                          <div className="h-4 bg-[#161b22] rounded skeleton-glow w-3/4" />
+                          <div className="h-3 bg-[#161b22] rounded skeleton-glow w-full" />
+                          <div className="h-3 bg-[#161b22] rounded skeleton-glow w-1/2" />
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : games.length === 0 ? (
                   <div className="text-center py-20 space-y-4">
-                    <Gamepad2 className="w-16 h-16 text-[#00ff41]/20 mx-auto" />
+                    <Gamepad2 className="w-16 h-16 text-[#00ff41]/20 mx-auto icon-glow-green" />
                     <p className="font-mono text-[#8b949e]">{'> '}No games found.</p>
                     <p className="font-mono text-[#8b949e] text-sm">
                       Try adjusting filters or{' '}
@@ -669,7 +670,7 @@ export default function GamePortal() {
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                   <div>
-                    <h2 className="text-lg font-mono font-bold text-[#e0e0e0]">GAME MANAGER</h2>
+                    <h2 className="text-lg font-mono font-bold neon-text">GAME MANAGER</h2>
                     <p className="text-xs font-mono text-[#8b949e]">{'> '}Total: {games.length} games</p>
                   </div>
                 </div>
@@ -732,21 +733,21 @@ export default function GamePortal() {
                         <div className="col-span-8 sm:col-span-3 flex items-center justify-end gap-1">
                           <button
                             onClick={() => playGame(game)}
-                            className="p-1.5 rounded border border-[#00ff41]/30 text-[#00ff41] hover:bg-[#00ff41]/10 transition-all"
+                            className="p-1.5 rounded border border-[#00ff41]/30 text-[#00ff41] hover:bg-[#00ff41]/10 hover:shadow-[0_0_8px_rgba(0,255,65,0.25)] hover:border-[#00ff41]/50 transition-all"
                             title="Play"
                           >
                             <Play className="w-3 h-3" />
                           </button>
                           <button
                             onClick={() => openEdit(game)}
-                            className="p-1.5 rounded border border-[#00f0ff]/30 text-[#00f0ff] hover:bg-[#00f0ff]/10 transition-all"
+                            className="p-1.5 rounded border border-[#00f0ff]/30 text-[#00f0ff] hover:bg-[#00f0ff]/10 hover:shadow-[0_0_8px_rgba(0,240,255,0.25)] hover:border-[#00f0ff]/50 transition-all"
                             title="Edit"
                           >
                             <Edit3 className="w-3 h-3" />
                           </button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <button className="p-1.5 rounded border border-[#ff4444]/30 text-[#ff4444] hover:bg-[#ff4444]/10 transition-all" title="Delete">
+                              <button className="p-1.5 rounded border border-[#ff4444]/30 text-[#ff4444] hover:bg-[#ff4444]/10 hover:shadow-[0_0_8px_rgba(255,68,68,0.25)] hover:border-[#ff4444]/50 transition-all" title="Delete">
                                 <Trash2 className="w-3 h-3" />
                               </button>
                             </AlertDialogTrigger>
@@ -780,15 +781,15 @@ export default function GamePortal() {
       </main>
 
       {/* ─── FOOTER ──────────────────────────────────────────────── */}
-      <footer className="relative z-10 border-t border-[rgba(0,255,65,0.1)] bg-[#050508]/80 backdrop-blur-sm mt-auto">
+      <footer className="relative z-10 footer-glow bg-[#050508]/80 backdrop-blur-sm mt-auto">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Gamepad2 className="w-4 h-4 text-[#00ff41]" />
+              <Gamepad2 className="w-4 h-4 text-[#00ff41] icon-glow-green" />
               <span className="text-xs font-mono text-[#8b949e]">
                 CYBERPLAY v2.0 &mdash; All systems operational
               </span>
-              <span className="inline-block w-1.5 h-1.5 bg-[#00ff41] rounded-full animate-pulse" />
+              <span className="inline-block w-1.5 h-1.5 bg-[#00ff41] rounded-full status-dot-glow" />
             </div>
             <div className="flex items-center gap-4 text-xs font-mono text-[#8b949e]">
               <span>{games.length} games indexed</span>
@@ -1024,7 +1025,7 @@ function GameCard({ game, onPlay, index, featured = false }: {
       transition={{ delay: index * 0.05, duration: 0.3 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="game-card cursor-pointer group"
+      className={`game-card cursor-pointer group ${featured ? 'game-card-featured' : ''}`}
       onClick={() => onPlay(game)}
     >
       {/* Thumbnail */}
@@ -1038,7 +1039,7 @@ function GameCard({ game, onPlay, index, featured = false }: {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#161b22] to-[#0d1117]">
-            <Gamepad2 className="w-10 h-10 text-[#00ff41]/20" />
+            <Gamepad2 className="w-10 h-10 text-[#00ff41]/20 icon-glow-green" />
           </div>
         )}
 
@@ -1051,7 +1052,7 @@ function GameCard({ game, onPlay, index, featured = false }: {
           animate={{ scale: isHovered ? 1 : 0.8, opacity: isHovered ? 1 : 0 }}
           className="absolute inset-0 flex items-center justify-center"
         >
-          <div className="w-14 h-14 rounded-full bg-[#00ff41]/20 border-2 border-[#00ff41]/60 flex items-center justify-center backdrop-blur-sm shadow-[0_0_20px_rgba(0,255,65,0.3)]">
+          <div className="w-14 h-14 rounded-full bg-[#00ff41]/20 border-2 border-[#00ff41]/60 flex items-center justify-center backdrop-blur-sm play-btn-glow">
             <Play className="w-6 h-6 text-[#00ff41] ml-0.5" fill="currentColor" />
           </div>
         </motion.div>
@@ -1063,9 +1064,9 @@ function GameCard({ game, onPlay, index, featured = false }: {
 
         {/* Featured star */}
         {game.featured && (
-          <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)]">
-            <Star className="w-3 h-3 text-[#ffd700]" fill="currentColor" />
-            <span className="text-[9px] font-mono text-[#ffd700]">HOT</span>
+          <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)]" style={{ boxShadow: '0 0 8px rgba(255,215,0,0.15)' }}>
+            <Star className="w-3 h-3 text-[#ffd700] icon-glow-gold" fill="currentColor" />
+            <span className="text-[9px] font-mono neon-text-gold">HOT</span>
           </div>
         )}
 
@@ -1078,7 +1079,7 @@ function GameCard({ game, onPlay, index, featured = false }: {
 
       {/* Info */}
       <div className="p-3 space-y-1.5">
-        <h3 className="text-sm font-mono font-bold text-[#e0e0e0] truncate group-hover:text-[#00ff41] transition-colors">
+        <h3 className="text-sm font-mono font-bold text-[#e0e0e0] truncate group-hover:text-[#00ff41] transition-all group-hover:[text-shadow:0_0_8px_rgba(0,255,65,0.5)]">
           {game.title}
         </h3>
         <p className="text-[11px] font-mono text-[#8b949e] line-clamp-2 leading-relaxed">

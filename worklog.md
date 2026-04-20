@@ -337,3 +337,21 @@ Stage Summary:
 - §20b duplicate section removed (globals.css reduced from 2027 → 1962 lines)
 - Blue (#3b82f6), cyan (#06b6d4), gold (#fbbf24), red (#ef4444) accent colors untouched
 - Consistent green Matrix hacking theme throughout
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Fix broken CrazyGames category fetch URLs (/c/ vs /t/ mismatch)
+
+Work Log:
+- Investigated why 8 categories returned 0 games during fetch
+- Discovered CrazyGames uses TWO different URL patterns: `/t/{slug}` for tags and `/c/{slug}` for categories
+- Old code used `/t/` for ALL slugs, causing 404 for category-type slugs
+- Added `prefix` field to each entry in CRAZYGAMES_TAGS array
+- Updated URL construction from `https://www.crazygames.com/t/${tag.slug}` to `https://www.crazygames.com${tag.prefix}/${tag.slug}`
+- Mapping: 10 categories use `/c/`, 15 tags use `/t/`, 1 special (multiplayer uses `/`)
+
+Stage Summary:
+- 8 previously broken categories now fixed: Action (/c/), Adventure (/c/), Clicker (/c/), Driving (/c/), Puzzle (/c/), Shooting (/c/), Sports (/c/), Multiplayer (/)
+- Card and .io also corrected to use /c/ prefix (previously worked via fragile redirect)
+- Lint passes, dev server running normally

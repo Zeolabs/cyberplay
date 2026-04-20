@@ -2,33 +2,35 @@ import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
 // CrazyGames tags — fetched dynamically from sidebar, with icon mapping
+// prefix: '/c' = category page, '/t' = tag page, '' = special (e.g. /multiplayer)
+// CrazyGames uses /c/{slug} for categories and /t/{slug} for tags — they are NOT interchangeable
 const CRAZYGAMES_TAGS = [
-  { name: 'Action', slug: 'action', icon: 'Swords' },
-  { name: 'Adventure', slug: 'adventure', icon: 'Compass' },
-  { name: 'Basketball', slug: 'basketball', icon: 'CircleDot' },
-  { name: 'Bike', slug: 'bike', icon: 'Bike' },
-  { name: 'Car', slug: 'car', icon: 'Car' },
-  { name: 'Card', slug: 'card', icon: 'Layers' },
-  { name: 'Casual', slug: 'casual', icon: 'Smile' },
-  { name: 'Clicker', slug: 'clicker', icon: 'MousePointerClick' },
-  { name: 'Controller', slug: 'controller', icon: 'Gamepad2' },
-  { name: 'Driving', slug: 'driving', icon: 'Truck' },
-  { name: 'Escape', slug: 'escape', icon: 'DoorOpen' },
-  { name: 'Flash', slug: 'flash', icon: 'Zap' },
-  { name: 'FPS', slug: 'first-person-shooter', icon: 'Crosshair' },
-  { name: 'Horror', slug: 'horror', icon: 'Skull' },
-  { name: '.io', slug: 'io', icon: 'Globe' },
-  { name: 'Mahjong', slug: 'mahjong', icon: 'Grid3X3' },
-  { name: 'Minecraft', slug: 'minecraft', icon: 'Pickaxe' },
-  { name: 'Multiplayer', slug: 'multiplayer', icon: 'Users' },
-  { name: 'Pool', slug: 'pool', icon: 'Dices' },
-  { name: 'Puzzle', slug: 'puzzle', icon: 'Puzzle' },
-  { name: 'Shooting', slug: 'shooting', icon: 'Target' },
-  { name: 'Soccer', slug: 'soccer', icon: 'Goal' },
-  { name: 'Sports', slug: 'sports', icon: 'Trophy' },
-  { name: 'Stickman', slug: 'stick', icon: 'PersonStanding' },
-  { name: 'Thinky', slug: 'thinky', icon: 'Brain' },
-  { name: 'Tower Defense', slug: 'tower-defense', icon: 'Castle' },
+  { name: 'Action',        slug: 'action',               icon: 'Swords',         prefix: '/c' },
+  { name: 'Adventure',     slug: 'adventure',            icon: 'Compass',        prefix: '/c' },
+  { name: 'Basketball',    slug: 'basketball',           icon: 'CircleDot',      prefix: '/t' },
+  { name: 'Bike',          slug: 'bike',                 icon: 'Bike',           prefix: '/t' },
+  { name: 'Car',           slug: 'car',                  icon: 'Car',            prefix: '/t' },
+  { name: 'Card',          slug: 'card',                 icon: 'Layers',         prefix: '/c' },
+  { name: 'Casual',        slug: 'casual',               icon: 'Smile',          prefix: '/t' },
+  { name: 'Clicker',       slug: 'clicker',              icon: 'MousePointerClick', prefix: '/c' },
+  { name: 'Controller',    slug: 'controller',           icon: 'Gamepad2',       prefix: '/t' },
+  { name: 'Driving',       slug: 'driving',              icon: 'Truck',          prefix: '/c' },
+  { name: 'Escape',        slug: 'escape',               icon: 'DoorOpen',       prefix: '/t' },
+  { name: 'Flash',         slug: 'flash',                icon: 'Zap',            prefix: '/t' },
+  { name: 'FPS',           slug: 'first-person-shooter', icon: 'Crosshair',      prefix: '/t' },
+  { name: 'Horror',        slug: 'horror',               icon: 'Skull',          prefix: '/t' },
+  { name: '.io',           slug: 'io',                   icon: 'Globe',          prefix: '/c' },
+  { name: 'Mahjong',       slug: 'mahjong',              icon: 'Grid3X3',        prefix: '/t' },
+  { name: 'Minecraft',     slug: 'minecraft',            icon: 'Pickaxe',        prefix: '/t' },
+  { name: 'Multiplayer',   slug: 'multiplayer',          icon: 'Users',          prefix: '' },
+  { name: 'Pool',          slug: 'pool',                 icon: 'Dices',          prefix: '/t' },
+  { name: 'Puzzle',        slug: 'puzzle',               icon: 'Puzzle',         prefix: '/c' },
+  { name: 'Shooting',      slug: 'shooting',             icon: 'Target',         prefix: '/c' },
+  { name: 'Soccer',        slug: 'soccer',               icon: 'Goal',           prefix: '/t' },
+  { name: 'Sports',        slug: 'sports',               icon: 'Trophy',         prefix: '/c' },
+  { name: 'Stickman',      slug: 'stick',                icon: 'PersonStanding', prefix: '/t' },
+  { name: 'Thinky',        slug: 'thinky',               icon: 'Brain',          prefix: '/t' },
+  { name: 'Tower Defense', slug: 'tower-defense',        icon: 'Castle',         prefix: '/t' },
 ] as const;
 
 type FetchStatus = {
@@ -200,7 +202,7 @@ async function fetchBulkTags(tags: readonly typeof CRAZYGAMES_TAGS) {
     fetchStatus.message = `Fetching ${tag.name}...`;
 
     try {
-      const url = `https://www.crazygames.com/t/${tag.slug}`;
+      const url = `https://www.crazygames.com${tag.prefix}/${tag.slug}`;
       console.log(`[fetch] ${tag.name}: ${url}`);
 
       const html = await fetchPage(url);

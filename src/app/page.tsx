@@ -784,7 +784,7 @@ export default function GamePortal() {
                 {/* Horizontal scrollable genre chips */}
                 <div className="relative">
                   <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-[#8b5cf6]/20 scrollbar-track-transparent">
-                    {genres.filter(g => g.count > 0 || g.name === 'All').map((genre) => (
+                    {genres.filter(g => g.count > 0 && g.name !== 'Uncategorized' || g.name === 'All').map((genre) => (
                       <button
                         key={genre.name}
                         onClick={() => setGenreFilter(genre.name)}

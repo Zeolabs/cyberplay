@@ -1237,6 +1237,100 @@
 .icon-glow-cyan { animation: iconGlowCyan 2.5s ease-in-out infinite; }
 
 /* ═══════════════════════════════════════════════════════════════════
+   §22  DRAGON LOGO & BACKGROUND
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Dragon logo glow pulse */
+@keyframes dragonLogoGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5)) drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.8)) drop-shadow(0 0 16px rgba(59, 130, 246, 0.4)) drop-shadow(0 0 24px rgba(6, 182, 212, 0.2));
+    transform: scale(1.05);
+  }
+}
+
+.dragon-logo {
+  animation: dragonLogoGlow 3s ease-in-out infinite;
+  transition: filter 0.3s ease;
+}
+
+.dragon-logo:hover {
+  filter: drop-shadow(0 0 12px rgba(139, 92, 246, 1)) drop-shadow(0 0 24px rgba(59, 130, 246, 0.6)) drop-shadow(0 0 36px rgba(6, 182, 212, 0.3));
+  animation-play-state: paused;
+}
+
+/* Dragon background watermark */
+@keyframes dragonDrift {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.03;
+  }
+  25% {
+    transform: translateY(-15px) rotate(0.5deg);
+    opacity: 0.05;
+  }
+  50% {
+    transform: translateY(-5px) rotate(-0.3deg);
+    opacity: 0.04;
+  }
+  75% {
+    transform: translateY(-20px) rotate(0.2deg);
+    opacity: 0.06;
+  }
+}
+
+.dragon-bg-watermark {
+  position: absolute;
+  pointer-events: none;
+  animation: dragonDrift 20s ease-in-out infinite;
+  filter: brightness(0) invert(35%) sepia(95%) saturate(3000%) hue-rotate(252deg) brightness(0.9);
+  opacity: 0.04;
+  z-index: 0;
+}
+
+.dragon-bg-watermark-cyan {
+  filter: brightness(0) invert(70%) sepia(60%) saturate(2000%) hue-rotate(130deg) brightness(0.8);
+}
+
+/* Page-wide dragon background */
+@keyframes dragonBgFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  33% {
+    transform: translate(10px, -20px) scale(1.02) rotate(0.5deg);
+  }
+  66% {
+    transform: translate(-8px, -10px) scale(0.98) rotate(-0.3deg);
+  }
+}
+
+.dragon-page-bg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60vw;
+  max-width: 600px;
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  animation: dragonBgFloat 30s ease-in-out infinite;
+  filter: brightness(0) invert(30%) sepia(90%) saturate(2500%) hue-rotate(252deg) brightness(0.6);
+  opacity: 0.025;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 70%);
+}
+
+/* Dragon footer icon */
+.dragon-footer {
+  animation: dragonLogoGlow 4s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    §20  TOAST OVERRIDE  (Sonner)
    ═══════════════════════════════════════════════════════════════════ */
 

@@ -121,6 +121,25 @@ function formatPlays(plays: number): string {
   return plays.toString();
 }
 
+// ─── DragonLogo Component ──────────────────────────────────────────
+const DRAGON_PATH = 'M16.85 8.081l-0.187-0.606c-1.436-0.223-3.092-0.35-4.778-0.35-0.879 0-1.75 0.035-2.611 0.103l0.114-0.007c-3.096 0.294-5.941 0.915-8.648 1.835l0.265-0.078c3.126-0.78 6.714-1.228 10.407-1.228 1.917 0 3.805 0.121 5.659 0.355l-0.221-0.023zM30.992 23.819s0.39-4.471-6.636-5.502c-0.944-0.144-2.037-0.228-3.148-0.234l-0.006-0c-5.631 0.075-5.836-6.494-1.593-6.826 2.193 0.12 4.213 0.758 5.973 1.793l-0.062-0.034c-0.006 0.040-0.009 0.085-0.009 0.132 0 0.209 0.067 0.403 0.181 0.561l-0.002-0.003c0.293 0.215 0.628 0.402 0.985 0.545l0.031 0.011c0.492 0.288 0.911 0.642 1.261 1.055l0.006 0.007c0.241-0.236 0.509-0.447 0.797-0.628l0.020-0.012c-0.214-0.019-0.411-0.072-0.593-0.153l0.012 0.005c-0.35-0.164-0.649-0.378-0.902-0.638l-0.001-0.001c-0.012-0.027-0.019-0.069 0.075-0.087 0.074-0.061-0.090-0.259-0.162-0.331s-0.556-0.895-0.567-0.912c-0.010-0.026-0.027-0.047-0.050-0.062l-0-0c-0.020-0.001-0.044-0.001-0.067-0.001-0.18 0-0.355 0.019-0.524 0.054l0.017-0.003c-0.446-0.244-0.786-0.632-0.962-1.102l-0.005-0.014c0.004 0.134-0.124 0.28 0 0.586-0.463-0.208-0.811-0.604-0.949-1.088l-0.003-0.012c-0.044 0.091-0.070 0.198-0.070 0.312s0.026 0.221 0.072 0.316l-0.002-0.004c-0.506-0.15-0.892-0.55-1.022-1.052l-0.002-0.010c-0.046 0.085-0.073 0.186-0.073 0.293s0.027 0.208 0.075 0.296l-0.002-0.003c-1.069-0.483-2.318-0.765-3.633-0.765-0.071 0-0.142 0.001-0.212 0.002l0.011-0c-1.603-0.147-1.937-2.967-1.787-3.441-2.007-0.913-4.336-1.539-6.784-1.751l-0.080-0.006c-1.356-0.169-2.926-0.265-4.518-0.265-1.326 0-2.636 0.067-3.928 0.197l0.163-0.013c0.395-0.014 0.859-0.022 1.325-0.022 4.728 0 9.263 0.824 13.469 2.337l-0.278-0.087c0.367 1.327 0.789 2.458 1.294 3.541l-0.058-0.138c-1.376 0.702-2.309 2.094-2.344 3.707l-0 0.005c-0.001 0.039-0.002 0.085-0.002 0.131 0 2.398 1.944 4.343 4.343 4.343h-0c0.162-0.007 0.352-0.011 0.543-0.011 1.981 0 3.859 0.438 5.544 1.222l-0.081-0.034c2.145 1.673 3.533 4.23 3.611 7.114l0 0.013c0.165-2.136-0.636-6.727-4.374-8.12 5.225 0.915 5.685 4.789 5.685 4.789zM26.683 13.223c0.049-0.085 0.207 0.271 0.329 0.421 0.005 0.030 0.012 0.049-0.056 0.034-0.002-0.015-0.007-0.029-0.016-0.040l0 0c-0.084-0.049-0.157-0.106-0.221-0.171l-0-0c-0.030-0.045-0.048-0.1-0.048-0.159 0-0.030 0.005-0.060 0.013-0.087l-0.001 0.002zM26.158 12.299l0.321-0.021c-1.421-1.523-3.226-2.67-5.262-3.287l-0.084-0.022c1.974 0.757 3.653 1.891 5.020 3.325l0.005 0.005zM16.972 8.431c-2.388 0.009-4.675 0.43-6.798 1.194l0.142-0.044c-2.553 0.762-4.779 1.865-6.768 3.28l0.070-0.047c3.932-2.105 8.557-3.461 13.469-3.755l0.092-0.004z';
+
+function DragonLogo({ className = '', size = 28 }: { className?: string; size?: number }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      width={size}
+      height={size}
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <title>kalilinux</title>
+      <path d={DRAGON_PATH} />
+    </svg>
+  );
+}
+
 // ─── GamePortal Component ───────────────────────────────────────────
 export default function GamePortal() {
   // State
@@ -476,6 +495,15 @@ export default function GamePortal() {
   // ─── Render ──────────────────────────────────────────────────────
   return (
     <div className="relative min-h-screen flex flex-col kali-gradient-bg scanlines scanlines-movable kali-kali-grid-bg">
+      {/* ── Dragon Page Background ── */}
+      {mounted && (
+        <img
+          src="/dragon.svg"
+          alt=""
+          className="dragon-page-bg"
+          aria-hidden="true"
+        />
+      )}
       {/* ── Background Particles ── */}
       {mounted &&
         particles.map((p) => (
@@ -496,8 +524,10 @@ export default function GamePortal() {
       <header className="sticky top-0 z-50 bg-[#0a0a14]/80 backdrop-blur-md header-glow px-4 py-3 border-b border-[#8b5cf6]/20">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex items-center gap-2 shrink-0">
-            <Gamepad2 className="w-7 h-7 text-[#8b5cf6] icon-glow-purple" />
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="text-[#8b5cf6] dragon-logo">
+              <DragonLogo size={32} />
+            </div>
             <span className="text-xl font-bold kali-text-blue glitch-hover cursor-pointer tracking-wider">
               CYBERPLAY
             </span>
@@ -608,6 +638,20 @@ export default function GamePortal() {
             >
               {/* Hero Section */}
               <section className="relative kali-border rounded p-6 md:p-10 text-center overflow-hidden bg-[#0a0a14]/60 corner-brackets">
+                {/* Dragon background watermark (right) */}
+                <img
+                  src="/dragon.svg"
+                  alt=""
+                  className="dragon-bg-watermark absolute -right-4 -top-4 w-64 md:w-80 opacity-[0.04]"
+                  aria-hidden="true"
+                />
+                {/* Dragon background watermark (left, cyan) */}
+                <img
+                  src="/dragon.svg"
+                  alt=""
+                  className="dragon-bg-watermark dragon-bg-watermark-cyan absolute -left-4 -bottom-4 w-48 md:w-56 scale-x-[-1] opacity-[0.03]"
+                  aria-hidden="true"
+                />
                 {/* Floating orbs */}
                 <div className="hero-orb-1 absolute top-4 left-8 w-32 h-32 rounded-full bg-[#8b5cf6]/5 blur-3xl pointer-events-none" />
                 <div className="hero-orb-2 absolute bottom-4 right-8 w-40 h-40 rounded-full bg-[#06b6d4]/5 blur-3xl pointer-events-none" />
@@ -1456,7 +1500,9 @@ export default function GamePortal() {
       <footer className="footer-glow mt-auto px-4 py-3 bg-[#0a0a14]/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-[#94a3b8]">
           <div className="flex items-center gap-2">
-            <Gamepad2 className="w-4 h-4 text-[#8b5cf6] icon-glow-purple" />
+            <div className="text-[#8b5cf6] dragon-footer">
+              <DragonLogo size={16} />
+            </div>
             <span className="kali-text text-[10px]">CYBERPLAY</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#8b5cf6] status-dot-glow" />
           </div>

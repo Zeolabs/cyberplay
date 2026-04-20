@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "Play thousands of free online games. HTML5, Unity WebGL, and Flash games. No downloads required. Just play instantly.",
   keywords: ["games", "html5 games", "unity webgl", "flash games", "online games", "free games", "browser games"],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/dragon.svg",
   },
 };
 

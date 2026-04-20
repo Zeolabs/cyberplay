@@ -1,100 +1,129 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import ZAI from 'z-ai-web-dev-sdk';
 
-// Helper: sleep for rate limiting
+// Browser-like headers for direct fetch (no SDK needed!)
+const FETCH_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+};
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Helper: extract slug from CrazyGames URL
+// Extract slug from CrazyGames embed URL
 function extractSlug(gameUrl: string): string {
   try {
     const url = new URL(gameUrl);
     const parts = url.pathname.split('/').filter(Boolean);
-    // CrazyGames URLs look like: /game/slug-name
-    // The slug is typically the last segment
-    if (parts.length > 0) {
-      return parts[parts.length - 1];
-    }
-    return '';
-  } catch {
-    return '';
-  }
+    if (parts.length > 0) return parts[parts.length - 1];
+  } catch {}
+  return '';
 }
 
-// Helper: try to extract og:image from HTML
+// Extract og:image from HTML meta tags
 function extractOgImage(html: string): string | null {
   const match = html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i);
-  if (match && match[1]) {
-    return decodeHtmlEntities(match[1]);
-  }
-  // Also try content before property
+  if (match?.[1]) return decodeHtmlEntities(match[1]);
   const altMatch = html.match(/<meta\s+content=["']([^"']+)["']\s+property=["']og:image["']/i);
-  if (altMatch && altMatch[1]) {
-    return decodeHtmlEntities(altMatch[1]);
-  }
+  if (altMatch?.[1]) return decodeHtmlEntities(altMatch[1]);
   return null;
 }
 
-// Helper: decode HTML entities in URLs
 function decodeHtmlEntities(str: string): string {
   return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
 }
 
-// Helper: try to fetch a URL and check if it returns an image (status 200)
-async function tryImageUrl(url: string): Promise<string | null> {
+// Extract image from __NEXT_DATA__
+function extractImageFromNextData(html: string): string | null {
+  const match = html.match(/<script\s+id="__NEXT_DATA__"\s+type="application\/json">([\s\S]*?)<\/script>/);
+  if (!match) return null;
   try {
-    const res = await fetch(url, { method: 'HEAD', redirect: 'follow' });
-    if (res.ok) {
-      const contentType = res.headers.get('content-type') || '';
-      if (contentType.startsWith('image/')) {
+    const jsonStr = match[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+    const data = JSON.parse(jsonStr);
+
+    // Navigate to game data in props.pageProps.game
+    const props = (data as Record<string, unknown>)?.props as Record<string, unknown> | undefined;
+    const game = props?.game as Record<string, unknown> | undefined;
+    if (!game) return null;
+
+    // Try various image fields
+    const fields = ['imageCover', 'thumbnailUrl', 'image', 'coverImage', 'cover'];
+    for (const field of fields) {
+      const val = game[field];
+      if (val && typeof val === 'string') {
+        let url = val;
+        if (url.startsWith('//')) url = `https:${url}`;
+        if (!url.includes('?')) url += '?metadata=none&quality=85&width=480&fit=crop';
         return url;
       }
-      // Some CDNs don't return content-type on HEAD, try GET
-      const getRes = await fetch(url, { method: 'GET', redirect: 'follow' });
-      if (getRes.ok) {
-        const getContentType = getRes.headers.get('content-type') || '';
-        if (getContentType.startsWith('image/')) {
-          return url;
-        }
-      }
     }
+    return null;
   } catch {
-    // URL not reachable
+    return null;
   }
+}
+
+// Check if URL returns a valid image
+async function tryImageUrl(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, { method: 'HEAD', redirect: 'follow', signal: AbortSignal.timeout(5000) });
+    if (res.ok) {
+      const ct = res.headers.get('content-type') || '';
+      if (ct.startsWith('image/')) return url;
+    }
+  } catch {}
   return null;
 }
 
+// Fetch CrazyGames game page directly (no SDK!)
+async function fetchGamePage(pageUrl: string): Promise<string> {
+  try {
+    const res = await fetch(pageUrl, {
+      headers: FETCH_HEADERS,
+      redirect: 'follow',
+      signal: AbortSignal.timeout(15000),
+    });
+    if (res.ok) return await res.text();
+  } catch {}
+  return '';
+}
+
 // Process a single game to find its thumbnail
-async function processGame(
-  game: { id: string; gameUrl: string; thumbnailUrl: string },
-  zai: Awaited<ReturnType<typeof ZAI.create>>,
-): Promise<{ id: string; fixed: boolean; url: string; method: string }> {
+async function processGame(game: { id: string; gameUrl: string; thumbnailUrl: string }): Promise<{
+  id: string;
+  fixed: boolean;
+  url: string;
+  method: string;
+}> {
   const slug = extractSlug(game.gameUrl);
 
-  // Strategy 1: Use page_reader to extract og:image
-  try {
-    const result = await zai.functions.invoke('page_reader', { url: game.gameUrl });
-    if (result?.data?.html) {
-      let ogImage = extractOgImage(result.data.html);
-      if (ogImage) {
-        // Ensure URL params are optimized for thumbnail display
-        try {
-          const urlObj = new URL(ogImage);
-          urlObj.searchParams.set('metadata', 'none');
-          urlObj.searchParams.set('quality', '85');
-          urlObj.searchParams.set('width', '480');
-          urlObj.searchParams.set('fit', 'crop');
-          ogImage = urlObj.toString();
-        } catch {
-          // URL construction failed, use as-is
-        }
-        return { id: game.id, fixed: true, url: ogImage, method: 'page_reader' };
-      }
+  // Strategy 1: Fetch the CrazyGames page and extract from __NEXT_DATA__ + og:image
+  const gamePageUrl = `https://www.crazygames.com/game/${slug}`;
+  const html = await fetchGamePage(gamePageUrl);
+
+  if (html) {
+    // Try __NEXT_DATA__ first
+    const nextDataImage = extractImageFromNextData(html);
+    if (nextDataImage) {
+      return { id: game.id, fixed: true, url: nextDataImage, method: 'next_data' };
     }
-  } catch {
-    // page_reader failed, continue to fallbacks
+
+    // Try og:image
+    const ogImage = extractOgImage(html);
+    if (ogImage) {
+      let url = ogImage;
+      try {
+        const urlObj = new URL(url);
+        urlObj.searchParams.set('metadata', 'none');
+        urlObj.searchParams.set('quality', '85');
+        urlObj.searchParams.set('width', '480');
+        urlObj.searchParams.set('fit', 'crop');
+        url = urlObj.toString();
+      } catch {}
+      return { id: game.id, fixed: true, url, method: 'og_image' };
+    }
   }
 
   // Strategy 2: Construct CDN URLs from slug
@@ -108,7 +137,7 @@ async function processGame(
     for (const url of patterns) {
       const validUrl = await tryImageUrl(url);
       if (validUrl) {
-        return { id: game.id, fixed: true, url: validUrl, method: `cdn_pattern` };
+        return { id: game.id, fixed: true, url: validUrl, method: 'cdn_pattern' };
       }
     }
   }
@@ -118,7 +147,7 @@ async function processGame(
 
 export async function POST() {
   try {
-    // Find all games with empty thumbnailUrl
+    // Find all games with empty or missing thumbnailUrl
     const games = await db.game.findMany({
       where: {
         OR: [
@@ -138,38 +167,27 @@ export async function POST() {
         total: 0,
         fixed: 0,
         failed: 0,
-        details: [],
         message: 'No games with missing thumbnails found.',
       });
     }
 
-    const zai = await ZAI.create();
-    const results: Array<{ id: string; fixed: boolean; url: string; method: string; title?: string }> = [];
-    const BATCH_SIZE = 3;
-    const DELAY_MS = 1000;
+    const results: Array<{ id: string; fixed: boolean; url: string; method: string }> = [];
 
-    // Process in batches of 3 concurrent
-    for (let i = 0; i < games.length; i += BATCH_SIZE) {
-      const batch = games.slice(i, i + BATCH_SIZE);
+    // Process all games (no SDK = no rate limit concerns, but be polite with small delay)
+    for (let i = 0; i < games.length; i++) {
+      const result = await processGame(games[i]);
+      results.push(result);
 
-      const batchResults = await Promise.all(
-        batch.map((game) => processGame(game, zai)),
-      );
-
-      // Update games that got a thumbnail
-      for (const result of batchResults) {
-        if (result.fixed) {
-          await db.game.update({
-            where: { id: result.id },
-            data: { thumbnailUrl: result.url },
-          });
-        }
-        results.push(result);
+      if (result.fixed) {
+        await db.game.update({
+          where: { id: result.id },
+          data: { thumbnailUrl: result.url },
+        });
       }
 
-      // Delay between batches to avoid rate limiting
-      if (i + BATCH_SIZE < games.length) {
-        await sleep(DELAY_MS);
+      // Small delay between each game (be polite to CrazyGames)
+      if (i < games.length - 1) {
+        await sleep(300);
       }
     }
 
@@ -180,7 +198,6 @@ export async function POST() {
       total: games.length,
       fixed: fixedCount,
       failed: failedCount,
-      details: results,
       message: `Processed ${games.length} games. Fixed ${fixedCount} thumbnails, ${failedCount} failed.`,
     });
   } catch (error) {

@@ -1,15 +1,12 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import ZAI from 'z-ai-web-dev-sdk';
 
-let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
-
-async function getZai() {
-  if (!zaiInstance) {
-    zaiInstance = await ZAI.create();
-  }
-  return zaiInstance;
-}
+// Browser-like headers for direct fetch (no SDK needed!)
+const FETCH_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+};
 
 interface VideoSize {
   width: number;
@@ -21,46 +18,66 @@ async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function processGame(game: { id: string; gameUrl: string }) {
-  const url = game.gameUrl;
-  console.log(`[fix-urls] Fetching page: ${url}`);
-
-  let html: string;
+// Fetch CrazyGames game page directly (no SDK!)
+async function fetchGamePage(url: string): Promise<string> {
   try {
-    const zai = await getZai();
-    const result = await zai.functions.invoke('page_reader', { url });
-    html = String(result?.data?.html || result?.html || '');
+    const res = await fetch(url, {
+      headers: FETCH_HEADERS,
+      redirect: 'follow',
+      signal: AbortSignal.timeout(15000),
+    });
+    if (res.ok) return await res.text();
+    console.error(`[fix-urls] HTTP ${res.status} for ${url}`);
   } catch (err) {
     console.error(`[fix-urls] Failed to fetch ${url}:`, err);
-    return { id: game.id, success: false, error: 'fetch_failed' };
   }
+  return '';
+}
+
+// Extract slug from CrazyGames URL
+function extractSlugFromUrl(gameUrl: string): string {
+  try {
+    const url = new URL(gameUrl);
+    const parts = url.pathname.split('/').filter(Boolean);
+    return parts[parts.length - 1] || '';
+  } catch {
+    return '';
+  }
+}
+
+async function processGame(game: { id: string; gameUrl: string }) {
+  const slug = extractSlugFromUrl(game.gameUrl);
+  const pageUrl = `https://www.crazygames.com/game/${slug}`;
+  console.log(`[fix-urls] Fetching: ${pageUrl}`);
+
+  // Fetch the page directly — no SDK!
+  const html = await fetchGamePage(pageUrl);
 
   if (!html) {
-    return { id: game.id, success: false, error: 'empty_html' };
+    return { id: game.id, success: false, error: 'fetch_failed' };
   }
 
   // Extract __NEXT_DATA__ JSON
   const nextDataMatch = html.match(/<script[^>]*id=['"]__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
-  if (!nextDataMatch || !nextDataMatch[1]) {
-    console.error(`[fix-urls] No __NEXT_DATA__ found for ${url}`);
+  if (!nextDataMatch?.[1]) {
     return { id: game.id, success: false, error: 'no_next_data' };
   }
 
   let nextData: Record<string, unknown>;
   try {
-    nextData = JSON.parse(nextDataMatch[1]);
-  } catch (err) {
-    console.error(`[fix-urls] Failed to parse __NEXT_DATA__ for ${url}:`, err);
+    nextData = JSON.parse(
+      nextDataMatch[1]
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+    );
+  } catch {
     return { id: game.id, success: false, error: 'parse_error' };
   }
 
-  // Navigate to game data
   const pageProps = nextData.props as Record<string, unknown> | undefined;
-  if (!pageProps) {
-    return { id: game.id, success: false, error: 'no_page_props' };
-  }
-
-  const gameData = pageProps.game as Record<string, unknown> | undefined;
+  const gameData = pageProps?.game as Record<string, unknown> | undefined;
   if (!gameData) {
     return { id: game.id, success: false, error: 'no_game_data' };
   }
@@ -76,22 +93,13 @@ async function processGame(game: { id: string; gameUrl: string }) {
     const original = videos.original as string | undefined;
 
     if (sizes && Array.isArray(sizes) && sizes.length > 0) {
-      // Find best size for card hover (width ~364-494px)
-      const hoverSize = sizes.find(
-        (s) => s.width >= 364 && s.width <= 494
-      ) || sizes.find(
-        (s) => s.width >= 300 && s.width <= 600
-      ) || sizes.reduce((best, s) =>
-        (s.width >= 300 && (!best || Math.abs(s.width - 420) < Math.abs(best.width - 420))) ? s : best,
-        sizes[0]
-      );
-
+      const hoverSize = sizes.find(s => s.width >= 364 && s.width <= 494) ||
+        sizes.find(s => s.width >= 300 && s.width <= 600) ||
+        sizes[0];
       if (hoverSize?.location) {
         videoUrl = `https://videos.crazygames.com/${hoverSize.location}`;
       }
     }
-
-    // Fallback to original if no suitable size found
     if (!videoUrl && original) {
       videoUrl = `https://videos.crazygames.com/${original}`;
     }
@@ -102,12 +110,10 @@ async function processGame(game: { id: string; gameUrl: string }) {
   let fixedUrl = false;
   let fixedVideo = false;
 
-  // Only update gameUrl if allowEmbed is true and we have a desktopUrl
   if (allowEmbed && desktopUrl) {
     updateData.gameUrl = desktopUrl;
     fixedUrl = true;
   }
-
   if (videoUrl) {
     updateData.videoUrl = videoUrl;
     fixedVideo = true;
@@ -119,9 +125,7 @@ async function processGame(game: { id: string; gameUrl: string }) {
         where: { id: game.id },
         data: updateData,
       });
-      console.log(`[fix-urls] Updated game ${game.id}: url=${fixedUrl}, video=${fixedVideo}`);
-    } catch (err) {
-      console.error(`[fix-urls] DB update failed for ${game.id}:`, err);
+    } catch {
       return { id: game.id, success: false, error: 'db_update_failed' };
     }
   }
@@ -155,14 +159,11 @@ export async function POST(request: Request) {
       failed: 0,
     };
 
-    // Process in batches of 2 concurrent with 1.5s delay between batches
-    const batchSize = 2;
+    // Process games (no SDK = no rate limits! Just be polite with small delays)
+    const batchSize = 3;
     for (let i = 0; i < games.length; i += batchSize) {
       const batch = games.slice(i, i + batchSize);
-
-      const batchResults = await Promise.all(
-        batch.map((game) => processGame(game))
-      );
+      const batchResults = await Promise.all(batch.map(game => processGame(game)));
 
       for (const result of batchResults) {
         if (result.success) {
@@ -173,9 +174,9 @@ export async function POST(request: Request) {
         }
       }
 
-      // Delay between batches (except after the last batch)
+      // Small delay between batches
       if (i + batchSize < games.length) {
-        await sleep(1500);
+        await sleep(500);
       }
     }
 
@@ -185,7 +186,7 @@ export async function POST(request: Request) {
     console.error('[fix-urls] Error:', error);
     return NextResponse.json(
       { error: 'Failed to fix game URLs', details: String(error) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

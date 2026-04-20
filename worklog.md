@@ -261,3 +261,36 @@ Stage Summary:
 - Rate limits handled gracefully with exponential backoff instead of silent failure
 - Reduced API calls from 80+ to 20 (one page_reader per genre via __NEXT_DATA__ parsing)
 - Verified: POST returns 200, status polling shows retry progression, rate limits detected and retried
+
+---
+Task ID: 11
+Agent: Main Agent
+Task: Remove z-ai-web-dev-sdk dependency — use native fetch() for all game fetching
+
+Work Log:
+- User reported SDK was causing 429 rate limits, asked for alternative
+- Rewrote all 3 API routes to use native `fetch()` with browser-like User-Agent headers
+- **fetch-categories/route.ts**: Complete rewrite
+  - Native fetch to `https://www.crazygames.com/t/{tag}` pages (no SDK)
+  - Discovered correct tag URL structure via exploration (26 tags: action, casual, car, etc.)
+  - Direct path parsing: `props.pageProps.games.items` for game data
+  - Each tag page returns 30-60 games with full data (name, slug, cover, videos)
+  - Proper field mapping: `cover` → thumbnail URL, `videos.sizes[3]` → video URL
+  - Fixed TypeScript syntax error with chained `as` casts on optional chaining
+  - 1-second polite delay between tags (no SDK rate limits to worry about!)
+- **fix-thumbnails/route.ts**: Rewritten to use native fetch
+  - Fetches CrazyGames game pages directly
+  - Extracts images from `__NEXT_DATA__` and `og:image` meta tags
+  - Falls back to CDN URL pattern guessing
+- **fix-urls/route.ts**: Rewritten to use native fetch
+  - Same approach as before but with native fetch instead of SDK page_reader
+- Updated frontend: removed rate-limit warning UI, simplified progress messages
+- Used user's detached node spawn command for persistent server process
+
+Stage Summary:
+- **800 new games fetched in ~30 seconds** across 26 tags (zero rate limits!)
+- Total: **869 games** in database, ALL with thumbnails, ALL with video URLs
+- Removed z-ai-web-dev-sdk dependency from fetch-categories, fix-thumbnails, fix-urls
+- Only game-fetcher.ts still uses SDK (Sources tab feature — separate from Fetch All)
+- Tag list now matches CrazyGames actual sidebar (26 categories including .io, Thinky, Mahjong, etc.)
+- Server running persistently via detached node spawn

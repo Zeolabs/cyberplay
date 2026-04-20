@@ -495,27 +495,26 @@ export default function GamePortal() {
   const handleFetchCategories = async () => {
     try {
       setCategoryFetching(true);
-      setCategoryFetchProgress('Initializing SDK...');
+      setCategoryFetchProgress('Starting...');
       const res = await fetch('/api/games/fetch-categories', { method: 'POST' });
       if (res.ok) {
-        toast.success('Fetch started! This may take several minutes.');
+        toast.success('Fetching games from CrazyGames...');
       } else {
-        toast.error('Failed to start category fetch');
+        toast.error('Failed to start fetch');
         setCategoryFetching(false);
         setCategoryFetchProgress(null);
         return;
       }
 
-      // Poll for progress every 3 seconds
+      // Poll for progress every 2 seconds
       const pollInterval = setInterval(async () => {
         try {
           const statusRes = await fetch('/api/games/fetch-categories?mode=status');
           if (statusRes.ok) {
             const status = await statusRes.json();
 
-            // Build rich progress message
+            // Build progress message
             const parts = [`[${status.genresDone}/${status.genresTotal}]`];
-            if (status.rateLimitWaits > 0) parts.push(`⚠${status.rateLimitWaits} rate-limits`);
             if (status.gamesFound > 0) parts.push(`${status.gamesFound} new`);
             parts.push(status.message);
             setCategoryFetchProgress(parts.join(' | '));
@@ -526,8 +525,6 @@ export default function GamePortal() {
               setTimeout(() => setCategoryFetchProgress(null), 5000);
               fetchGenres();
               fetchGames();
-              // Fire-and-forget thumbnail fix
-              fetch('/api/games/fix-thumbnails', { method: 'POST' }).catch(() => {});
               if (status.status === 'done') {
                 toast.success(status.message);
               } else {
@@ -538,7 +535,7 @@ export default function GamePortal() {
         } catch {
           // Continue polling
         }
-      }, 3000);
+      }, 2000);
     } catch {
       toast.error('Failed to start fetch');
       setCategoryFetching(false);
@@ -742,7 +739,7 @@ export default function GamePortal() {
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-[#8b5cf6] terminal-prefix">category_scan</span>
                     {categoryFetching && (
-                      <span className={`text-xs flex items-center gap-1.5 max-w-[60vw] truncate ${categoryFetchProgress?.includes('Rate') ? 'text-[#fbbf24]' : 'text-[#06b6d4]'}`}>
+                      <span className="text-xs text-[#06b6d4] flex items-center gap-1.5 max-w-[60vw] truncate">
                         <Loader2 className="w-3 h-3 animate-spin shrink-0" />
                         <span className="truncate">{categoryFetchProgress || 'Fetching games...'}</span>
                       </span>
@@ -753,7 +750,7 @@ export default function GamePortal() {
                       onClick={handleFetchCategories}
                       disabled={categoryFetching}
                       className="kali-btn-cyan kali-btn-sm text-[10px]"
-                      title="Fetch games from CrazyGames by category (takes several minutes)"
+                      title="Fetch all games from CrazyGames (direct HTTP, no SDK)"
                     >
                       <Database className="w-3 h-3 mr-1" />
                       {categoryFetching ? 'FETCHING...' : 'FETCH ALL'}

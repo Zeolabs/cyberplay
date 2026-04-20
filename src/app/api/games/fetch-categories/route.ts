@@ -1,33 +1,38 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import ZAI from 'z-ai-web-dev-sdk';
 
-// CrazyGames genre categories with their page slugs
-const CRAZYGAMES_GENRES = [
+// CrazyGames tags — fetched dynamically from sidebar, with icon mapping
+const CRAZYGAMES_TAGS = [
   { name: 'Action', slug: 'action', icon: '⚔️' },
-  { name: 'Shooting', slug: 'shooting', icon: '🔫' },
-  { name: 'Racing', slug: 'racing', icon: '🏎️' },
-  { name: 'Puzzle', slug: 'puzzle', icon: '🧩' },
-  { name: 'Arcade', slug: 'arcade', icon: '👾' },
   { name: 'Adventure', slug: 'adventure', icon: '🗺️' },
-  { name: 'Sports', slug: 'sports', icon: '⚽' },
-  { name: 'Multiplayer', slug: 'multiplayer', icon: '👥' },
-  { name: '2 Player', slug: '2-player', icon: '🤝' },
-  { name: 'Stickman', slug: 'stickman', icon: '🧍' },
-  { name: 'Idle', slug: 'idle', icon: '⏳' },
-  { name: 'Simulation', slug: 'simulation', icon: '🏗️' },
-  { name: 'Strategy', slug: 'strategy', icon: '♟️' },
-  { name: 'Girls', slug: 'girls', icon: '👗' },
-  { name: 'Skill', slug: 'skill', icon: '🎯' },
-  { name: 'Platformer', slug: 'platformer', icon: '🦘' },
-  { name: 'Driving', slug: 'driving', icon: '🚗' },
-  { name: 'Escape', slug: 'escape', icon: '🚪' },
-  { name: 'Sniper', slug: 'sniper', icon: '🎯' },
+  { name: 'Basketball', slug: 'basketball', icon: '🏀' },
+  { name: 'Bike', slug: 'bike', icon: '🚲' },
+  { name: 'Car', slug: 'car', icon: '🚗' },
+  { name: 'Card', slug: 'card', icon: '🃏' },
+  { name: 'Casual', slug: 'casual', icon: '😎' },
   { name: 'Clicker', slug: 'clicker', icon: '🖱️' },
+  { name: 'Controller', slug: 'controller', icon: '🎮' },
+  { name: 'Driving', slug: 'driving', icon: '🚕' },
+  { name: 'Escape', slug: 'escape', icon: '🚪' },
+  { name: 'Flash', slug: 'flash', icon: '⚡' },
+  { name: 'FPS', slug: 'first-person-shooter', icon: '🔫' },
+  { name: 'Horror', slug: 'horror', icon: '👻' },
+  { name: '.io', slug: 'io', icon: '🌐' },
+  { name: 'Mahjong', slug: 'mahjong', icon: '🀄' },
+  { name: 'Minecraft', slug: 'minecraft', icon: '⛏️' },
+  { name: 'Multiplayer', slug: 'multiplayer', icon: '👥' },
+  { name: 'Pool', slug: 'pool', icon: '🎱' },
+  { name: 'Puzzle', slug: 'puzzle', icon: '🧩' },
+  { name: 'Shooting', slug: 'shooting', icon: '🎯' },
+  { name: 'Soccer', slug: 'soccer', icon: '⚽' },
+  { name: 'Sports', slug: 'sports', icon: '🏆' },
+  { name: 'Stickman', slug: 'stick', icon: '🧍' },
+  { name: 'Thinky', slug: 'thinky', icon: '🧠' },
+  { name: 'Tower Defense', slug: 'tower-defense', icon: '🏰' },
 ] as const;
 
 type FetchStatus = {
-  status: 'idle' | 'fetching' | 'done' | 'error' | 'rate-limited';
+  status: 'idle' | 'fetching' | 'done' | 'error';
   genre: string;
   message: string;
   total: number;
@@ -35,8 +40,6 @@ type FetchStatus = {
   gamesFound: number;
   genresDone: number;
   genresTotal: number;
-  retries: number;
-  rateLimitWaits: number;
 };
 
 const fetchStatus: FetchStatus = {
@@ -47,183 +50,90 @@ const fetchStatus: FetchStatus = {
   current: 0,
   gamesFound: 0,
   genresDone: 0,
-  genresTotal: CRAZYGAMES_GENRES.length,
-  retries: 0,
-  rateLimitWaits: 0,
+  genresTotal: CRAZYGAMES_TAGS.length,
 };
 
 function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-// Retry with exponential backoff for 429 rate limits
-async function invokeWithRetry(
-  zai: Awaited<ReturnType<typeof ZAI.create>>,
-  fn: 'page_reader' | 'web_search',
-  params: Record<string, unknown>,
-  maxRetries = 3,
-  baseDelayMs = 8000,
-  statusRef: typeof fetchStatus,
-): Promise<unknown> {
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const result = await zai.functions.invoke(fn, params);
-      return result;
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      const isRateLimit = errMsg.includes('429') || errMsg.includes('Too many requests');
+// ─── Native HTTP fetch with browser-like headers (NO SDK!) ────────────
+const HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+};
 
-      if (isRateLimit && attempt < maxRetries) {
-        const waitTime = baseDelayMs * Math.pow(2, attempt) + Math.random() * 2000;
-        statusRef.rateLimitWaits++;
-        statusRef.message = `Rate limited. Waiting ${Math.round(waitTime / 1000)}s before retry (${attempt + 1}/${maxRetries})...`;
-        console.log(`[fetch-categories] Rate limited, waiting ${Math.round(waitTime / 1000)}s (attempt ${attempt + 1}/${maxRetries})`);
-        await delay(waitTime);
-        statusRef.retries++;
-        continue;
-      }
-
-      if (isRateLimit) {
-        statusRef.status = 'rate-limited';
-        statusRef.message = `Rate limited after ${maxRetries} retries. Pausing 30s...`;
-        console.log(`[fetch-categories] Rate limited, pausing 30s`);
-        await delay(30000);
-        statusRef.status = 'fetching';
-        // Try one more time after the long pause
-        try {
-          const result = await zai.functions.invoke(fn, params);
-          statusRef.rateLimitWaits++;
-          return result;
-        } catch {
-          throw new Error(`Rate limited even after 30s pause: ${errMsg}`);
-        }
-      }
-
-      throw err;
-    }
-  }
-  throw new Error('Max retries exceeded');
-}
-
-// Parse __NEXT_DATA__ from CrazyGames HTML to extract game list
-function parseNextData(html: string): Array<{
-  slug: string;
-  title: string;
-  description: string;
-  thumbnailUrl: string;
-  gameUrl: string;
-}> {
-  const games: Array<{
-    slug: string;
-    title: string;
-    description: string;
-    thumbnailUrl: string;
-    gameUrl: string;
-  }> = [];
-
-  // Strategy 1: Extract __NEXT_DATA__ JSON (most reliable)
-  const nextDataMatch = html.match(/<script\s+id="__NEXT_DATA__"\s+type="application\/json">([\s\S]*?)<\/script>/);
-  if (nextDataMatch) {
-    try {
-      const jsonStr = nextDataMatch[1]
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"');
-      const data = JSON.parse(jsonStr);
-
-      // Navigate the Next.js data structure to find games
-      // The game list is typically in props.pageProps.games or similar
-      const extractGames = (obj: unknown, depth = 0): void => {
-        if (depth > 8 || !obj || typeof obj !== 'object') return;
-
-        if (Array.isArray(obj)) {
-          for (const item of obj) {
-            if (item && typeof item === 'object' && !Array.isArray(item)) {
-              const rec = item as Record<string, unknown>;
-              // Check if this looks like a game object
-              if (rec.slug && (rec.title || rec.name || rec.gameTitle)) {
-                const slug = String(rec.slug);
-                const title = String(rec.title || rec.name || rec.gameTitle || '');
-                const desc = String(rec.description || rec.teaser || '');
-                const thumb = String(rec.imageCover || rec.thumbnailUrl || rec.image || rec.coverImage || '');
-                const allowEmbed = rec.allowEmbed !== false && rec.isEmbeddable !== false;
-                const desktopUrl = String(rec.desktopUrl || rec.gameUrl || '');
-
-                if (slug && title && slug.length > 1) {
-                  // Build embed URL
-                  let gameUrl = '';
-                  if (desktopUrl && allowEmbed) {
-                    gameUrl = desktopUrl.startsWith('http') ? desktopUrl : `https://games.crazygames.com/en_US/${slug}/index.html`;
-                  } else {
-                    gameUrl = `https://games.crazygames.com/en_US/${slug}/index.html`;
-                  }
-
-                  // Build thumbnail URL
-                  let thumbnailUrl = '';
-                  if (thumb) {
-                    if (thumb.startsWith('//')) thumbnailUrl = `https:${thumb}`;
-                    else if (thumb.startsWith('http')) thumbnailUrl = thumb;
-                    else thumbnailUrl = thumb;
-                    // Add size params if no query params
-                    if (!thumbnailUrl.includes('?')) {
-                      thumbnailUrl += '?metadata=none&quality=85&width=480&fit=crop';
-                    }
-                  } else {
-                    // Fallback: construct from slug
-                    thumbnailUrl = `https://images.crazygames.com/${slug}/202x128?v=1&q=80&format=webp`;
-                  }
-
-                  games.push({
-                    slug,
-                    title,
-                    description: desc || `${title} — Play free on CYBERPLAY!`,
-                    thumbnailUrl,
-                    gameUrl,
-                  });
-                }
-              }
-              extractGames(item, depth + 1);
-            }
-          }
-        } else if (typeof obj === 'object' && obj !== null) {
-          const rec = obj as Record<string, unknown>;
-          for (const key of Object.keys(rec)) {
-            extractGames(rec[key], depth + 1);
-          }
-        }
-      };
-
-      extractGames(data);
-      return games;
-    } catch (e) {
-      console.error('[fetch-categories] Failed to parse __NEXT_DATA__:', e);
-    }
-  }
-
-  // Strategy 2: Fallback - extract game links from HTML
-  const seenSlugs = new Set<string>();
-  const linkRegex = /crazygames\.com\/game\/([^/?"]+)/g;
-  let match;
-  while ((match = linkRegex.exec(html)) !== null) {
-    const slug = match[1];
-    if (seenSlugs.has(slug) || slug.length < 2) continue;
-    seenSlugs.add(slug);
-
-    const titleSlug = slug.replace(/-/g, ' ');
-    games.push({
-      slug,
-      title: titleSlug.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-      description: `${titleSlug} — Play free on CYBERPLAY!`,
-      thumbnailUrl: `https://images.crazygames.com/${slug}/202x128?v=1&q=80&format=webp`,
-      gameUrl: `https://games.crazygames.com/en_US/${slug}/index.html`,
+async function fetchPage(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, {
+      headers: HEADERS,
+      redirect: 'follow',
+      signal: AbortSignal.timeout(30000),
     });
+    if (res.ok) return await res.text();
+    console.error(`[fetch] HTTP ${res.status} for ${url}`);
+  } catch (err) {
+    console.error(`[fetch] Failed: ${url}:`, err);
   }
-
-  return games;
+  return '';
 }
 
-// ─── GET: returns current fetch status or list of genres ───────────────
+// ─── Parse CrazyGames tag page → extract games ─────────────────────────
+interface CrazyGame {
+  name: string;
+  slug: string;
+  cover: string;
+  categoryName: string;
+  videos: {
+    sizes: Array<{ width: number; height: number; location: string }>;
+  } | null;
+}
+
+function parseTagPage(html: string): CrazyGame[] {
+  // Flexible regex: handles crossorigin and other attributes on script tag
+  const match = html.match(/<script[^>]*id=['"]__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/);
+  if (!match) return [];
+
+  try {
+    const jsonStr = match[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+    const data = JSON.parse(jsonStr);
+
+    // Direct path: props.pageProps.games.items
+    const raw = (data as Record<string, unknown>)?.props;
+    const pp = raw as Record<string, unknown> | undefined;
+    const gameContainer = pp?.pageProps as Record<string, unknown> | undefined;
+    const gamesData = gameContainer?.games as Record<string, unknown> | undefined;
+    const games = gamesData?.items as CrazyGame[] | undefined;
+
+    if (Array.isArray(games)) return games;
+
+    return [];
+  } catch (e) {
+    console.error('[parse] JSON parse error:', e);
+    return [];
+  }
+}
+
+// ─── Build URLs from game data ────────────────────────────────────────
+function buildThumbnailUrl(cover: string): string {
+  if (!cover) return '';
+  return `https://images.crazygames.com/${cover}?metadata=none&quality=85&width=480&fit=crop`;
+}
+
+function buildVideoUrl(videos: CrazyGame['videos']): string {
+  if (!videos?.sizes?.length) return '';
+  // Find the 494px width (perfect for card hover) or closest
+  const ideal = videos.sizes.find(s => s.width >= 364 && s.width <= 600);
+  const size = ideal || videos.sizes[videos.sizes.length - 1];
+  return size ? `https://videos.crazygames.com/${size.location}` : '';
+}
+
+function buildGameUrl(slug: string): string {
+  return `https://games.crazygames.com/en_US/${slug}/index.html`;
+}
+
+// ─── GET: status, genres, or tag list ─────────────────────────────────
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const mode = searchParams.get('mode');
@@ -234,7 +144,7 @@ export async function GET(request: Request) {
 
   if (mode === 'genres') {
     const genresWithCounts = await Promise.all(
-      CRAZYGAMES_GENRES.map(async (g) => {
+      CRAZYGAMES_TAGS.map(async (g) => {
         const count = await db.game.count({ where: { genre: g.name } });
         return { ...g, count };
       })
@@ -248,150 +158,133 @@ export async function GET(request: Request) {
     ]);
   }
 
-  return NextResponse.json(CRAZYGAMES_GENRES);
+  return NextResponse.json(CRAZYGAMES_TAGS);
 }
 
-// ─── POST: start bulk category fetch ──────────────────────────────────
+// ─── POST: start bulk tag fetch ───────────────────────────────────────
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const { genres: selectedGenres } = body;
 
-  if (fetchStatus.status === 'fetching' || fetchStatus.status === 'rate-limited') {
+  if (fetchStatus.status === 'fetching') {
     return NextResponse.json({ ...fetchStatus, message: 'Fetch already in progress' });
   }
 
   const genresToFetch = selectedGenres?.length
-    ? CRAZYGAMES_GENRES.filter((g) => selectedGenres.includes(g.name))
-    : CRAZYGAMES_GENRES;
+    ? CRAZYGAMES_TAGS.filter((g) => selectedGenres.includes(g.name))
+    : CRAZYGAMES_TAGS;
 
   if (genresToFetch.length === 0) {
     return NextResponse.json({ error: 'No genres selected' }, { status: 400 });
   }
 
-  // Start fetching in background
-  fetchBulkGenres(genresToFetch).catch(console.error);
+  fetchBulkTags(genresToFetch).catch(console.error);
 
   return NextResponse.json({
-    message: `Started fetching ${genresToFetch.length} genres`,
+    message: `Started fetching ${genresToFetch.length} tags (direct HTTP, no SDK)`,
     genresTotal: genresToFetch.length,
   });
 }
 
-// ─── Core: fetch games from each genre page ────────────────────────────
-async function fetchBulkGenres(genres: readonly typeof CRAZYGAMES_GENRES) {
-  const zai = await ZAI.create();
-  let totalGamesFound = 0;
+// ─── Core: fetch games from each CrazyGames tag page ───────────────────
+async function fetchBulkTags(tags: readonly typeof CRAZYGAMES_TAGS) {
+  let totalNew = 0;
 
   fetchStatus.status = 'fetching';
-  fetchStatus.genresTotal = genres.length;
+  fetchStatus.genresTotal = tags.length;
   fetchStatus.genresDone = 0;
   fetchStatus.gamesFound = 0;
-  fetchStatus.retries = 0;
-  fetchStatus.rateLimitWaits = 0;
 
-  for (const genre of genres) {
-    fetchStatus.genre = genre.name;
-    fetchStatus.message = `Reading ${genre.name} page...`;
+  for (const tag of tags) {
+    fetchStatus.genre = tag.name;
+    fetchStatus.message = `Fetching ${tag.name}...`;
 
     try {
-      // Read the CrazyGames tag/genre page
-      const genreUrl = `https://www.crazygames.com/t/${genre.slug}`;
-      console.log(`[fetch-categories] Fetching: ${genreUrl}`);
+      const url = `https://www.crazygames.com/t/${tag.slug}`;
+      console.log(`[fetch] ${tag.name}: ${url}`);
 
-      const pageResult = await invokeWithRetry(
-        zai,
-        'page_reader',
-        { url: genreUrl },
-        3,
-        8000,
-        fetchStatus,
-      );
+      const html = await fetchPage(url);
+      if (!html) {
+        fetchStatus.genresDone++;
+        fetchStatus.message = `${tag.name}: Empty response`;
+        await delay(500);
+        continue;
+      }
 
-      const html = String((pageResult as Record<string, unknown>)?.data?.html || '');
-      const parsedGames = parseNextData(html);
+      const games = parseTagPage(html);
+      console.log(`[fetch] ${tag.name}: ${games.length} games`);
 
-      console.log(`[fetch-categories] ${genre.name}: parsed ${parsedGames.length} games from page`);
-
-      fetchStatus.total = parsedGames.length;
+      fetchStatus.total = games.length;
       fetchStatus.current = 0;
 
-      let savedInGenre = 0;
-      for (const game of parsedGames) {
+      let savedInTag = 0;
+      for (const game of games) {
         fetchStatus.current++;
 
         const existing = await db.game.findFirst({
           where: { externalId: game.slug },
         });
 
+        const thumbnailUrl = buildThumbnailUrl(game.cover);
+        const videoUrl = buildVideoUrl(game.videos);
+        const gameUrl = buildGameUrl(game.slug);
+        const description = `${game.name} — Play free on CYBERPLAY!`;
+        const tagsText = game.name.toLowerCase().split(/\s+/).filter(w => w.length > 2).slice(0, 5).join(', ');
+
         if (existing) {
-          // Update genre if missing
+          // Update genre
           if (!existing.genre) {
-            await db.game.update({
-              where: { id: existing.id },
-              data: { genre: genre.name },
-            });
+            await db.game.update({ where: { id: existing.id }, data: { genre: tag.name } });
           } else {
             const genres = existing.genre.split(', ').filter(Boolean);
-            if (!genres.includes(genre.name)) {
-              genres.push(genre.name);
-              await db.game.update({
-                where: { id: existing.id },
-                data: { genre: genres.slice(0, 3).join(', ') },
-              });
+            if (!genres.includes(tag.name)) {
+              genres.push(tag.name);
+              await db.game.update({ where: { id: existing.id }, data: { genre: genres.slice(0, 3).join(', ') } });
             }
           }
-          // Update thumbnail if empty
-          if (!existing.thumbnailUrl && game.thumbnailUrl) {
-            await db.game.update({
-              where: { id: existing.id },
-              data: { thumbnailUrl: game.thumbnailUrl },
-            });
+          // Update missing fields
+          const updates: Record<string, string> = {};
+          if (!existing.thumbnailUrl && thumbnailUrl) updates.thumbnailUrl = thumbnailUrl;
+          if (!existing.videoUrl && videoUrl) updates.videoUrl = videoUrl;
+          if (Object.keys(updates).length > 0) {
+            await db.game.update({ where: { id: existing.id }, data: updates });
           }
         } else {
           await db.game.create({
             data: {
-              title: game.title,
-              description: game.description,
+              title: game.name,
+              description,
               category: 'HTML5',
-              genre: genre.name,
-              thumbnailUrl: game.thumbnailUrl,
-              videoUrl: '',
-              gameUrl: game.gameUrl,
-              tags: game.title.toLowerCase().split(/\s+/).filter((w) => w.length > 2).slice(0, 5).join(', '),
+              genre: tag.name,
+              thumbnailUrl,
+              videoUrl,
+              gameUrl,
+              tags: tagsText,
               externalId: game.slug,
               rating: 3.5 + Math.random() * 1.5,
             },
           });
-          savedInGenre++;
+          savedInTag++;
         }
       }
 
-      totalGamesFound += savedInGenre;
-      fetchStatus.gamesFound = totalGamesFound;
+      totalNew += savedInTag;
+      fetchStatus.gamesFound = totalNew;
       fetchStatus.genresDone++;
-      fetchStatus.message = `${genre.name}: ${savedInGenre} new, ${parsedGames.length} total`;
-      console.log(`[fetch-categories] ${genre.name}: ${savedInGenre} new games saved`);
+      fetchStatus.message = `${tag.name}: +${savedInTag} new (${games.length} total)`;
+      console.log(`[fetch] ${tag.name}: +${savedInTag} new`);
 
-      // Longer delay between genres to avoid rate limits (8-12 seconds)
-      await delay(8000 + Math.random() * 4000);
+      // Polite delay (1s between tags — no SDK rate limit!)
+      await delay(1000);
     } catch (err) {
-      console.error(`[fetch-categories] Error fetching ${genre.name}:`, err);
-      fetchStatus.message = `${genre.name}: Error - ${err instanceof Error ? err.message : 'Unknown'}`;
+      console.error(`[fetch] ${tag.name} error:`, err);
+      fetchStatus.message = `${tag.name}: Error`;
       fetchStatus.genresDone++;
-
-      // If we got a hard rate limit, wait longer before trying next genre
-      const errMsg = err instanceof Error ? err.message : '';
-      if (errMsg.includes('429') || errMsg.includes('rate limit')) {
-        console.log('[fetch-categories] Hard rate limit detected, pausing 30s before next genre');
-        fetchStatus.message = `${genre.name}: Rate limited. Waiting 30s...`;
-        await delay(30000);
-      } else {
-        await delay(3000);
-      }
+      await delay(500);
     }
   }
 
   fetchStatus.status = 'done';
-  fetchStatus.message = `Done! ${totalGamesFound} new games across ${genres.length} genres (${fetchStatus.rateLimitWaits} rate limit waits, ${fetchStatus.retries} retries)`;
-  console.log(`[fetch-categories] Complete: ${fetchStatus.message}`);
+  fetchStatus.message = `Done! ${totalNew} new games across ${tags.length} tags`;
+  console.log(`[fetch] Complete: ${fetchStatus.message}`);
 }

@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaLibSQL } from '@prisma/adapter-libsql'
-import { createClient } from '@libsql/client'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -8,6 +7,7 @@ const globalForPrisma = globalThis as unknown as {
 
 function createPrismaClient(): PrismaClient {
   const databaseUrl = process.env.DATABASE_URL || ''
+  const authToken = process.env.TURSO_AUTH_TOKEN || ''
 
   console.log('[db] DATABASE_URL prefix:', databaseUrl.substring(0, 20) + '...')
   console.log('[db] TURSO_AUTH_TOKEN set:', !!process.env.TURSO_AUTH_TOKEN)
@@ -17,11 +17,12 @@ function createPrismaClient(): PrismaClient {
   if (databaseUrl.startsWith('libsql://')) {
     console.log('[db] Using Turso/libSQL adapter')
     try {
-      const libsql = createClient({
+      // Pass config directly to adapter instead of creating a Client separately.
+      // This avoids bundling issues with @libsql/client on Vercel.
+      const adapter = new PrismaLibSQL({
         url: databaseUrl,
-        authToken: process.env.TURSO_AUTH_TOKEN,
+        authToken: authToken,
       })
-      const adapter = new PrismaLibSQL(libsql)
       return new PrismaClient({
         adapter,
         log: ['error'],

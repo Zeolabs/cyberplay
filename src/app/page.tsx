@@ -509,7 +509,7 @@ export default function GamePortal() {
             <div className="text-[#8b5cf6] header-logo-glow">
               <Gamepad2 className="w-7 h-7" strokeWidth={1.5} />
             </div>
-            <span className="text-xl font-bold kali-text-blue glitch-hover cursor-pointer tracking-wider">
+            <span className="text-xl font-bold kali-text cursor-pointer tracking-wider">
               CYBERPLAY
             </span>
           </div>

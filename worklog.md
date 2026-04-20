@@ -136,3 +136,21 @@ Stage Summary:
 - Upload button now has proper purple gradient styling matching the hacking theme
 - Active states for SOURCES and MANAGE nav buttons now properly defined
 - No build or lint errors
+
+---
+Task ID: 6
+Agent: Main Agent
+Task: Make header text logo consistent with hero section (color + animation)
+
+Work Log:
+- Identified inconsistency: Header logo used `kali-text-blue glitch-hover` (blue #3b82f6 glow + glitch hover) while hero used `kali-text` (purple #8b5cf6 glow pulse)
+- Changed header CYBERPLAY text from `kali-text-blue glitch-hover` to `kali-text` in page.tsx line 512
+- Now both header logo and hero text share the same purple color (#8b5cf6) and `textGlowPulse` animation (3s ease-in-out infinite)
+- Header Gamepad2 icon already used `text-[#8b5cf6] header-logo-glow` (purple) — now fully consistent
+- Verified: dev server compiles with 0 errors, page renders with 200 status
+
+Stage Summary:
+- Header "CYBERPLAY" text now matches hero section: purple color + purple glow pulse animation
+- Consistent purple aesthetic across header and hero
+- Upload button already properly styled with kali-btn (purple hacking theme)
+- No build or lint errors

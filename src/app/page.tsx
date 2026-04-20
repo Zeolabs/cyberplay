@@ -1765,11 +1765,10 @@ export default function GamePortal() {
               <Gamepad2 className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <span className="kali-text text-[10px]">CYBERPLAY</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
-            <span className="w-1 h-1 rounded-full bg-[#00ff41] copyright-dot" />
             <span className="text-[10px] text-[#00ff41]/80 font-bold copyright-glow tracking-wider">
               - COPYRIGHT © 2026 ZEOLABS STUDIO
             </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
           </div>
           <span>{games.length} GAME{games.length !== 1 ? 'S' : ''} AVAILABLE</span>
         </div>
@@ -1861,6 +1860,7 @@ function LoadingOverlay({ onComplete }: { onComplete: () => void }) {
 
               {/* Terminal body */}
               <div className="p-4 font-mono text-[11px] min-h-[220px] max-h-[260px] overflow-hidden">
+                <div className="overflow-x-clip">
                 {lines.map((line, idx) => (
                   <motion.div
                     key={idx}
@@ -1884,6 +1884,7 @@ function LoadingOverlay({ onComplete }: { onComplete: () => void }) {
                     )}
                   </motion.div>
                 ))}
+                </div>
               </div>
             </div>
 

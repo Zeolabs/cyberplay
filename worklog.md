@@ -35,3 +35,30 @@ Stage Summary:
 - Categories: HTML5 (11 games), Unity WebGL (4 games), Flash (1 game)
 - API endpoints all tested and working
 - No lint errors, clean build
+
+---
+Task ID: 2
+Agent: Main Agent
+Task: Implement dynamic game fetching from external sources (CrazyGames, Poki, etc.)
+
+Work Log:
+- Verified existing implementation from previous session was already complete
+- Pushed Prisma schema (GameSource model + Game.sourceId/externalId fields) to SQLite DB
+- Cleared stale .next cache and restarted dev server
+- Verified all API endpoints working:
+  - `GET/POST /api/sources` - List/Create game sources
+  - `GET/PUT/DELETE /api/sources/[id]` - Read/Update/Delete source
+  - `POST/GET /api/sources/[id]/fetch` - Start fetch & poll progress
+  - `GET/POST /api/games` - Games CRUD with search/filter/sort
+- Confirmed full page renders correctly with all 4 views (Home, Play, Manage, Sources)
+- Confirmed 16 seeded games in database
+- All lint checks pass (0 errors)
+
+Stage Summary:
+- Dynamic game source fetching system fully operational
+- Supports CrazyGames and Poki as built-in source types
+- Extensible architecture: new source types can be added via `src/lib/game-fetcher.ts` fetcher registry
+- SOURCES view UI with: add source dialog, source cards with fetch button, progress bar, delete confirmation
+- Background fetch with polling progress (searching → fetching → saving → done)
+- Duplicate detection via externalId+sourceId (updates existing games instead of creating duplicates)
+- Dev server running on port 3000 via Caddy gateway on port 81

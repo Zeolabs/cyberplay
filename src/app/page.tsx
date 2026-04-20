@@ -1767,17 +1767,17 @@ export default function GamePortal() {
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff41] status-dot-glow" />
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 md:hidden">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="kali-btn-outline kali-btn-icon"
+              className="kali-btn-outline kali-btn-icon cursor-pointer"
               title="Scroll to top"
             >
               <ArrowUp className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
-              className="kali-btn-outline kali-btn-icon"
+              className="kali-btn-outline kali-btn-icon cursor-pointer"
               title="Scroll to bottom"
             >
               <ArrowDown className="w-3.5 h-3.5" />

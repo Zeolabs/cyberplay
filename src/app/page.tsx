@@ -183,6 +183,28 @@ export default function GamePortal() {
   } | null>(null);
   const fetchProgressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Hover preview state
+  const [hoveredGame, setHoveredGame] = useState<Game | null>(null);
+  const [hoveredRect, setHoveredRect] = useState<{top: number; left: number} | null>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleHoverGame = useCallback((game: Game | null, e?: React.MouseEvent) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    if (game && e) {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      setHoveredRect({ top: rect.top, left: rect.left + rect.width / 2 });
+      hoverTimeoutRef.current = setTimeout(() => {
+        setHoveredGame(game);
+      }, 400);
+    } else {
+      setHoveredGame(null);
+      setHoveredRect(null);
+    }
+  }, []);
+
   // Refs
   const gameFrameRef = useRef<HTMLIFrameElement>(null);
   const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -250,11 +272,14 @@ export default function GamePortal() {
     }
   }, [view, fetchSources]);
 
-  // Cleanup fetch progress interval
+  // Cleanup fetch progress interval & hover timeout
   useEffect(() => {
     return () => {
       if (fetchProgressInterval.current) {
         clearInterval(fetchProgressInterval.current);
+      }
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
       }
     };
   }, []);
@@ -401,6 +426,8 @@ export default function GamePortal() {
               fetchGames();
               if (progress.status === 'done') {
                 toast.success(progress.message);
+                // Fire-and-forget: fix any missing thumbnails
+                fetch('/api/games/fix-thumbnails', { method: 'POST' }).catch(() => {});
               } else {
                 toast.error(progress.message);
               }
@@ -704,7 +731,7 @@ export default function GamePortal() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {featuredGames.map((game) => (
-                      <GameCard key={game.id} game={game} onPlay={playGame} />
+                      <GameCard key={game.id} game={game} onPlay={playGame} onHoverGame={handleHoverGame} />
                     ))}
                   </div>
                 </section>
@@ -743,7 +770,7 @@ export default function GamePortal() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {allGames.map((game) => (
-                      <GameCard key={game.id} game={game} onPlay={playGame} />
+                      <GameCard key={game.id} game={game} onPlay={playGame} onHoverGame={handleHoverGame} />
                     ))}
                   </div>
                 )}
@@ -1154,6 +1181,108 @@ export default function GamePortal() {
         </AnimatePresence>
       </main>
 
+      {/* ── Game Hover Preview Popup ── */}
+      <AnimatePresence>
+        {hoveredGame && hoveredRect && (
+          <motion.div
+            key={hoveredGame.id}
+            initial={{ opacity: 0, scale: 0.9, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 8 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="fixed z-[100] pointer-events-none w-[340px] hidden md:block"
+            style={{
+              top: Math.min(hoveredRect.top, window.innerHeight - 460),
+              left: hoveredRect.left > window.innerWidth / 2
+                ? hoveredRect.left - 360
+                : hoveredRect.left + 20,
+            }}
+            onMouseEnter={() => {}}
+          >
+            <div className="rounded-xl border-2 border-[#8b5cf6]/60 bg-[#0d0d1f]/95 backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.25),0_0_60px_rgba(139,92,246,0.1)]">
+              {/* Thumbnail */}
+              <div className="relative h-[180px] bg-[#111127] overflow-hidden">
+                {hoveredGame.thumbnailUrl ? (
+                  <img
+                    src={hoveredGame.thumbnailUrl}
+                    alt={hoveredGame.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Gamepad2 className="w-16 h-16 text-[#8b5cf6]/20" />
+                  </div>
+                )}
+                {/* Purple gradient overlay at bottom */}
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0d0d1f] to-transparent" />
+                {/* Category badge */}
+                <div className="absolute top-3 left-3">
+                  <CategoryBadge category={hoveredGame.category} />
+                </div>
+                {/* Featured badge */}
+                {hoveredGame.featured && (
+                  <div className="absolute top-3 right-3 flex items-center gap-1 text-xs font-bold text-[#fbbf24]">
+                    <Star className="w-3 h-3 fill-[#fbbf24]" />
+                    FEATURED
+                  </div>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="p-4">
+                {/* Title */}
+                <h3 className="text-base font-bold text-white mb-1.5 leading-tight truncate"
+                  style={{ textShadow: '0 0 10px rgba(139,92,246,0.3)' }}
+                >
+                  {hoveredGame.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-xs text-[#94a3b8] line-clamp-2 mb-3 leading-relaxed">
+                  {hoveredGame.description || 'No description available.'}
+                </p>
+
+                {/* Stats row */}
+                <div className="flex items-center gap-3 mb-3 text-xs text-[#94a3b8]">
+                  <span className="flex items-center gap-1">
+                    <Star className="w-3 h-3 text-[#fbbf24]" />
+                    <span className="text-white font-medium">{hoveredGame.rating.toFixed(1)}</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    <span>{formatPlays(hoveredGame.plays)} plays</span>
+                  </span>
+                </div>
+
+                {/* Tags */}
+                {hoveredGame.tags && (
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {hoveredGame.tags.split(',').slice(0, 4).map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-[#8b5cf6]/10 text-[#8b5cf6] border border-[#8b5cf6]/20"
+                      >
+                        {tag.trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Play Now button */}
+                <button
+                  className="w-full py-2 rounded-lg bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white text-xs font-bold tracking-wider uppercase transition-all hover:from-[#a78bfa] hover:to-[#8b5cf6] shadow-[0_0_15px_rgba(139,92,246,0.3)] flex items-center justify-center gap-2"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  PLAY NOW
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Dialogs ── */}
 
       {/* Add Source Dialog */}
@@ -1467,13 +1596,15 @@ export default function GamePortal() {
 }
 
 // ─── GameCard Component ─────────────────────────────────────────────
-function GameCard({ game, onPlay }: { game: Game; onPlay: (game: Game) => void }) {
+function GameCard({ game, onPlay, onHoverGame }: { game: Game; onPlay: (game: Game) => void; onHoverGame: (game: Game | null, e?: React.MouseEvent) => void }) {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={`group game-card cursor-pointer ${game.featured ? 'game-card-featured' : ''}`}
       onClick={() => onPlay(game)}
+      onMouseEnter={(e) => onHoverGame(game, e)}
+      onMouseLeave={() => onHoverGame(null)}
     >
       {/* Thumbnail */}
       <div className="relative overflow-hidden bg-[#111127]">

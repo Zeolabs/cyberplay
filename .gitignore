@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (keep .env.example for reference)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -55,3 +56,14 @@ server.log
 
 # Image cache
 /.cache/
+
+# Database
+/db/*.db
+/db/*.db-journal
+
+# Backup files
+*.bak
+*.tar.gz
+
+# Lock files
+bun.lock
